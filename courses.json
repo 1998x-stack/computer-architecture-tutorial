@@ -1,316 +1,36 @@
 {
   "title": "计算机体系结构 · 从入门到精通",
   "emoji": "🖥️",
-  "subtitle": "🖥️ 28章 实战体系",
+  "subtitle": "📘 28章 实战体系",
   "chapterCount": 28,
   "chapters": [
-    {
-      "num": "01",
-      "title": "第1章 体系结构概述",
-      "topics": [
-        "什么是计算机体系结构",
-        "计算机的发展历程",
-        "冯·诺依曼架构",
-        "体系结构的分类方法"
-      ],
-      "file": "01.html"
-    },
-    {
-      "num": "02",
-      "title": "第2章 数字逻辑基础",
-      "topics": [
-        "数字逻辑基础",
-        "布尔代数与逻辑门",
-        "组合逻辑电路",
-        "时序逻辑电路"
-      ],
-      "file": "02.html"
-    },
-    {
-      "num": "03",
-      "title": "第3章 数据表示与运算",
-      "topics": [
-        "数据表示与运算",
-        "整数的二进制表示",
-        "整数运算与ALU",
-        "浮点数与IEEE 754"
-      ],
-      "file": "03.html"
-    },
-    {
-      "num": "04",
-      "title": "第4章 指令集架构(ISA)",
-      "topics": [
-        "指令集架构(ISA)",
-        "ISA是什么：硬件与软件的契约",
-        "RISC vs CISC：一场持续四十年的争论",
-        "寻址模式全景"
-      ],
-      "file": "04.html"
-    },
-    {
-      "num": "05",
-      "title": "第5章 RISC-V指令集精讲",
-      "topics": [
-        "RISC-V指令集精讲",
-        "RV32I指令格式全集",
-        "六大指令类型详解",
-        "函数调用约定(ABI)"
-      ],
-      "file": "05.html"
-    },
-    {
-      "num": "06",
-      "title": "第6章 MIPS与x86指令集对比",
-      "topics": [
-        "MIPS与x86指令集对比",
-        "MIPS：教科书的优雅",
-        "x86：兼容性的代价与胜利",
-        "微码与指令翻译层"
-      ],
-      "file": "06.html"
-    },
-    {
-      "num": "07",
-      "title": "第7章 汇编与机器码实战",
-      "topics": [
-        "汇编与机器码实战",
-        "从C到汇编再到机器码",
-        "汇编器的工作原理",
-        "objdump与反汇编工具"
-      ],
-      "file": "07.html"
-    },
-    {
-      "num": "08",
-      "title": "第8章 单周期处理器设计",
-      "topics": [
-        "单周期处理器设计",
-        "处理器设计的五阶段模型",
-        "数据通路设计",
-        "控制单元设计"
-      ],
-      "file": "08.html"
-    },
-    {
-      "num": "09",
-      "title": "第9章 流水线技术原理",
-      "topics": [
-        "流水线技术原理",
-        "流水线的直觉：洗衣服的类比",
-        "五级流水线数据通路",
-        "流水线的性能分析"
-      ],
-      "file": "09.html"
-    },
-    {
-      "num": "10",
-      "title": "第10章 流水线冲突与解决",
-      "topics": [
-        "流水线冲突与解决",
-        "结构冲突（Structural Hazard）",
-        "数据冲突（Data Hazard）",
-        "控制冲突（Control Hazard）"
-      ],
-      "file": "10.html"
-    },
-    {
-      "num": "11",
-      "title": "第11章 分支预测技术",
-      "topics": [
-        "分支预测技术",
-        "分支的代价",
-        "静态分支预测",
-        "动态分支预测：1-bit与2-bit饱和计数器"
-      ],
-      "file": "11.html"
-    },
-    {
-      "num": "12",
-      "title": "第12章 异常与中断处理",
-      "topics": [
-        "异常与中断处理",
-        "异常 vs 中断",
-        "精确异常处理",
-        "RISC-V的异常处理机制"
-      ],
-      "file": "12.html"
-    },
-    {
-      "num": "13",
-      "title": "第13章 静态多发射与VLIW",
-      "topics": [
-        "静态多发射与VLIW",
-        "指令级并行（ILP）的基本概念",
-        "静态多发射处理器",
-        "VLIW架构详解"
-      ],
-      "file": "13.html"
-    },
-    {
-      "num": "14",
-      "title": "第14章 动态调度与乱序执行",
-      "topics": [
-        "动态调度与乱序执行",
-        "为什么需要乱序执行",
-        "Scoreboard算法",
-        "Tomasulo算法"
-      ],
-      "file": "14.html"
-    },
-    {
-      "num": "15",
-      "title": "第15章：存储层次与局部性原理",
-      "topics": [
-        "存储墙：处理器与内存的速度鸿沟",
-        "局部性原理的形式化",
-        "存储层次的设计哲学",
-        "AMAT：平均存储访问时间"
-      ],
-      "file": "15.html"
-    },
-    {
-      "num": "16",
-      "title": "第16章：Cache设计与优化",
-      "topics": [
-        "Cache的三大映射方式",
-        "替换策略",
-        "写入策略",
-        "Cache性能优化十大技术"
-      ],
-      "file": "16.html"
-    },
-    {
-      "num": "17",
-      "title": "第17章：虚拟内存与TLB",
-      "topics": [
-        "虚拟内存的动机与原理",
-        "页表与地址转换",
-        "TLB：地址转换的Cache",
-        "TLB缺失处理"
-      ],
-      "file": "17.html"
-    },
-    {
-      "num": "18",
-      "title": "第18章：总线与I/O系统",
-      "topics": [
-        "总线基础",
-        "总线仲裁",
-        "DMA：让数据自己移动",
-        "PCIe：现代总线的标准"
-      ],
-      "file": "18.html"
-    },
-    {
-      "num": "19",
-      "title": "第19章 超标量与前瞻执行",
-      "topics": [
-        "超标量与前瞻执行",
-        "超标量的核心概念",
-        "现代超标量处理器的真实参数",
-        "寄存器重命名深入"
-      ],
-      "file": "19.html"
-    },
-    {
-      "num": "20",
-      "title": "第20章 多核与多处理器架构",
-      "topics": [
-        "多核与多处理器架构",
-        "为什么我们需要多核",
-        "SMP与NUMA架构",
-        "缓存一致性协议深入"
-      ],
-      "file": "20.html"
-    },
-    {
-      "num": "21",
-      "title": "第21章 SIMD与向量处理器",
-      "topics": [
-        "SIMD与向量处理器",
-        "SIMD的并行哲学",
-        "x86 SIMD演进史",
-        "编译器自动向量化"
-      ],
-      "file": "21.html"
-    },
-    {
-      "num": "22",
-      "title": "第22章 GPU体系结构",
-      "topics": [
-        "GPU体系结构",
-        "GPU vs CPU：两种哲学",
-        "SIMT执行模型",
-        "NVIDIA GPU内部结构"
-      ],
-      "file": "22.html"
-    },
-    {
-      "num": "23",
-      "title": "第23章 RISC-V开放生态与香山处理器",
-      "topics": [
-        "RISC-V：从大学项目到全球标准",
-        "RISC-V的全球格局2025-2026",
-        "香山处理器：中国开源硬件的里程碑",
-        "RISC-V在数据中心：从概念到现实"
-      ],
-      "file": "23.html"
-    },
-    {
-      "num": "24",
-      "title": "第24章 Chiplet与先进封装",
-      "topics": [
-        "从单片到芯粒：范式的转移",
-        "UCIe标准：芯粒的\"USB\"",
-        "先进封装技术全景",
-        "开源Chiplet：Occamy及未来"
-      ],
-      "file": "24.html"
-    },
-    {
-      "num": "25",
-      "title": "第25章 AI加速器与领域专用架构",
-      "topics": [
-        "通用计算的终结？DSA的黄金时代",
-        "Google TPU：DSA的教科书案例",
-        "数据流架构：超越冯·诺依曼",
-        "存内计算与近存计算"
-      ],
-      "file": "25.html"
-    },
-    {
-      "num": "26",
-      "title": "第26章 从零构建计算机",
-      "topics": [
-        "第1-5章：从NAND到计算机硬件",
-        "第6-11章：从汇编器到编译器",
-        "硬件描述语言与FPGA原型验证",
-        "开源EDA工具链"
-      ],
-      "file": "26.html"
-    },
-    {
-      "num": "27",
-      "title": "第27章 性能建模与仿真工具",
-      "topics": [
-        "性能分析的方法论",
-        "perf与硬件性能计数器",
-        "gem5：学术界的标准模拟器",
-        "其他性能分析工具"
-      ],
-      "file": "27.html"
-    },
-    {
-      "num": "28",
-      "title": "第28章 量子计算与体系结构的未来",
-      "topics": [
-        "量子计算基础：体系结构的全新维度",
-        "量子计算对经典体系结构的启示",
-        "其他新兴计算范式",
-        "体系结构教育的演变"
-      ],
-      "file": "28.html"
-    }
+    { "num": "01", "title": "体系结构概述", "topics": ["冯·诺依曼架构", "Flynn分类法", "发展历程"], "file": "01.html" },
+    { "num": "02", "title": "数字逻辑基础", "topics": ["布尔代数与逻辑门", "组合/时序逻辑", "有限状态机"], "file": "02.html" },
+    { "num": "03", "title": "数据表示与运算", "topics": ["补码与整数运算", "IEEE 754浮点", "ALU设计"], "file": "03.html" },
+    { "num": "04", "title": "指令集架构(ISA)", "topics": ["RISC vs CISC", "寻址模式", "ISA设计权衡"], "file": "04.html" },
+    { "num": "05", "title": "RISC-V指令集精讲", "topics": ["RV32I指令格式", "函数调用约定", "模块化扩展"], "file": "05.html" },
+    { "num": "06", "title": "MIPS与x86指令集对比", "topics": ["MIPS优雅设计", "x86兼容性演进", "微码翻译层"], "file": "06.html" },
+    { "num": "07", "title": "汇编与机器码实战", "topics": ["C到机器码全流程", "objdump反汇编", "手工汇编练习"], "file": "07.html" },
+    { "num": "08", "title": "单周期处理器设计", "topics": ["五阶段模型", "数据通路设计", "控制信号真值表"], "file": "08.html" },
+    { "num": "09", "title": "流水线技术原理", "topics": ["流水线加速比", "流水寄存器", "Pentium 4教训"], "file": "09.html" },
+    { "num": "10", "title": "流水线冲突与解决", "topics": ["结构/数据/控制冲突", "转发旁路", "Load-Use Stall"], "file": "10.html" },
+    { "num": "11", "title": "分支预测技术", "topics": ["2-bit饱和计数器", "Gshare/TAGE", "BTB与RAS"], "file": "11.html" },
+    { "num": "12", "title": "异常与中断处理", "topics": ["精确异常", "RISC-V CSR", "Syscall机制"], "file": "12.html" },
+    { "num": "13", "title": "静态多发射与VLIW", "topics": ["指令级并行ILP", "VLIW架构", "Itanium教训"], "file": "13.html" },
+    { "num": "14", "title": "动态调度与乱序执行", "topics": ["Tomasulo算法", "寄存器重命名", "ROB"], "file": "14.html" },
+    { "num": "15", "title": "存储层次与局部性原理", "topics": ["存储墙问题", "局部性原理", "AMAT公式"], "file": "15.html" },
+    { "num": "16", "title": "Cache设计与优化", "topics": ["映射方式与替换策略", "写入策略", "False Sharing"], "file": "16.html" },
+    { "num": "17", "title": "虚拟内存与TLB", "topics": ["页表地址转换", "TLB设计", "熔断与幽灵"], "file": "17.html" },
+    { "num": "18", "title": "总线与I/O系统", "topics": ["DMA传输", "PCIe 6.0", "CXL互连"], "file": "18.html" },
+    { "num": "19", "title": "超标量与前瞻执行", "topics": ["超标量设计参数", "寄存器重命名深入", "推测执行安全"], "file": "19.html" },
+    { "num": "20", "title": "多核与多处理器架构", "topics": ["SMP/NUMA", "MESI/MOESI协议", "内存一致性模型"], "file": "20.html" },
+    { "num": "21", "title": "SIMD与向量处理器", "topics": ["SSE/AVX演进", "ARM NEON", "RISC-V Vector"], "file": "21.html" },
+    { "num": "22", "title": "GPU体系结构", "topics": ["SIMT执行模型", "Warp调度", "Tensor Core"], "file": "22.html" },
+    { "num": "23", "title": "RISC-V生态与香山处理器", "topics": ["RISC-V全球格局", "香山昆明湖架构", "开源芯片运动"], "file": "23.html" },
+    { "num": "24", "title": "Chiplet与先进封装", "topics": ["UCIe标准", "2.5D/3D封装", "Occamy开源Chiplet"], "file": "24.html" },
+    { "num": "25", "title": "AI加速器与领域专用架构", "topics": ["Google TPU演进", "数据流架构", "存内计算"], "file": "25.html" },
+    { "num": "26", "title": "从零构建计算机", "topics": ["Nand to Tetris", "Verilog硬件描述", "开源EDA工具链"], "file": "26.html" },
+    { "num": "27", "title": "性能建模与仿真工具", "topics": ["perf/VTune分析", "gem5模拟器", "Roofline模型"], "file": "27.html" },
+    { "num": "28", "title": "量子计算与体系结构的未来", "topics": ["量子计算基础", "神经形态/光计算", "体系结构新黄金时代"], "file": "28.html" }
   ]
 }
