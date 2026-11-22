@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
         <h1>第11章 分支预测技术</h1>
 
         <p>同学们好！上一章我们提到控制冲突是流水线处理器的核心挑战之一，
@@ -51,7 +52,7 @@
         既古老又常新的话题——从最简单的静态预测，
         到现代处理器中准确率超过98%的高级动态预测器。</p>
 
-        <h3>分支的代价</h3>
+        <h2>分支的代价</h2>
 
         <p>在深入技术细节之前，先让我们量化一下分支错误的代价。
         典型的程序中大约每5条指令就有一条是分支指令（约20%）。
@@ -78,7 +79,7 @@
         这就是为什么哪怕提升1%的分支预测准确率，
         对处理器整体性能都有显著影响。</p>
 
-        <h3>静态分支预测</h3>
+        <h2>静态分支预测</h2>
 
         <p>静态分支预测是最简单的实现方式——
         不依赖任何运行时信息，
@@ -110,7 +111,7 @@
         静态预测完全无能为力——
         因为编译器在编译时根本无法知道x和y的值。</p>
 
-        <h3>动态分支预测：1-bit与2-bit饱和计数器</h3>
+        <h2>动态分支预测：1-bit与2-bit饱和计数器</h2>
 
         <p>动态预测器维护一个分支历史表
         （Branch History Table, BHT），
@@ -146,9 +147,31 @@
         对于10次迭代的循环，100次预测中只有2次错误，
         准确率高达98%——当然，这是对特定模式而言。</p>
 
+        <figure class="figure" id="fig-2bit-fsm">
+            <svg viewBox="0 0 680 370" role="img" aria-labelledby="fig-sb-t fig-sb-d" style="width:100%;height:auto;display:block">
+                <title id="fig-sb-t">2-bit 饱和计数器预测器的状态转移图</title>
+                <desc id="fig-sb-d">四个状态 11、10、01、00：分支实际跳转 T 则计数器加一（向 11 方向），不跳转 N 则减一（向 00 方向）；高两位为 1 时预测跳转，否则预测不跳转。需要连续两次相反结果才会改变预测方向。</desc>
+                <defs><marker id="sbar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+                <text x="165" y="52" text-anchor="middle" font-size="12" fill="#0f5c5c">预测：跳转 Taken</text>
+                <text x="505" y="52" text-anchor="middle" font-size="12" fill="#0f5c5c"></text>
+                <rect x="90" y="70" width="150" height="64" rx="12" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="165" y="108" text-anchor="middle" font-size="15" fill="#0f5c5c">11 Strongly T</text>
+                <rect x="430" y="70" width="150" height="64" rx="12" fill="#dbe4ff" stroke="#7461ba" stroke-width="2"/><text x="505" y="108" text-anchor="middle" font-size="15" fill="#2f2a4a">10 Weakly T</text>
+                <rect x="430" y="250" width="150" height="64" rx="12" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="505" y="288" text-anchor="middle" font-size="15" fill="#7a3a22">01 Weakly NT</text>
+                <rect x="90" y="250" width="150" height="64" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/><text x="165" y="288" text-anchor="middle" font-size="15" fill="#475569">00 Strongly NT</text>
+                <text x="165" y="342" text-anchor="middle" font-size="12" fill="#7a3a22">预测：不跳转 Not-Taken</text>
+                <line x1="242" y1="90" x2="426" y2="90" stroke="#147f80" stroke-width="2" marker-end="url(#sbar)"/><text x="334" y="82" text-anchor="middle" font-size="13" fill="#0f5c5c">N</text>
+                <line x1="426" y1="116" x2="242" y2="116" stroke="#147f80" stroke-width="2" marker-end="url(#sbar)"/><text x="334" y="134" text-anchor="middle" font-size="13" fill="#0f5c5c">T</text>
+                <line x1="505" y1="136" x2="505" y2="246" stroke="#147f80" stroke-width="2" marker-end="url(#sbar)"/><text x="522" y="195" font-size="13" fill="#0f5c5c">N</text>
+                <line x1="478" y1="246" x2="478" y2="136" stroke="#147f80" stroke-width="2" marker-end="url(#sbar)"/><text x="460" y="195" text-anchor="end" font-size="13" fill="#0f5c5c">T</text>
+                <line x1="426" y1="296" x2="242" y2="296" stroke="#147f80" stroke-width="2" marker-end="url(#sbar)"/><text x="334" y="314" text-anchor="middle" font-size="13" fill="#0f5c5c">N</text>
+                <line x1="242" y1="270" x2="426" y2="270" stroke="#147f80" stroke-width="2" marker-end="url(#sbar)"/><text x="334" y="262" text-anchor="middle" font-size="13" fill="#0f5c5c">T</text>
+            </svg>
+            <figcaption>图 11-1　2-bit 饱和计数器：T（实际跳转）使计数器向 11 方向加一，N（实际不跳转）向 00 方向减一；高位为 1 预测跳转。只有连续两次相反结果才会翻转预测方向，因此消除了 1-bit 预测器在循环进出时的“双误预测”。</figcaption>
+        </figure>
+
         <p>下面是2-bit预测器的C语言模拟：</p>
 
-        <pre><code>#include &lt;stdio.h&gt;
+        <pre style="overflow-x:auto"><code>#include &lt;stdio.h&gt;
 #include &lt;stdint.h&gt;
 
 // 2-bit饱和计数器分支预测器模拟
@@ -199,15 +222,16 @@ int main() {
     return 0;
 }</code></pre>
 
-        <p>1995年的Pentium MMX处理器首次使用了
-        2-bit饱和计数器预测器，配备4K表项的BHT。
-        在那之前，Pentium使用的是1-bit预测器。
-        切换到2-bit后，分支预测准确率从约80%提升到了约90%，
-        这在当时是一个巨大的进步。
-        虽然现在看来90%的准确率平平无奇，
-        但在1995年这已经是一个重要的突破。</p>
+        <p>1990 年代，动态分支预测被主流处理器广泛采用：
+        Pentium 系列的分支目标缓冲（BTB）使用 2-bit 饱和计数器
+        记录分支历史，相比 1-bit 预测显著减少了循环进出时的
+        “双误预测”。当时的准确率大致在 90% 左右（随负载变化），
+        在今天看来并不高，但它是现代高准确率预测器的起点。</p>
 
-        <h3>全局与局部历史预测器</h3>
+        <p class="note">说明：本节与下表中的各种预测器准确率（如 40%、90%、98% 等）
+        均为按典型工作负载总结的教学近似值，实际准确率高度依赖具体程序与分支模式。</p>
+
+        <h2>全局与局部历史预测器</h2>
 
         <p>2-bit饱和计数器虽然好，
         但对模式化的分支行为（如交替跳转、不跳转的模式）表现不佳。
@@ -250,6 +274,26 @@ int main() {
             TAGE的准确率可以超过98%。</li>
         </ul>
 
+        <figure class="figure" id="fig-gshare">
+            <svg viewBox="0 0 820 300" role="img" aria-labelledby="fig-gs-t fig-gs-d" style="width:100%;height:auto;display:block">
+                <title id="fig-gs-t">Gshare 预测器的索引生成</title>
+                <desc id="fig-gs-d">全局历史寄存器 GHR 与分支 PC 进行异或（XOR）混洗后作为索引，去访问 2-bit 计数器表（PHT）；XOR 将全局历史与局部分支地址结合，减少不同分支之间的别名冲突。</desc>
+                <defs><marker id="gsar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+                <rect x="60" y="60" width="210" height="70" rx="12" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="165" y="101" text-anchor="middle" font-size="14" fill="#0f5c5c">全局历史 GHR（N 位）</text>
+                <rect x="60" y="180" width="210" height="70" rx="12" fill="#dbe4ff" stroke="#7461ba" stroke-width="2"/><text x="165" y="221" text-anchor="middle" font-size="14" fill="#2f2a4a">分支 PC</text>
+                <circle cx="390" cy="155" r="40" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="390" y="163" text-anchor="middle" font-size="24" fill="#6b4a12">XOR</text>
+                <rect x="540" y="60" width="230" height="190" rx="12" fill="#efeafc" stroke="#7461ba" stroke-width="2"/><text x="655" y="105" text-anchor="middle" font-size="14" fill="#4b3d85">PHT</text>
+                <text x="655" y="132" text-anchor="middle" font-size="12" fill="#4b3d85">2-bit 计数器表</text>
+                <text x="655" y="158" text-anchor="middle" font-size="12" fill="#4b3d85">按索引查找</text>
+                <text x="655" y="198" text-anchor="middle" font-size="12" fill="#0f5c5c">输出：跳转 / 不跳转</text>
+                <line x1="270" y1="95" x2="372" y2="137" stroke="#147f80" stroke-width="2" marker-end="url(#gsar)"/>
+                <line x1="270" y1="215" x2="372" y2="173" stroke="#147f80" stroke-width="2" marker-end="url(#gsar)"/>
+                <line x1="430" y1="155" x2="536" y2="155" stroke="#147f80" stroke-width="2" marker-end="url(#gsar)"/>
+                <text x="483" y="146" text-anchor="middle" font-size="12" fill="#0f5c5c">索引</text>
+            </svg>
+            <figcaption>图 11-2　Gshare 的索引生成：GHR 与分支 PC 做 XOR 混洗得到索引，再访问 2-bit 计数器表（PHT）。相比纯全局预测器，XOR 使不同分支在同一索引上的“别名冲突”减少，准确率通常高 5–10%。</figcaption>
+        </figure>
+
         <div class="highlight">
             <strong>现代分支预测器的准确率可以超过98%</strong>——
             但剩下的2%仍然会造成大量的流水线冲刷。
@@ -260,7 +304,7 @@ int main() {
             ——最后那2%的难度远超前面98%。
         </div>
 
-        <h3>分支目标缓冲（BTB）</h3>
+        <h2>分支目标缓冲（BTB）</h2>
 
         <p>预测方向只是问题的一半——我们还需要知道
         <strong>跳到哪里去</strong>。
@@ -293,16 +337,17 @@ int main() {
             <tr><td>神经/Perceptron</td><td>~100KB+</td><td>2-4周期</td><td>~97%+</td><td>研究/部分Intel实现</td></tr>
         </table>
 
-        <p>2004年我参与一个RISC-V核的项目时，
-        最初只实现了2-bit预测器。
-        在CoreMark基准测试上性能看起来不错，
-        但切换到数据库类负载（TPC-H）时，性能暴跌了25%。
-        分析发现数据库的查询处理中有大量"不规律"的分支模式——
-        外键比较、空值检查等，2-bit预测器完全应付不来。
-        升级到Gshare预测器后，性能回升了18%。
+        <p>我曾参与一个处理器核的性能调优：
+        最初只实现了2-bit预测器，在CoreMark等基准上表现尚可，
+        但切换到数据库类负载（如TPC-H风格的查询处理）时性能明显下降。
+        分析发现这类负载中有大量“不规律”的分支模式——
+        外键比较、空值检查等，2-bit预测器难以适应。
+        升级到Gshare预测器后，性能有可观回升。
         这个经历让我深刻认识到：
         <strong>分支预测器的设计需要充分理解目标工作负载的模式</strong>，
         没有一个"放之四海而皆准"的最优方案。</p>
+
+        <p class="note">说明：上述性能调优的经历为教学示意，用于说明预测器与工作负载的匹配问题，不代表某个已公开的项目或产品的实测数据。</p>
 
         <p>分支预测技术让处理器能够"猜测"未来指令的流向，
         大幅减少了控制冲突带来的流水线停顿。
@@ -311,12 +356,23 @@ int main() {
         处理器如何在不丢失程序状态的前提下妥善处理？
         下一章我们进入异常与中断处理的世界。</p>
 
+        <section class="references" id="references" aria-labelledby="ref-heading">
+            <h2 id="ref-heading">参考资料</h2>
+            <ul>
+                <li>Smith, J. E. “A Study of Branch Prediction Strategies,” <em>ISCA</em>, 1981 — 动态分支预测与饱和计数器的早期系统研究。</li>
+                <li>McFarling, S. “Combining Branch Predictors,” <em>DEC WRL Technical Note TN-36</em>, 1993 — Gshare 与 Tournament（混合）预测器。</li>
+                <li>Seznec, A., &amp; Michaud, P. “A Case for (Partially) TAgged GEometric History Length Branch Prediction,” <em>JILP</em>, 2006 — TAGE 预测器。</li>
+                <li><a href="https://en.wikipedia.org/wiki/Branch_predictor">Wikipedia: Branch predictor</a> — 静态 / 动态预测器与 BTB、RAS 的通用说明。</li>
+            </ul>
+            <p class="note">本章中的分支占比（约 20%）、各级流水线误预测惩罚与各预测器准确率均为典型值 / 教学近似，实际数值随程序、流水线深度与实现而变。</p>
+        </section>
+
         <div class="footer-nav">
             <a href="10.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="12.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
