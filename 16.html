@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
         <h1>第16章 Cache设计与优化</h1>
 
         <p>上一章我们讲完了存储层次和局部性原理——现在大家已经知道为什么我们需要缓存了。这一章，我们要深入缓存<strong>内部</strong>，看看Cache到底是怎么设计的，以及工程师们为了挤出一丁点儿命中率而付出的天才般的努力。坦白说，Cache设计是计算机体系结构中最精妙的领域之一——每一个比特的增减、每一条路径的选择，都充满了权衡。</p>
@@ -57,7 +58,37 @@
 
         <p><strong>组相联（Set-Associative）</strong>：最实用的折衷方案。缓存被分成若干组（Set），每个组包含N个Cache Line（N-way）。每个内存块可以映射到某一组，但组内有N个位置可选。地址现在是：<code>Tag | Set Index | Offset</code>。典型的现代处理器使用8-way到16-way组相联。</p>
 
-        <pre><code>地址分解示例（4KB缓存，16字节块，4-way组相联）：
+        <figure class="figure" id="fig-cache-mapping">
+            <svg viewBox="0 0 860 400" role="img" aria-labelledby="fig-cm-t fig-cm-d" style="width:100%;height:auto;display:block">
+                <title id="fig-cm-t">三种映射方式的地址划分对比</title>
+                <desc id="fig-cm-d">直接映射把地址分为 Tag/Index/Offset，块只能落在 Index 指定的唯一行；全相联没有 Index，块可落在任意行但需并行比较所有 Tag；组相联保留 Set Index，块落在指定组后再在组内多路选择。</desc>
+                <text x="70" y="111" text-anchor="end" font-size="14" font-weight="700" fill="#1e3a5f">直接映射</text>
+                <rect x="80" y="80" width="320" height="52" fill="#dbe4ff" stroke="#94a3b8"/>
+                <text x="240" y="112" text-anchor="middle" font-size="14" fill="#0f172a">Tag</text>
+                <rect x="400" y="80" width="200" height="52" fill="#fde8dc" stroke="#94a3b8"/>
+                <text x="500" y="112" text-anchor="middle" font-size="14" fill="#7a3a22">Index</text>
+                <rect x="600" y="80" width="110" height="52" fill="#e6f5e0" stroke="#94a3b8"/>
+                <text x="655" y="112" text-anchor="middle" font-size="14" fill="#0f5c5c">Offset</text>
+                <text x="80" y="155" font-size="12" fill="#475569">块只能落在 Index 指定的唯一行 → 硬件极简，但易发生冲突缺失</text>
+                <text x="70" y="216" text-anchor="end" font-size="14" font-weight="700" fill="#1e3a5f">全相联</text>
+                <rect x="80" y="185" width="520" height="52" fill="#dbe4ff" stroke="#94a3b8"/>
+                <text x="340" y="217" text-anchor="middle" font-size="14" fill="#0f172a">Tag（原 Index 位并入 Tag）</text>
+                <rect x="600" y="185" width="110" height="52" fill="#e6f5e0" stroke="#94a3b8"/>
+                <text x="655" y="217" text-anchor="middle" font-size="14" fill="#0f5c5c">Offset</text>
+                <text x="80" y="260" font-size="12" fill="#475569">块可落在任意行 → 需并行比较所有 Tag，硬件昂贵（常用于 TLB）</text>
+                <text x="70" y="321" text-anchor="end" font-size="14" font-weight="700" fill="#1e3a5f">组相联</text>
+                <rect x="80" y="290" width="320" height="52" fill="#dbe4ff" stroke="#94a3b8"/>
+                <text x="240" y="322" text-anchor="middle" font-size="14" fill="#0f172a">Tag</text>
+                <rect x="400" y="290" width="200" height="52" fill="#fde8dc" stroke="#94a3b8"/>
+                <text x="500" y="322" text-anchor="middle" font-size="14" fill="#7a3a22">Set Index</text>
+                <rect x="600" y="290" width="110" height="52" fill="#e6f5e0" stroke="#94a3b8"/>
+                <text x="655" y="322" text-anchor="middle" font-size="14" fill="#0f5c5c">Offset</text>
+                <text x="80" y="365" font-size="12" fill="#475569">落在指定 Set，组内 N 路任选 → 冲突与硬件开销的实用折衷（常见 8–16 路）</text>
+            </svg>
+            <figcaption>图 16-1　三种映射方式的地址划分对比：直接映射定位快但冲突缺失多，全相联无冲突但硬件昂贵，组相联在两者之间取得折衷。图中段宽为示意，不按真实位宽比例绘制。</figcaption>
+        </figure>
+
+        <pre style="overflow-x:auto"><code>地址分解示例（4KB缓存，16字节块，4-way组相联）：
   Offset = log2(block_size) = log2(16) = 4 bits
   Number of sets = cache_size / (associativity × block_size)
                   = 4096 / (4 × 16) = 64 个组
@@ -83,6 +114,8 @@
             <p><strong>真实故事</strong>：Intel从Sandy Bridge微架构开始，将L3缓存的替换策略从传统的LRU改为了RRIP。为什么？因为某些工作负载（如数据库哈希连接）会产生大量"扫描式"的数据访问，每次扫描新的数据，就把LRU中的旧数据全部踢走——尽管这些旧数据马上就会被重新用到。RRIP通过识别引用模式（区分扫描流和重用流），大大缓解了这个问题。这个改动在缓存密集型负载上带来了5-15%的性能提升。你看，一个替换策略的改进，实际效果可能比增加缓存容量更显著。</p>
         </div>
 
+        <p class="note">说明：RRIP 的提出见 Qureshi 等人 2007 年的论文（见参考资料）；此处“5–15% 提升”为文献中报告的经验区间，实际收益取决于工作负载与基线配置。</p>
+
         <h2>写入策略</h2>
 
         <p>读操作很简单：命中就返回数据，不命中就从下一级取。写操作要复杂得多——因为CPU不仅要读，还要写；而且写操作可能发生在缓存里，也可能直通内存。这就需要用不同的写入策略来处理。</p>
@@ -94,6 +127,29 @@
         <p>写入缺失时还有两个子策略：<strong>写分配（Write-Allocate）</strong>先把内存块载入缓存再写入，适用于写回缓存；<strong>不写分配（No-Write-Allocate）</strong>直接写入下一级，不载入缓存，适用于写直达缓存。</p>
 
         <p>现代处理器的实践：L1/L2/L3都使用<strong>写回+写分配</strong>。为什么？因为写操作也有局部性。你的代码可能频繁更新一个变量——如果每次都穿透到内存，太浪费了。写回策略让这些更新在缓存中完成高速聚合。</p>
+
+        <figure class="figure" id="fig-write-policy">
+            <svg viewBox="0 0 820 360" role="img" aria-labelledby="fig-wp-t fig-wp-d" style="width:100%;height:auto;display:block">
+                <title id="fig-wp-t">写直达与写回策略的对比</title>
+                <desc id="fig-wp-d">写直达下每次存储同时写 Cache 和内存，内存始终有最新数据但写带宽消耗大；写回下存储只写到 Cache 并置脏位，直到该行被替换时才写回内存。</desc>
+                <defs><marker id="wpar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+                <text x="30" y="42" font-size="15" font-weight="700" fill="#1e3a5f">写直达 Write-Through</text>
+                <rect x="40" y="60" width="120" height="70" rx="12" fill="#fde8dc" stroke="#d06d4d"/><text x="100" y="100" text-anchor="middle" font-size="14" fill="#7a3a22">CPU</text>
+                <rect x="210" y="60" width="170" height="70" rx="12" fill="#dbe4ff" stroke="#7461ba"/><text x="295" y="100" text-anchor="middle" font-size="14" fill="#2f2a4a">Cache（干净）</text>
+                <rect x="460" y="60" width="180" height="70" rx="12" fill="#e6f5e0" stroke="#147f80"/><text x="550" y="100" text-anchor="middle" font-size="14" fill="#0f5c5c">内存</text>
+                <line x1="160" y1="95" x2="206" y2="95" stroke="#147f80" stroke-width="2" marker-end="url(#wpar)"/>
+                <line x1="380" y1="95" x2="456" y2="95" stroke="#147f80" stroke-width="2" marker-end="url(#wpar)"/>
+                <text x="418" y="84" text-anchor="middle" font-size="12" fill="#0f5c5c">每次写都直达</text>
+                <text x="30" y="202" font-size="15" font-weight="700" fill="#1e3a5f">写回 Write-Back</text>
+                <rect x="40" y="220" width="120" height="70" rx="12" fill="#fde8dc" stroke="#d06d4d"/><text x="100" y="260" text-anchor="middle" font-size="14" fill="#7a3a22">CPU</text>
+                <rect x="210" y="220" width="170" height="70" rx="12" fill="#dbe4ff" stroke="#7461ba"/><text x="295" y="260" text-anchor="middle" font-size="14" fill="#2f2a4a">Cache（脏位=1）</text>
+                <rect x="460" y="220" width="180" height="70" rx="12" fill="#e6f5e0" stroke="#147f80"/><text x="550" y="260" text-anchor="middle" font-size="14" fill="#0f5c5c">内存</text>
+                <line x1="160" y1="255" x2="206" y2="255" stroke="#147f80" stroke-width="2" marker-end="url(#wpar)"/>
+                <line x1="380" y1="255" x2="456" y2="255" stroke="#147f80" stroke-width="2" stroke-dasharray="7 4" marker-end="url(#wpar)"/>
+                <text x="418" y="244" text-anchor="middle" font-size="12" fill="#0f5c5c">仅在该行被替换时</text>
+            </svg>
+            <figcaption>图 16-2　写策略对比：写直达每次存储都直达内存，一致性简单但写带宽消耗大；写回只在替换脏行时才写回内存，配合写分配能充分利用写操作的局部性。现代 L1/L2/L3 普遍使用写回＋写分配。</figcaption>
+        </figure>
 
         <h2>Cache性能优化十大技术</h2>
 
@@ -112,7 +168,7 @@
             <li><strong>Way Prediction</strong>：在组相联缓存中，预测哪一路可能命中，只比较这一路的Tag，节省比较的延迟和功耗。</li>
         </ol>
 
-        <pre><code>// 一个Intel CPU L1数据缓存的典型参数配置
+        <pre style="overflow-x:auto"><code>// 一个Intel CPU L1数据缓存的典型参数配置
 typedef struct {
     int size;           // 32768 (32KB)
     int associativity;  // 8
@@ -201,7 +257,7 @@ typedef struct {
             <p><strong>False Sharing（伪共享）</strong>是并发编程中最隐蔽的性能杀手。考虑两个线程，线程A修改变量x，线程B修改变量y。如果x和y恰好在同一个Cache Line中，每次A写x时，这个Cache Line在B的缓存中被标记为Invalid。B要写y时，必须先重新载入——然后又把A的缓存搞失效。两个线程像"打乒乓球"一样来回传递这个Cache Line，尽管它们访问的是<strong>不同的变量</strong>。伪共享可以导致30-60%甚至更高的性能损失。</p>
         </div>
 
-        <pre><code>// 伪共享演示 (C代码风格)
+        <pre style="overflow-x:auto"><code>// 伪共享演示 (C代码风格)
 struct Data {
     int x;  // 线程A修改
     int y;  // 线程B修改
@@ -224,14 +280,27 @@ struct FixedData {
 
         <p>我曾经在生产环境中遇到过这个问题。一个多线程日志系统里，两个线程各自写不同的日志级别计数器（errorCount和warnCount），结果这两个计数器碰巧在同一个Cache Line里。系统吞吐量只有预期的40%。排查了很久才通过perf的cache-miss事件发现这个"交互陷阱"——两个计数器明明没有共享变量，却因为Cache Line的粒度互相拖累。修复起来就是加了一行padding，性能立刻提升了2.5倍。False sharing是彻头彻尾的"体系结构级别的Bug"——代码看起来完全正确，硬件行为却让你大吃一惊。</p>
 
+        <p class="note">说明：上面的伪共享 C 示例中的吞吐量数字（约 2000 万 / 8000 万次每秒）与生产故事中的性能提升幅度均为教学示意，只用于展示伪共享可能造成的量级影响，不是某次公开基准的实测值。</p>
+
         <p>好了，缓存的微观世界先说这么多。后面第20章讲多核架构时我们还会深入Cache coherence协议。下一章，我们将沿着存储层次继续向下——进入<strong>虚拟内存和TLB</strong>的世界。准备好了吗？</p>
+
+        <section class="references" id="references" aria-labelledby="ref-heading">
+            <h2 id="ref-heading">参考资料</h2>
+            <ul>
+                <li>Qureshi, M. K., Jaleel, A., Patt, Y. N., Steely, S. C., &amp; Emer, J. “Adaptive Insertion Policies for High Performance Caching,” <em>ISCA</em>, 2007 — RRIP 替换策略的原始论文。</li>
+                <li><a href="https://en.wikipedia.org/wiki/CPU_cache">Wikipedia: CPU cache</a> — 映射方式、替换策略与写策略的通用定义。</li>
+                <li><a href="https://en.wikipedia.org/wiki/False_sharing">Wikipedia: False sharing</a> — 伪共享的机制与缓存行对齐缓解手段。</li>
+                <li><a href="https://en.wikipedia.org/wiki/Sandy_Bridge">Wikipedia: Sandy Bridge</a> — Intel 自该代起在 L3 使用 RRIP 的公开资料。</li>
+            </ul>
+            <p class="note">本章的 L1D / L2 / L3 参数表（容量、相联度、行大小、延迟、替换策略）取自各平台公开规格，不同型号与频率会造成差异；文中标注为教学示意的数字已在对应位置说明。</p>
+        </section>
 
         <div class="footer-nav">
             <a href="15.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="17.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
