@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html" class="active">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
 
         <h1>第1章 体系结构概述</h1>
 
@@ -117,11 +118,47 @@
             <li><strong>控制器（Control Unit）</strong>：从存储器取出指令、译码，并控制数据在各部件之间的流动。</li>
         </ul>
 
+        <figure class="figure" id="fig-von-neumann">
+            <svg viewBox="0 0 860 460" role="img" aria-labelledby="fig-vn-t fig-vn-d" style="width:100%;height:auto;display:block">
+                <title id="fig-vn-t">冯·诺依曼架构的五个基本部件</title>
+                <desc id="fig-vn-d">控制器与运算器构成 CPU，通过总线访问共享同一地址空间的存储器；指令与数据都存在存储器中，输入设备写入、输出设备读出。</desc>
+                <defs><marker id="vnar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+                <rect x="40" y="40" width="270" height="300" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="7 5"/>
+                <text x="48" y="32" font-size="15" font-weight="700" fill="#475569">CPU</text>
+                <rect x="60" y="70" width="230" height="120" rx="14" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/>
+                <text x="175" y="125" text-anchor="middle" font-size="16" fill="#7a3a22">控制器</text>
+                <text x="175" y="150" text-anchor="middle" font-size="12" fill="#7a3a22">Control Unit（取指 / 译码）</text>
+                <rect x="60" y="220" width="230" height="100" rx="14" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/>
+                <text x="175" y="265" text-anchor="middle" font-size="16" fill="#7a3a22">运算器</text>
+                <text x="175" y="290" text-anchor="middle" font-size="12" fill="#7a3a22">ALU（算术 / 逻辑）</text>
+                <rect x="520" y="40" width="300" height="300" rx="14" fill="#efeafc" stroke="#7461ba" stroke-width="2"/>
+                <text x="670" y="80" text-anchor="middle" font-size="16" fill="#4b3d85">存储器（统一地址空间）</text>
+                <rect x="555" y="110" width="230" height="80" rx="10" fill="#ffffff" stroke="#7461ba"/>
+                <text x="670" y="155" text-anchor="middle" font-size="14" fill="#4b3d85">指令 / 程序</text>
+                <rect x="555" y="220" width="230" height="80" rx="10" fill="#ffffff" stroke="#7461ba"/>
+                <text x="670" y="265" text-anchor="middle" font-size="14" fill="#4b3d85">数据</text>
+                <rect x="60" y="370" width="230" height="60" rx="14" fill="#e6f4f4" stroke="#147f80" stroke-width="2"/>
+                <text x="175" y="406" text-anchor="middle" font-size="15" fill="#0f5c5c">输入设备</text>
+                <rect x="520" y="370" width="300" height="60" rx="14" fill="#e6f4f4" stroke="#147f80" stroke-width="2"/>
+                <text x="670" y="406" text-anchor="middle" font-size="15" fill="#0f5c5c">输出设备</text>
+                <line x1="290" y1="120" x2="520" y2="120" stroke="#147f80" stroke-width="2" marker-end="url(#vnar)"/>
+                <text x="405" y="112" text-anchor="middle" font-size="12" fill="#0f5c5c">取指令 / 地址</text>
+                <line x1="520" y1="160" x2="290" y2="160" stroke="#147f80" stroke-width="2" marker-end="url(#vnar)"/>
+                <text x="405" y="182" text-anchor="middle" font-size="12" fill="#0f5c5c">指令码</text>
+                <line x1="290" y1="270" x2="520" y2="270" stroke="#147f80" stroke-width="2" marker-start="url(#vnar)" marker-end="url(#vnar)"/>
+                <text x="405" y="262" text-anchor="middle" font-size="12" fill="#0f5c5c">操作数 / 结果</text>
+                <line x1="290" y1="400" x2="510" y2="400" stroke="#147f80" stroke-width="2" marker-end="url(#vnar)"/>
+                <text x="400" y="392" text-anchor="middle" font-size="12" fill="#0f5c5c">输入数据</text>
+                <line x1="670" y1="340" x2="670" y2="368" stroke="#147f80" stroke-width="2" marker-end="url(#vnar)"/>
+            </svg>
+            <figcaption>图 1-1　冯·诺依曼架构的五个基本部件：控制器与运算器（合称 CPU）通过总线访问存储器。指令与数据共用同一存储器与总线，取指令和访问数据只能串行进行——这正是“冯·诺依曼瓶颈”的根源。该图为教学示意，部件比例并不代表真实面积。</figcaption>
+        </figure>
+
         <p>存储程序概念的革命性在于：程序指令被当作数据一样存储在内存中，可以被读取、修改、甚至自我修改。这意味着同一台硬件可以通过加载不同的程序来实现完全不同的功能——这就是软件灵活性的根本来源。</p>
 
         <p>下面是一个极简的 RISC-V 汇编代码片段，展示了典型的"取指令—执行"模式：</p>
 
-        <pre><code># 将两个数相加并存储结果 — 体现存储程序概念的完整指令序列
+        <pre style="overflow-x:auto"><code># 将两个数相加并存储结果 — 体现存储程序概念的完整指令序列
 .text
     lui   t0, 0x100          # t0 = 内存基地址
     lw    t1, 0(t0)          # 从内存加载第一个数到 t1
@@ -170,6 +207,36 @@
             </tbody>
         </table>
 
+        <figure class="figure" id="fig-flynn">
+            <svg viewBox="0 0 800 430" role="img" aria-labelledby="fig-fl-t fig-fl-d" style="width:100%;height:auto;display:block">
+                <title id="fig-fl-t">Flynn 分类法：按指令流与数据流划分的四类架构</title>
+                <desc id="fig-fl-d">纵轴为指令流数量、横轴为数据流数量，交叉得到 SISD、SIMD、MISD、MIMD 四类；现代 GPU 的 SIMT 可视为在 SIMD 与 MIMD 之间的混合模型。</desc>
+                <text x="220" y="40" text-anchor="middle" font-size="13" fill="#475569">数据流：单 (S)</text>
+                <text x="570" y="40" text-anchor="middle" font-size="13" fill="#475569">数据流：多 (M)</text>
+                <text x="30" y="130" transform="rotate(-90 30 130)" text-anchor="middle" font-size="13" fill="#475569">指令流：单 (S)</text>
+                <text x="30" y="300" transform="rotate(-90 30 300)" text-anchor="middle" font-size="13" fill="#475569">指令流：多 (M)</text>
+                <line x1="395" y1="50" x2="395" y2="395" stroke="#94a3b8" stroke-width="1.5"/>
+                <line x1="60" y1="215" x2="745" y2="215" stroke="#94a3b8" stroke-width="1.5"/>
+                <rect x="70" y="60" width="300" height="140" rx="14" fill="#e6f4f4" stroke="#147f80" stroke-width="2"/>
+                <text x="220" y="105" text-anchor="middle" font-size="20" font-weight="700" fill="#0f5c5c">SISD</text>
+                <text x="220" y="135" text-anchor="middle" font-size="13" fill="#0f5c5c">单指令 · 单数据</text>
+                <text x="220" y="165" text-anchor="middle" font-size="13" fill="#475569">传统单核 CPU</text>
+                <rect x="420" y="60" width="300" height="140" rx="14" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/>
+                <text x="570" y="105" text-anchor="middle" font-size="20" font-weight="700" fill="#7a3a22">SIMD</text>
+                <text x="570" y="135" text-anchor="middle" font-size="13" fill="#7a3a22">单指令 · 多数据</text>
+                <text x="570" y="165" text-anchor="middle" font-size="13" fill="#475569">SSE / AVX、NEON</text>
+                <rect x="70" y="230" width="300" height="140" rx="14" fill="#efeafc" stroke="#7461ba" stroke-width="2"/>
+                <text x="220" y="275" text-anchor="middle" font-size="20" font-weight="700" fill="#4b3d85">MISD</text>
+                <text x="220" y="305" text-anchor="middle" font-size="13" fill="#4b3d85">多指令 · 单数据</text>
+                <text x="220" y="335" text-anchor="middle" font-size="13" fill="#475569">三模冗余（罕见）</text>
+                <rect x="420" y="230" width="300" height="140" rx="14" fill="#fffbeb" stroke="#916c22" stroke-width="2"/>
+                <text x="570" y="275" text-anchor="middle" font-size="20" font-weight="700" fill="#6b4a12">MIMD</text>
+                <text x="570" y="305" text-anchor="middle" font-size="13" fill="#6b4a12">多指令 · 多数据</text>
+                <text x="570" y="335" text-anchor="middle" font-size="13" fill="#475569">多核 CPU、GPU 集群</text>
+            </svg>
+            <figcaption>图 1-2　Flynn 分类法以“指令流 × 数据流”两个维度（各分为单 / 多）划分出四类架构。现实中真正的 MISD 极少见，而 NVIDIA GPU 的 SIMT 模型介于 SIMD 与 MIMD 之间，说明这一二维框架在现代体系结构中已被不断扩展。</figcaption>
+        </figure>
+
         <p>Flynn 分类法的局限性在于它过于简化。现代计算机体系结构的发展已经超出了这个简单的二维框架，产生了许多新的执行模型：</p>
 
         <ul>
@@ -205,6 +272,8 @@
 
         <p>结果：L2 Cache Miss 率从 42% 降到了 4% 以下，整体推理 P99 延迟从 200ms 降到了 18ms——性能提升了 10 倍以上，而且没有改动一行模型代码。这就是体系结构知识的力量。</p>
 
+        <p class="note">说明：上面这个故事中的延迟（200ms → 18ms）与 Cache Miss 率（42% → 4%）为教学示意，用于展示访存局部性对性能的影响量级，并非某次公开基准测试的实测值。</p>
+
         <div class="warning">
             <strong>常见误区：</strong>很多初学者认为"学体系结构就是学汇编"，或者"学体系结构就是去设计 CPU"。这就像说"学建筑就是学砌砖"一样片面。体系结构是一门关于如何组织计算资源的学科——从单个逻辑门的传播延迟，到数据中心级互联拓扑的通信开销，都属于它的范畴。汇编语言充其量是我们理解 ISA 的一个窗口，而 ISA 又是体系结构的一个层面。不要把自己的视野局限在"写汇编"这个小角落里。体系结构真正的魅力在于，它能让你的软件从"勉强能跑"变成"飞起来"。
         </div>
@@ -215,12 +284,24 @@
 
         <p>这就是第一章的全部内容。我们一起俯瞰了计算机体系结构的地图：从它的定义、发展史，到冯·诺依曼模型和 Flynn 分类法，再到它今天为什么格外重要。下一章我们将深入到数字逻辑的世界，从与或非门开始，理解计算机最基本的"细胞"是如何工作的。</p>
 
+        <section class="references" id="references" aria-labelledby="ref-heading">
+            <h2 id="ref-heading">参考资料</h2>
+            <ul>
+                <li>Hennessy, J. L., &amp; Patterson, D. A. <em>Computer Architecture: A Quantitative Approach</em>, 6th ed. — 体系结构 / 组成 / 实现三层抽象的定义。</li>
+                <li>von Neumann, J. <em>First Draft of a Report on the EDVAC</em> (1945) — 存储程序概念与五部件模型。</li>
+                <li><a href="https://en.wikipedia.org/wiki/ENIAC">ENIAC</a> — 约 18 000 个真空管、约 167 平方米等史实的公开记录。</li>
+                <li><a href="https://en.wikipedia.org/wiki/Intel_4004">Intel 4004</a> — 2 300 个晶体管、4 位数据总线的公开记录。</li>
+                <li>Flynn, M. J. “Very High-Speed Computing Systems,” <em>Proceedings of the IEEE</em>, 54(12), 1966 — Flynn 分类法原始出处。</li>
+            </ul>
+            <p class="note">本章的历史数据（年份、真空管与晶体管数量）取自上述公开记录；正文中的“踩坑故事”数字为教学示意，已在对应位置标注。</p>
+        </section>
+
         <div class="footer-nav">
             <a href="javascript:void(0)">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="02.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
