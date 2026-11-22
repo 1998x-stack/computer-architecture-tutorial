@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
         <h1>第20章 多核与多处理器架构</h1>
 
         <p>同学们好！上一章我们见识了在单核上"压榨"性能的极致手段——超标量、乱序执行、前瞻执行。但单核性能是有极限的。2005年左右，整个行业撞上了一堵墙——功耗墙。从那以后，处理器的进化方向彻底改变了。今天我们就来聊聊这个改变一切的技术：<strong>多核</strong>（Multi-Core）与<strong>多处理器</strong>（Multi-Processor）架构。</p>
@@ -64,9 +65,37 @@
             <li><strong>NUMA</strong>（Non-Uniform Memory Access，非统一内存访问）：每个CPU有自己的本地内存（访问快速），也可以访问其他CPU的远程内存（慢30-60%）。这对于大型服务器系统（32核以上）是必需的。</li>
         </ul>
 
+        <figure class="figure" id="fig-smp-numa">
+            <svg viewBox="0 0 820 480" role="img" aria-labelledby="fig-sn-t fig-sn-d" style="width:100%;height:auto;display:block">
+                <title id="fig-sn-t">SMP 与 NUMA 内存架构对比</title>
+                <desc id="fig-sn-d">SMP 中所有核心通过共享总线访问同一内存，任意核心的访问延迟相同；NUMA 中每个核心连接本地内存，访问其他节点的远程内存需要经过互连，延迟更高。</desc>
+                <text x="30" y="36" font-size="15" font-weight="700" fill="#1e3a5f">SMP：对称多处理（统一访问延迟）</text>
+                <rect x="70" y="54" width="140" height="46" rx="10" fill="#fde8dc" stroke="#d06d4d"/><text x="140" y="83" text-anchor="middle" font-size="13" fill="#7a3a22">Core 0</text>
+                <rect x="250" y="54" width="140" height="46" rx="10" fill="#fde8dc" stroke="#d06d4d"/><text x="320" y="83" text-anchor="middle" font-size="13" fill="#7a3a22">Core 1</text>
+                <rect x="430" y="54" width="140" height="46" rx="10" fill="#fde8dc" stroke="#d06d4d"/><text x="500" y="83" text-anchor="middle" font-size="13" fill="#7a3a22">Core 2</text>
+                <rect x="610" y="54" width="140" height="46" rx="10" fill="#fde8dc" stroke="#d06d4d"/><text x="680" y="83" text-anchor="middle" font-size="13" fill="#7a3a22">Core 3</text>
+                <line x1="70" y1="130" x2="750" y2="130" stroke="#147f80" stroke-width="3"/><text x="410" y="150" text-anchor="middle" font-size="13" fill="#0f5c5c">共享总线 / 交叉开关</text>
+                <rect x="300" y="172" width="220" height="56" rx="10" fill="#e6f5e0" stroke="#147f80"/><text x="410" y="205" text-anchor="middle" font-size="13" fill="#0f5c5c">统一内存（延迟一致）</text>
+                <text x="30" y="288" font-size="15" font-weight="700" fill="#1e3a5f">NUMA：非统一内存访问（本地快、远程慢）</text>
+                <rect x="70" y="306" width="140" height="46" rx="10" fill="#fde8dc" stroke="#d06d4d"/><text x="140" y="335" text-anchor="middle" font-size="13" fill="#7a3a22">Core 0</text>
+                <rect x="250" y="306" width="140" height="46" rx="10" fill="#fde8dc" stroke="#d06d4d"/><text x="320" y="335" text-anchor="middle" font-size="13" fill="#7a3a22">Core 1</text>
+                <rect x="430" y="306" width="140" height="46" rx="10" fill="#fde8dc" stroke="#d06d4d"/><text x="500" y="335" text-anchor="middle" font-size="13" fill="#7a3a22">Core 2</text>
+                <rect x="610" y="306" width="140" height="46" rx="10" fill="#fde8dc" stroke="#d06d4d"/><text x="680" y="335" text-anchor="middle" font-size="13" fill="#7a3a22">Core 3</text>
+                <rect x="70" y="366" width="140" height="46" rx="10" fill="#efeafc" stroke="#7461ba"/><text x="140" y="394" text-anchor="middle" font-size="12" fill="#4b3d85">本地内存</text>
+                <rect x="250" y="366" width="140" height="46" rx="10" fill="#efeafc" stroke="#7461ba"/><text x="320" y="394" text-anchor="middle" font-size="12" fill="#4b3d85">本地内存</text>
+                <rect x="430" y="366" width="140" height="46" rx="10" fill="#efeafc" stroke="#7461ba"/><text x="500" y="394" text-anchor="middle" font-size="12" fill="#4b3d85">本地内存</text>
+                <rect x="610" y="366" width="140" height="46" rx="10" fill="#efeafc" stroke="#7461ba"/><text x="680" y="394" text-anchor="middle" font-size="12" fill="#4b3d85">本地内存</text>
+                <line x1="140" y1="352" x2="140" y2="366" stroke="#475569" stroke-width="2"/><line x1="320" y1="352" x2="320" y2="366" stroke="#475569" stroke-width="2"/><line x1="500" y1="352" x2="500" y2="366" stroke="#475569" stroke-width="2"/><line x1="680" y1="352" x2="680" y2="366" stroke="#475569" stroke-width="2"/>
+                <line x1="70" y1="440" x2="750" y2="440" stroke="#147f80" stroke-width="3"/><text x="410" y="462" text-anchor="middle" font-size="13" fill="#0f5c5c">互连（访问远程内存需绕行）</text>
+            </svg>
+            <figcaption>图 20-1　SMP 与 NUMA 对比：SMP 中所有核心共享同一内存，访问延迟一致，但总线易成为瓶颈；NUMA 把内存按节点分布，本地访问快、远程访问需经互连，可扩展到大量核心。小方块比例仅为示意。</figcaption>
+        </figure>
+
         <p>现代处理器在NUMA基础上还有更精细的<strong>子NUMA聚类</strong>（Sub-NUMA Clustering, SNC）：将芯片内部的L3 Cache和内存控制器划分为多个域，每个域对本地内存访问更快。Intel的至强处理器在胶水方案（多个die封装在一起）中大量使用了类似技术。</p>
 
         <p>讲一个真实的踩坑故事。我参与过一个数据库性能优化项目，部署在一台4路服务器上（4个CPU socket，每个16核共64核）。数据库的吞吐量始终上不去，只达到预期的60%。排查了索引优化、查询优化、磁盘IO，都没用。最后用<code>numactl --hardware</code>一看，发现操作系统的线程调度器把数据库的关键线程和内存分配器分配在了不同的NUMA节点上——一个线程在Socket 0上运行，但它分配的内存却在Socket 2上。每次内存访问都要跨NUMA跳转，延迟增加了40%。解决方案是强制线程和内存绑定到同一NUMA节点（<code>numactl --membind --cpunodebind</code>），性能立刻恢复了。这个经验告诉我们：<strong>在多核系统中，理解NUMA拓扑是性能调优的基本功</strong>。</p>
+
+        <p class="note">说明：上述 NUMA 项目故事中的延迟增幅（约 40%）为教学示意，用于说明跨节点访问的代价量级，不代表某次已公开的实测结果。</p>
 
         <h2>20.3 缓存一致性协议深入</h2>
 
@@ -79,6 +108,27 @@
             <li><strong>S</strong>（Shared）：数据干净且多份拷贝</li>
             <li><strong>I</strong>（Invalid）：数据失效</li>
         </ul>
+
+        <figure class="figure" id="fig-mesi-fsm">
+            <svg viewBox="0 0 820 460" role="img" aria-labelledby="fig-me-t fig-me-d" style="width:100%;height:auto;display:block">
+                <title id="fig-me-t">MESI 缓存一致性协议的状态转移</title>
+                <desc id="fig-me-d">四个状态 M、E、S、I：本地读未命中且无共享时进入 E，有共享时进入 S，本地写进入 M；其他核心读（BusRd）会把 M 降为 S，其他核心写（BusRdX）会把 M/S 变为 I。M、E 仅本核持有，S 多核共享，I 无效。</desc>
+                <defs><marker id="mear" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+                <rect x="310" y="60" width="200" height="64" rx="12" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="410" y="100" text-anchor="middle" font-size="16" fill="#7a3a22">M 已修改（脏）</text>
+                <rect x="60" y="200" width="200" height="64" rx="12" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="160" y="240" text-anchor="middle" font-size="16" fill="#0f5c5c">E 独占（干净）</text>
+                <rect x="560" y="200" width="200" height="64" rx="12" fill="#dbe4ff" stroke="#7461ba" stroke-width="2"/><text x="660" y="240" text-anchor="middle" font-size="16" fill="#2f2a4a">S 共享（干净）</text>
+                <rect x="310" y="340" width="200" height="64" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/><text x="410" y="380" text-anchor="middle" font-size="16" fill="#475569">I 无效</text>
+                <line x1="340" y1="340" x2="200" y2="268" stroke="#147f80" stroke-width="2" marker-end="url(#mear)"/><text x="238" y="318" font-size="12" fill="#0f5c5c">PrRd（无共享）</text>
+                <line x1="480" y1="340" x2="620" y2="268" stroke="#147f80" stroke-width="2" marker-end="url(#mear)"/><text x="524" y="318" font-size="12" fill="#0f5c5c">PrRd（有共享）</text>
+                <line x1="410" y1="340" x2="410" y2="128" stroke="#147f80" stroke-width="2" marker-end="url(#mear)"/><text x="424" y="238" font-size="12" fill="#0f5c5c">PrWr</text>
+                <line x1="200" y1="200" x2="330" y2="120" stroke="#147f80" stroke-width="2" marker-end="url(#mear)"/><text x="228" y="160" font-size="12" fill="#0f5c5c">PrWr</text>
+                <line x1="620" y1="200" x2="490" y2="120" stroke="#147f80" stroke-width="2" marker-end="url(#mear)"/><text x="548" y="160" font-size="12" fill="#0f5c5c">PrWr / BusRdX</text>
+                <line x1="500" y1="112" x2="650" y2="196" stroke="#147f80" stroke-width="2" marker-end="url(#mear)"/><text x="612" y="132" font-size="12" fill="#0f5c5c">BusRd（他核读）</text>
+                <line x1="660" y1="264" x2="480" y2="360" stroke="#147f80" stroke-width="2" marker-end="url(#mear)"/><text x="600" y="330" font-size="12" fill="#0f5c5c">BusRdX</text>
+                <line x1="340" y1="124" x2="340" y2="336" stroke="#147f80" stroke-width="2" marker-end="url(#mear)"/><text x="300" y="240" text-anchor="end" font-size="12" fill="#0f5c5c">BusRdX</text>
+            </svg>
+            <figcaption>图 20-2　MESI 状态转移：本地读未命中时，无其他副本则进入 E、有共享则进入 S，本地写进入 M；其他核发出 BusRd 会把 M 降为 S，发出 BusRdX 会把 M/S 变为 I。M、E 仅本核持有，S 为多核共享，I 为无效。</figcaption>
+        </figure>
 
         <p>当一个核心要对处于S状态的行做写操作时，必须发送<strong>总线嗅探</strong>（Bus Snoop）让其他核心的行失效。这种基于总线的嗅探协议在核心数少时工作良好，但在大规模系统中，嗅探的广播开销变得不可接受。</p>
 
@@ -129,7 +179,7 @@
 
         <p>这里有一个著名的<strong>双检测锁</strong>（Double-Checked Locking, DCL）bug：</p>
 
-        <pre><code>// 错误的DCL — 在弱一致性模型上会崩溃！
+        <pre style="overflow-x:auto"><code>// 错误的DCL — 在弱一致性模型上会崩溃！
 class Singleton {
     static Singleton* instance;
     static std::mutex mtx;
@@ -184,6 +234,29 @@ public:
 
         <p>其中s是串行部分比例，p是并行部分比例，N是核心数。关键洞察：即使并行部分可以无限加速，整体加速极限也受制于1/s。一个程序95%的代码可以并行（p=0.95, s=0.05），在64核上的加速上限只有1/(0.05+0.95/64) ≈ 14.5倍——不到16倍的加速，尽管你有64个核心！</p>
 
+        <div class="widget">
+            <p>点击切换串行比例，观察 64 核下的 Amdahl 加速上限 <strong>1/(s + p/N)</strong>：</p>
+            <p class="widget-buttons">
+                <button type="button" data-s="0.05">串行 5%</button>
+                <button type="button" data-s="0.10">串行 10%</button>
+                <button type="button" data-s="0.20">串行 20%</button>
+            </p>
+            <p id="amdahl-out" aria-live="polite">串行 5%（64 核）：加速上限 ≈ 14.5×</p>
+        </div>
+        <script>
+        (function () {
+            var N = 64, out = document.getElementById('amdahl-out');
+            function render(s) {
+                var sp = 1 / (s + (1 - s) / N);
+                out.textContent = '串行 ' + Math.round(s * 100) + '%（64 核）：加速上限 ≈ ' + sp.toFixed(1) + '×';
+            }
+            var bs = document.querySelectorAll('.widget button');
+            for (var i = 0; i < bs.length; i++) {
+                bs[i].addEventListener('click', function () { render(Number(this.dataset.s)); });
+            }
+        })();
+        </script>
+
         <div class="highlight">
             <strong>🔑 Amdahl定律的启示：</strong>Amdahl定律是悬在并行计算头顶的达摩克利斯之剑——只要一点点串行代码，就能让再多核的性能提升归于零。这就是为什么多核编程需要从算法层面重新思考，把串行部分压缩到极致。很多时候，并行化的收益不是由你能并行多少决定的，而是由你"不能并行的那部分"决定的。
         </div>
@@ -199,12 +272,24 @@ public:
 
         <p>好了，多核的故事就讲到这里。下一章我们将探讨另一种并行化的思路——不是多核并行（多指令多数据流），而是<strong>SIMD</strong>（单指令多数据流）和向量处理器的世界。如果说多核是为了吞吐量，那么SIMD就是为了让单条指令能处理更多数据。我们下章见！</p>
 
+        <section class="references" id="references" aria-labelledby="ref-heading">
+            <h2 id="ref-heading">参考资料</h2>
+            <ul>
+                <li>Amdahl, G. M. “Validity of the Single Processor Approach to Achieving Large-Scale Computing Capabilities,” <em>AFIPS</em>, 1967 — Amdahl 定律原始论文。</li>
+                <li>Adve, S. V., &amp; Gharachorloo, K. “Shared Memory Consistency Models: A Tutorial,” <em>IEEE Computer</em>, 1996 — 内存一致性模型的经典教程。</li>
+                <li><a href="https://en.wikipedia.org/wiki/MESI_protocol">Wikipedia: MESI protocol</a> — MESI 四状态与总线事务的通用说明。</li>
+                <li><a href="https://en.wikipedia.org/wiki/Non-uniform_memory_access">Wikipedia: Non-uniform memory access</a> — NUMA 拓扑与本地 / 远程内存延迟差异。</li>
+                <li>Hennessy, J. L., &amp; Patterson, D. A. <em>Computer Architecture: A Quantitative Approach</em> — 多核、缓存一致性与内存一致性模型。</li>
+            </ul>
+            <p class="note">本章的 Pentium 4 Tejas 取消与功耗数据引自公开资料；文中标注为教学示意的数字已在对应位置说明。</p>
+        </section>
+
         <div class="footer-nav">
             <a href="19.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="21.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
