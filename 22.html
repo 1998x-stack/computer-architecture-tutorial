@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
         <h1>第22章 GPU体系结构</h1>
 
         <p>同学们好！上一章我们学习了SIMD——一条指令处理多份数据，这是并行计算的"轻量级方案"。今天我们要见识真正的"并行巨兽"——<strong>GPU</strong>（Graphics Processing Unit）。GPU可以同时运行数万个线程，是当代AI革命的算力基石。但GPU的设计哲学和CPU完全不同，理解它的内部结构是发挥其威力的前提。让我们一起揭开GPU的神秘面纱。</p>
@@ -57,6 +58,8 @@
 
         <p>结果就是：一个现代CPU（如Intel Core i9-14900K）的单线程浮点性能约200 GFLOPS，而一块RTX 4090的理论浮点性能超过80 TFLOPS——相差400倍！当然，GPU只有在足够多的并行工作负载下才能发挥这个性能。</p>
 
+        <p class="note">说明：这里的单线程浮点性能对比为量级示意，用于说明 CPU 与 GPU 的设计目标差异；具体 GFLOPS 数值随频率、指令组合与实现（如 FMA）而异。</p>
+
         <h2>22.2 SIMT执行模型</h2>
 
         <p>NVIDIA引入了一种称为<strong>SIMT</strong>（Single Instruction, Multiple Threads，单指令多线程）的执行模型，这是理解GPU编程的关键。</p>
@@ -65,7 +68,7 @@
 
         <p>如果warp中所有线程都走同一个分支路径，硬件利用率是100%。但如果线程发生<strong>分支分歧</strong>（Branch Divergence），情况就不同了：</p>
 
-        <pre><code>// CUDA 中的分支分歧示例
+        <pre style="overflow-x:auto"><code>// CUDA 中的分支分歧示例
 __global__ void divergent_kernel(float* data, int n) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx &lt; n) {
@@ -83,6 +86,26 @@ __global__ void divergent_kernel(float* data, int n) {
 // 硬件先执行路径A（thread 0,2,3...），thread 1,4等被mask掉（不写入）
 // 然后执行路径B（thread 1,4...），thread 0,2等被mask掉
 // 两种分支→ 两倍的执行时间！</code></pre>
+
+        <figure class="figure" id="fig-simt-divergence">
+            <svg viewBox="0 0 820 340" role="img" aria-labelledby="fig-sd-t fig-sd-d" style="width:100%;height:auto;display:block">
+                <title id="fig-sd-t">SIMT warp 分支分歧与掩码执行</title>
+                <desc id="fig-sd-d">一个 warp 含 32 个线程，按分支分成两组。硬件先执行路径 A（路径 B 的线程被掩掉），再执行路径 B（路径 A 的线程被掩掉）；两段串行执行使该 warp 耗时约为无分歧时的两倍。</desc>
+                <text x="40" y="44" font-size="13" fill="#475569">一个 warp = 32 个线程（按分支分为两组）</text>
+                <rect x="200" y="56" width="350" height="44" rx="6" fill="#e6f5e0" stroke="#147f80"/><text x="375" y="84" text-anchor="middle" font-size="13" fill="#0f5c5c">线程 0–19：走路径 A</text>
+                <rect x="550" y="56" width="210" height="44" rx="6" fill="#dbe4ff" stroke="#7461ba"/><text x="655" y="84" text-anchor="middle" font-size="13" fill="#2f2a4a">线程 20–31：路径 B</text>
+                <text x="40" y="158" font-size="14" font-weight="700" fill="#1e3a5f">阶段 1：</text>
+                <text x="40" y="180" font-size="12" fill="#475569">执行路径 A</text>
+                <rect x="200" y="140" width="350" height="44" rx="6" fill="#e6f5e0" stroke="#147f80"/><text x="375" y="168" text-anchor="middle" font-size="13" fill="#0f5c5c">活跃（写回）</text>
+                <rect x="550" y="140" width="210" height="44" rx="6" fill="#f1f5f9" stroke="#94a3b8"/><text x="655" y="168" text-anchor="middle" font-size="13" fill="#94a3b8">掩码（不写回）</text>
+                <text x="40" y="248" font-size="14" font-weight="700" fill="#1e3a5f">阶段 2：</text>
+                <text x="40" y="270" font-size="12" fill="#475569">执行路径 B</text>
+                <rect x="200" y="230" width="350" height="44" rx="6" fill="#f1f5f9" stroke="#94a3b8"/><text x="375" y="258" text-anchor="middle" font-size="13" fill="#94a3b8">掩码（不写回）</text>
+                <rect x="550" y="230" width="210" height="44" rx="6" fill="#dbe4ff" stroke="#7461ba"/><text x="655" y="258" text-anchor="middle" font-size="13" fill="#2f2a4a">活跃（写回）</text>
+                <text x="410" y="312" text-anchor="middle" font-size="12" fill="#7a3a22">两段串行执行 → 该 warp 耗时约为无分歧时的 2 倍</text>
+            </svg>
+            <figcaption>图 22-1　SIMT warp 分支分歧：一个 32 线程的 warp 按分支分为两组，硬件分两个阶段串行执行并分别掩码另一组线程。分歧越多、差异路径越长，被浪费的执行机会就越多。</figcaption>
+        </figure>
 
         <p>SIMT和SIMD的区别很微妙但重要：SIMD（如SSE/AVX）要求程序员显式地将数据打包到向量寄存器中，用向量指令操作；而SIMT让程序员为<strong>单个线程</strong>编写标量代码，硬件自动将线程组织成warp执行。程序员写的是"每个线程做什么"，硬件负责将线程分组并行的细节。这大大简化了编程模型。</p>
 
@@ -153,7 +176,9 @@ __global__ void divergent_kernel(float* data, int n) {
 
         <p>最重要的优化之一是<strong>合并访问</strong>（Coalesced Memory Access）。当一个warp中的32个线程访问全局内存时，硬件会尝试将这些访问合并成尽可能少的<strong>内存事务</strong>（Memory Transactions）。如果32个线程访问的是连续对齐的128字节块，所有访问可合并为1个事务，带宽利用率100%。但如果每个线程访问的是间隔很大的地址（如列优先矩阵访问），可能产生32个独立事务，带宽利用率暴跌到3%以下。</p>
 
-        <pre><code>// 合并访问 vs 非合并访问
+        <p class="note">说明：“3% 以下”为极端情况下的教学示意；实际带宽利用率取决于访问模式、缓存行大小与对齐方式。</p>
+
+        <pre style="overflow-x:auto"><code>// 合并访问 vs 非合并访问
 #define N 4096
 __global__ void coalesced(float* A, float* B, int n) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -193,6 +218,33 @@ __global__ void matmul_shared(float* A, float* B, float* C, int M, int N, int K)
     C[row * N + col] = sum;
 }</code></pre>
 
+        <figure class="figure" id="fig-coalescing">
+            <svg viewBox="0 0 820 360" role="img" aria-labelledby="fig-co-t fig-co-d" style="width:100%;height:auto;display:block">
+                <title id="fig-co-t">合并访问与跨步访问的内存事务对比</title>
+                <desc id="fig-co-d">合并访问时，warp 内 32 个线程访问连续的 128 字节块，可合并为 1 个内存事务；跨步访问时线程间地址间隔很大，落到不同缓存行，需 32 个独立事务，带宽利用率很低。</desc>
+                <defs><marker id="coar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+                <text x="40" y="40" font-size="14" font-weight="700" fill="#1e3a5f">合并访问 Coalesced</text>
+                <rect x="40" y="60" width="170" height="60" rx="10" fill="#fde8dc" stroke="#d06d4d"/><text x="125" y="96" text-anchor="middle" font-size="13" fill="#7a3a22">Warp（32 线程）</text>
+                <rect x="300" y="60" width="110" height="60" rx="8" fill="#e6f5e0" stroke="#147f80"/><text x="355" y="96" text-anchor="middle" font-size="13" fill="#0f5c5c">行 0</text>
+                <rect x="420" y="60" width="110" height="60" rx="8" fill="#f1f5f9" stroke="#94a3b8"/><text x="475" y="96" text-anchor="middle" font-size="13" fill="#94a3b8">行 1</text>
+                <rect x="540" y="60" width="110" height="60" rx="8" fill="#f1f5f9" stroke="#94a3b8"/><text x="595" y="96" text-anchor="middle" font-size="13" fill="#94a3b8">行 2</text>
+                <rect x="660" y="60" width="110" height="60" rx="8" fill="#f1f5f9" stroke="#94a3b8"/><text x="715" y="96" text-anchor="middle" font-size="13" fill="#94a3b8">行 3</text>
+                <line x1="210" y1="90" x2="296" y2="90" stroke="#147f80" stroke-width="2" marker-end="url(#coar)"/><text x="355" y="150" text-anchor="middle" font-size="12" fill="#0f5c5c">1 个事务（128 B，100% 利用）</text>
+                <text x="40" y="212" font-size="14" font-weight="700" fill="#1e3a5f">跨步访问 Strided（stride=32）</text>
+                <rect x="40" y="230" width="170" height="60" rx="10" fill="#fde8dc" stroke="#d06d4d"/><text x="125" y="266" text-anchor="middle" font-size="13" fill="#7a3a22">Warp（32 线程）</text>
+                <rect x="300" y="230" width="110" height="60" rx="8" fill="#e6f5e0" stroke="#147f80"/><text x="355" y="266" text-anchor="middle" font-size="13" fill="#0f5c5c">行 0</text>
+                <rect x="420" y="230" width="110" height="60" rx="8" fill="#e6f5e0" stroke="#147f80"/><text x="475" y="266" text-anchor="middle" font-size="13" fill="#0f5c5c">行 1</text>
+                <rect x="540" y="230" width="110" height="60" rx="8" fill="#e6f5e0" stroke="#147f80"/><text x="595" y="266" text-anchor="middle" font-size="13" fill="#0f5c5c">行 2</text>
+                <rect x="660" y="230" width="110" height="60" rx="8" fill="#e6f5e0" stroke="#147f80"/><text x="715" y="266" text-anchor="middle" font-size="13" fill="#0f5c5c">行 3</text>
+                <line x1="210" y1="248" x2="296" y2="248" stroke="#147f80" stroke-width="2" marker-end="url(#coar)"/>
+                <line x1="210" y1="262" x2="416" y2="262" stroke="#147f80" stroke-width="2" marker-end="url(#coar)"/>
+                <line x1="210" y1="276" x2="536" y2="276" stroke="#147f80" stroke-width="2" marker-end="url(#coar)"/>
+                <line x1="210" y1="290" x2="656" y2="290" stroke="#147f80" stroke-width="2" marker-end="url(#coar)"/>
+                <text x="410" y="336" text-anchor="middle" font-size="12" fill="#7a3a22">落到 4 个不同行 → 需要多个独立事务，带宽利用率骤降</text>
+            </svg>
+            <figcaption>图 22-2　合并访问与跨步访问：warp 内线程连续访问时可合并为单个内存事务；跨步访问会落到不同缓存行，需多个独立事务。图中“行”指缓存行 / 内存分段，仅为示意。</figcaption>
+        </figure>
+
         <h2>22.5 Tensor Core与AI时代的GPU</h2>
 
         <p>2017年，NVIDIA在Volta架构（V100）中首次引入了<strong>Tensor Core</strong>——一种专门为矩阵乘法加速的硬件单元。这是一个革命性的设计，因为它标志着GPU从"图形处理器"向"AI处理器"的转型。</p>
@@ -201,6 +253,7 @@ __global__ void matmul_shared(float* A, float* B, float* C, int M, int N, int K)
 
         <p>历代GPU的规格对比：</p>
 
+        <div class="table-scroll" style="overflow-x:auto">
         <table>
             <tr>
                 <th>架构</th>
@@ -283,6 +336,7 @@ __global__ void matmul_shared(float* A, float* B, float* C, int M, int N, int K)
                 <td>2250</td>
             </tr>
         </table>
+        </div>
 
         <p>Blackwell（B200）的发布标志着GPU进入了一个新阶段——FP4和FP6精度支持、Transformer Engine第二代（动态调度模型各层的计算精度）、以及更大规模的多芯片封装（两个GPU die通过10TB/s的NVLink连接）。GPU已经不再是"图形卡"，它是AI工厂的核心引擎。</p>
 
@@ -292,12 +346,23 @@ __global__ void matmul_shared(float* A, float* B, float* C, int M, int N, int K)
 
         <p>好了，GPU的体系结构就讲到这里。我们从CPU和GPU的哲学差异讲到了SIMT执行模型，从SM的内部构造讲到Tensor Core的革命性影响。下一章我们的话题将发生一个有趣的转折——从最商业化的GPU回到最开放的RISC-V，我们看看<strong>RISC-V开放生态与香山处理器</strong>如何改变游戏规则。敬请期待！</p>
 
+        <section class="references" id="references" aria-labelledby="ref-heading">
+            <h2 id="ref-heading">参考资料</h2>
+            <ul>
+                <li><a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/">NVIDIA CUDA C Programming Guide</a> — SIMT 执行模型、warp、共享内存与合并访问的定义。</li>
+                <li><a href="https://en.wikipedia.org/wiki/Hopper_(microarchitecture)">Wikipedia: Hopper (microarchitecture)</a> — H100 的 SM 数、线程容量、HBM 带宽与 Tensor Core 规格。</li>
+                <li><a href="https://en.wikipedia.org/wiki/Blackwell_(microarchitecture)">Wikipedia: Blackwell (microarchitecture)</a> — B200 的 NVLink 带宽与多芯片封装信息。</li>
+                <li>Patterson, D. A., &amp; Hennessy, J. L. <em>Computer Architecture: A Quantitative Approach</em> — 面向吞吐量与面向延迟的设计哲学。</li>
+            </ul>
+            <p class="note">本章的 GPU 规格表与 H100 / B200 参数引自上述公开资料或厂商规格，不同来源的口径（如是否计稀疏）可能略有差异；标注为教学示意的数值已在对应位置说明。</p>
+        </section>
+
         <div class="footer-nav">
             <a href="21.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="23.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
