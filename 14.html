@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
         <h1>第14章 动态调度与乱序执行</h1>
 
         <p>同学们好！上一章我们学习了静态调度——
@@ -55,12 +56,12 @@
         这就是乱序执行（Out-of-Order Execution），
         现代高性能处理器的核心能力。</p>
 
-        <h3>为什么需要乱序执行</h3>
+        <h2>为什么需要乱序执行</h2>
 
         <p>让我们先看一个具体的例子来理解乱序执行的必要性。
         假设有以下指令序列：</p>
 
-        <pre><code>// 示例：长延迟操作阻塞后续独立指令
+        <pre style="overflow-x:auto"><code>// 示例：长延迟操作阻塞后续独立指令
 1: DIV x1, x2, x3     // x1 = x2 / x3, 需要20个周期
 2: ADD x4, x1, x5     // 依赖DIV的结果，必须等x1
 3: ADD x6, x7, x8     // 独立于DIV，操作数x7、x8已就绪
@@ -86,7 +87,33 @@
         节省了约19%的时间。如果DIV的延迟更长，
         或者独立指令更多，节省的比例就更大。</p>
 
-        <h3>Scoreboard算法</h3>
+        <figure class="figure" id="fig-ooo-timeline">
+            <svg viewBox="0 0 820 300" role="img" aria-labelledby="fig-oo-t fig-oo-d" style="width:100%;height:auto;display:block">
+                <title id="fig-oo-t">按序执行与乱序执行的时间线对比</title>
+                <desc id="fig-oo-d">按序执行时长延时的 DIV 会阻塞所有后续指令；乱序执行时独立于 DIV 的 I3–I6 可以越过 DIV 先执行，I2 仍然等待 DIV 的结果。</desc>
+                <text x="52" y="88" text-anchor="end" font-size="13" font-weight="700" fill="#1e3a5f">按序 In-Order</text>
+                <rect x="60" y="62" width="260" height="44" rx="8" fill="#fde8dc" stroke="#d06d4d"/><text x="190" y="90" text-anchor="middle" font-size="13" fill="#7a3a22">I1 DIV（长延时）</text>
+                <rect x="320" y="62" width="80" height="44" rx="8" fill="#dbe4ff" stroke="#7461ba"/><text x="360" y="90" text-anchor="middle" font-size="12" fill="#2f2a4a">I2</text>
+                <rect x="400" y="62" width="80" height="44" rx="8" fill="#dbe4ff" stroke="#7461ba"/><text x="440" y="90" text-anchor="middle" font-size="12" fill="#2f2a4a">I3</text>
+                <rect x="480" y="62" width="80" height="44" rx="8" fill="#dbe4ff" stroke="#7461ba"/><text x="520" y="90" text-anchor="middle" font-size="12" fill="#2f2a4a">I4</text>
+                <rect x="560" y="62" width="80" height="44" rx="8" fill="#dbe4ff" stroke="#7461ba"/><text x="600" y="90" text-anchor="middle" font-size="12" fill="#2f2a4a">I5</text>
+                <rect x="640" y="62" width="80" height="44" rx="8" fill="#dbe4ff" stroke="#7461ba"/><text x="680" y="90" text-anchor="middle" font-size="12" fill="#2f2a4a">I6</text>
+                <text x="52" y="198" text-anchor="end" font-size="13" font-weight="700" fill="#1e3a5f">乱序 OoO</text>
+                <rect x="60" y="172" width="260" height="44" rx="8" fill="#fde8dc" stroke="#d06d4d"/><text x="190" y="200" text-anchor="middle" font-size="13" fill="#7a3a22">I1 DIV（长延时）</text>
+                <rect x="60" y="222" width="80" height="36" rx="8" fill="#e6f5e0" stroke="#147f80"/><text x="100" y="245" text-anchor="middle" font-size="12" fill="#0f5c5c">I3</text>
+                <rect x="140" y="222" width="80" height="36" rx="8" fill="#e6f5e0" stroke="#147f80"/><text x="180" y="245" text-anchor="middle" font-size="12" fill="#0f5c5c">I4</text>
+                <rect x="220" y="222" width="80" height="36" rx="8" fill="#e6f5e0" stroke="#147f80"/><text x="260" y="245" text-anchor="middle" font-size="12" fill="#0f5c5c">I5</text>
+                <rect x="320" y="172" width="80" height="44" rx="8" fill="#dbe4ff" stroke="#7461ba"/><text x="360" y="200" text-anchor="middle" font-size="12" fill="#2f2a4a">I2</text>
+                <rect x="400" y="172" width="80" height="44" rx="8" fill="#e6f5e0" stroke="#147f80"/><text x="440" y="200" text-anchor="middle" font-size="12" fill="#0f5c5c">I6</text>
+                <line x1="60" y1="282" x2="740" y2="282" stroke="#94a3b8" stroke-width="1.5"/>
+                <text x="748" y="286" font-size="12" fill="#475569">时间</text>
+            </svg>
+            <figcaption>图 14-1　按序与乱序执行对比（长度非按真实周期等比例）：按序执行时，长延时的 DIV 会阻塞后续所有指令；乱序执行时，独立于 DIV 的 I3–I5 在 DIV 执行期间就完成，I2 仍需等待 DIV 的结果。颜色区分指令类别。</figcaption>
+        </figure>
+
+        <p class="note">说明：本例中 DIV 的 20 周期、总时间 26 → 21 周期与约 19% 的节省均为教学示意，用于展示乱序执行越过长延时操作的效果量级，并非某次真实测量的结果。</p>
+
+        <h2>Scoreboard算法</h2>
 
         <p>乱序执行的历史可以追溯到1964年。
         Seymour Cray在CDC 6600——
@@ -130,7 +157,7 @@
         因为它没有寄存器重命名能力。
         当两条指令存在名称依赖时，Scoreboard只能等待。</p>
 
-        <h3>Tomasulo算法</h3>
+        <h2>Tomasulo算法</h2>
 
         <p>1967年，IBM的Robert Tomasulo为IBM 360/91浮点单元
         设计了具有革命性的调度算法。
@@ -158,7 +185,7 @@
 
         <p>让我们通过一个示例来走一遍Tomasulo算法的执行过程：</p>
 
-        <pre><code>// Tomasulo算法执行示例 (6条指令)
+        <pre style="overflow-x:auto"><code>// Tomasulo算法执行示例 (6条指令)
 // 假设: MULT需要10周期, ADD需要2周期
 
 // 指令序列:
@@ -189,7 +216,7 @@ I6: SD   F12, 0(R3)     // Mem[R3+0] = F12
 // 周期18: I6执行(写内存)
 //
 // 关键观察: I3和I4在I2(MULT)执行期间就完成了!
-// 如果按序执行, 所有指令都要等I2的20个周期</code></pre>
+// 如果按序执行, 所有指令都要等I2的10个周期</code></pre>
 
         <p>Tomasulo算法的每个保留站和寄存器
         需要跟踪的关键字段如下：</p>
@@ -214,7 +241,7 @@ I6: SD   F12, 0(R3)     // Mem[R3+0] = F12
             本质上都是Tomasulo的变体。
         </div>
 
-        <h3>Reorder Buffer（ROB）</h3>
+        <h2>Reorder Buffer（ROB）</h2>
 
         <p>Tomasulo算法有一个重要的缺失：
         它不能保证精确异常。
@@ -238,8 +265,30 @@ I6: SD   F12, 0(R3)     // Mem[R3+0] = F12
         </ul>
 
         <p>ROB保证了<strong>按序提交</strong>：
-        指令可以乱序执行完成，但必须按程序顺序提交。
-        当异常发生时，
+        指令可以乱序执行完成，但必须按程序顺序提交。</p>
+
+        <figure class="figure" id="fig-rob-commit">
+            <svg viewBox="0 0 820 300" role="img" aria-labelledby="fig-rob-t fig-rob-d" style="width:100%;height:auto;display:block">
+                <title id="fig-rob-t">重排序缓冲的乱序完成与按序提交</title>
+                <desc id="fig-rob-d">ROB 按发射顺序排列条目：I1 已从头部提交；I2–I4 已乱序完成但等待提交；I5–I6 仍在执行。只有头部提交后才写入寄存器堆或内存，异常时头部之后的条目被清除。</desc>
+                <defs><marker id="robar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+                <text x="60" y="56" font-size="13" fill="#475569">发射顺序 →</text>
+                <rect x="60" y="90" width="110" height="60" rx="10" fill="#e6f5e0" stroke="#147f80"/><text x="115" y="126" text-anchor="middle" font-size="13" fill="#0f5c5c">I1 已提交</text>
+                <rect x="180" y="90" width="110" height="60" rx="10" fill="#dbe4ff" stroke="#7461ba"/><text x="235" y="126" text-anchor="middle" font-size="13" fill="#2f2a4a">I2 完成</text>
+                <rect x="300" y="90" width="110" height="60" rx="10" fill="#dbe4ff" stroke="#7461ba"/><text x="355" y="126" text-anchor="middle" font-size="13" fill="#2f2a4a">I3 完成</text>
+                <rect x="420" y="90" width="110" height="60" rx="10" fill="#dbe4ff" stroke="#7461ba"/><text x="475" y="126" text-anchor="middle" font-size="13" fill="#2f2a4a">I4 完成</text>
+                <rect x="540" y="90" width="110" height="60" rx="10" fill="#f1f5f9" stroke="#94a3b8"/><text x="595" y="126" text-anchor="middle" font-size="13" fill="#475569">I5 执行中</text>
+                <rect x="660" y="90" width="110" height="60" rx="10" fill="#f1f5f9" stroke="#94a3b8"/><text x="715" y="126" text-anchor="middle" font-size="13" fill="#475569">I6 执行中</text>
+                <line x1="115" y1="150" x2="115" y2="196" stroke="#147f80" stroke-width="2" marker-end="url(#robar)"/>
+                <text x="115" y="214" text-anchor="middle" font-size="13" fill="#0f5c5c">头部：按序提交</text>
+                <text x="355" y="214" text-anchor="middle" font-size="13" fill="#4b3d85">中部：可乱序完成</text>
+                <text x="700" y="214" text-anchor="middle" font-size="13" fill="#475569">尾部：尚未完成</text>
+                <text x="355" y="256" text-anchor="middle" font-size="12" fill="#7a3a22">异常时，头部之后的条目全部清除，保证精确异常</text>
+            </svg>
+            <figcaption>图 14-2　重排序缓冲：指令可以乱序完成，但必须从头部按序提交。I1 提交后写入寄存器堆；I2–I4 已完成但等待提交；异常发生时，头部之后的条目被清除，从而保证精确异常。</figcaption>
+        </figure>
+
+        <p>当异常发生时，
         ROB中位于异常指令之后的条目全部被清除，
         它们的执行结果被丢弃。
         异常指令之前提交的指令结果已经写入寄存器堆
@@ -256,7 +305,7 @@ I6: SD   F12, 0(R3)     // Mem[R3+0] = F12
         从空闲列表中分配一个新的物理寄存器——
         这就是寄存器的重命名过程。</p>
 
-        <h3>现代乱序处理器的实现</h3>
+        <h2>现代乱序处理器的实现</h2>
 
         <p>今天的乱序处理器在Tomasulo + ROB的基础上
         增加了更多优化，构成了一套复杂的执行引擎：</p>
@@ -310,6 +359,8 @@ I6: SD   F12, 0(R3)     // Mem[R3+0] = F12
         每个新的乱序核心设计都要针对LSQ
         做专门的"地址冲突"形式化验证。</p>
 
+        <p class="note">说明：这个 LSQ 地址别名 bug 的故事为教学示意，用于说明乱序访存验证的难点，不代表某个已公开的产品或项目。</p>
+
         <p>乱序执行是现代高性能处理器的巅峰之作。
         从CDC 6600的Scoreboard到IBM 360/91的Tomasulo，
         再到今天Apple M1的宽发射乱序引擎，
@@ -321,12 +372,23 @@ I6: SD   F12, 0(R3)     // Mem[R3+0] = F12
         全面理解存储器系统如何成为
         整个体系结构中最关键的瓶颈。</p>
 
+        <section class="references" id="references" aria-labelledby="ref-heading">
+            <h2 id="ref-heading">参考资料</h2>
+            <ul>
+                <li>Tomasulo, R. M. “An Efficient Algorithm for Exploiting Multiple Arithmetic Units,” <em>IBM Journal of Research and Development</em>, 1967 — Tomasulo 算法原始论文。</li>
+                <li>Thornton, J. E. “Parallel Operation in the Control Data 6600,” <em>AFIPS</em>, 1964 — CDC 6600 Scoreboard 的原始描述。</li>
+                <li>Smith, J. E., &amp; Pleszkun, A. R. “Implementing Precise Interrupts in Pipelined Processors,” <em>ISCA</em>, 1985 — 重排序缓冲（ROB）与精确异常。</li>
+                <li><a href="https://www.anandtech.com/show/16252/mac-mini-apple-m1-tested">AnandTech: Apple M1 深度分析</a> — Firestorm 核心的发射宽度、ROB 与调度队列规模等微架构参数。</li>
+            </ul>
+            <p class="note">本章的 Apple M1 参数（发射宽度、ROB 大小、调度队列深度、物理寄存器数）引自上述公开分析，不同来源的估计可能略有差异。</p>
+        </section>
+
         <div class="footer-nav">
             <a href="13.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="15.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
