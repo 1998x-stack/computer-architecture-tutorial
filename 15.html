@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
         <h1>第15章 存储层次与局部性原理</h1>
 
         <p>同学们好！之前14章我们一起走过了单周期处理器、流水线、乱序执行这些处理器核心的微架构设计。现在，让我们面对一个计算机体系结构中最"残酷"的现实问题：<strong>处理器实在是太快了，内存根本跟不上</strong>。这一章，我们要深度探讨存储层次（Memory Hierarchy）背后那条最重要、最优雅的经验规律——<strong>局部性原理</strong>（Principle of Locality）。这是整个存储层次能够奏效的根本原因。</p>
@@ -76,6 +77,32 @@
         <h2>存储层次的设计哲学</h2>
 
         <p>理解了局部性原理，存储层次的设计哲学就顺理成章了。我们构建一个从快到慢、从贵到便宜、从小到大的层次化金字塔：</p>
+
+        <figure class="figure" id="fig-mem-hierarchy">
+            <svg viewBox="0 0 860 420" role="img" aria-labelledby="fig-mh-t fig-mh-d" style="width:100%;height:auto;display:block">
+                <title id="fig-mh-t">存储层次金字塔</title>
+                <desc id="fig-mh-d">从顶部的寄存器到底部的磁盘，容量与访问延迟逐层增大：越靠近 CPU 的层次越快、越小、越贵，越向下的层次越慢、越大、越便宜。</desc>
+                <text x="850" y="68" text-anchor="end" font-size="13" fill="#147f80">↑ 更快 · 更小 · 更贵</text>
+                <text x="850" y="386" text-anchor="end" font-size="13" fill="#7a3a22">↓ 更慢 · 更大 · 更便宜</text>
+                <polygon points="320,40 440,40 474,90 286,90" fill="#147f80"/>
+                <polygon points="286,90 474,90 509,140 251,140" fill="#2f9c9c"/>
+                <polygon points="251,140 509,140 543,190 217,190" fill="#6cb8b8"/>
+                <polygon points="217,190 543,190 577,240 183,240" fill="#bcd9e8"/>
+                <polygon points="183,240 577,240 611,290 149,290" fill="#dbe4ff"/>
+                <polygon points="149,290 611,290 646,340 114,340" fill="#fde8dc"/>
+                <polygon points="114,340 646,340 680,390 80,390" fill="#efeafc"/>
+                <g font-size="14" text-anchor="middle">
+                    <text x="380" y="70" fill="#ffffff">寄存器（~1 KB）</text>
+                    <text x="380" y="120" fill="#ffffff">L1 Cache（32–128 KB）</text>
+                    <text x="380" y="170" fill="#10333a">L2 Cache（256 KB–2 MB）</text>
+                    <text x="380" y="220" fill="#10333a">L3 Cache（4–64 MB）</text>
+                    <text x="380" y="270" fill="#1e293b">主存 DRAM（8–512 GB）</text>
+                    <text x="380" y="320" fill="#7a3a22">SSD（1–30 TB）</text>
+                    <text x="380" y="370" fill="#4b3d85">HDD（1–20 TB）</text>
+                </g>
+            </svg>
+            <figcaption>图 15-1　存储层次金字塔：越靠近 CPU 的层次越快、越小、越贵，越向下的层次越慢、越大、越便宜。容量与延迟区间为现代通用平台的典型范围（教学示意），具体数值因实现而异。</figcaption>
+        </figure>
 
         <table>
             <tr>
@@ -149,7 +176,7 @@
 
         <p>为了量化这个效果，我们引入一个正式的性能模型——<strong>AMAT</strong>（Average Memory Access Time，平均存储访问时间）：</p>
 
-        <pre><code>AMAT = HitTime_L1 + MissRate_L1 × MissPenalty_L1
+        <pre style="overflow-x:auto"><code>AMAT = HitTime_L1 + MissRate_L1 × MissPenalty_L1
 
 其中：MissPenalty_L1 = HitTime_L2 + MissRate_L2 × MissPenalty_L2
 
@@ -157,7 +184,7 @@
 
         <p>这个公式可以递归扩展到任意深度的层次。让我们用一组现代CPU的典型参数做一次完整计算：</p>
 
-        <pre><code>参数假设：
+        <pre style="overflow-x:auto"><code>参数假设：
   L1:  HitTime = 1 ns, MissRate = 5%
   L2:  HitTime = 5 ns, MissRate = 15%
   L3:  HitTime = 20 ns, MissRate = 40%
@@ -172,9 +199,41 @@
 
         <p>结果令人印象深刻：有缓存的层次化设计获得了约<strong>49倍</strong>的加速。这就是存储层次的价值。当然，这个计算假设了命中率和延迟参数，实际中这些参数会因工作负载而异。但无论如何，巨大的性能提升是普遍成立的。</p>
 
+        <div class="widget">
+            <p>点击切换场景，体验 AMAT 对命中率 / 缺失率的敏感性：</p>
+            <p class="widget-buttons">
+                <button type="button" data-sc="0">典型桌面</button>
+                <button type="button" data-sc="1">高命中率 L1</button>
+                <button type="button" data-sc="2">大 L3 / 低缺失</button>
+            </p>
+            <p id="amat-out" aria-live="polite">典型桌面：AMAT = 1.64 ns（相对内存 ≈ 49×）</p>
+        </div>
+        <script>
+        (function () {
+            var scen = [
+                { name: '典型桌面', lt: [1, 5, 20], mr: [0.05, 0.15, 0.40], mem: 80 },
+                { name: '高命中率 L1', lt: [1, 5, 20], mr: [0.01, 0.10, 0.30], mem: 80 },
+                { name: '大 L3 / 低缺失', lt: [1, 5, 15], mr: [0.04, 0.08, 0.20], mem: 70 }
+            ];
+            var out = document.getElementById('amat-out');
+            function amat(s) {
+                var penalty = s.mem;
+                for (var i = s.lt.length - 1; i >= 0; i--) penalty = s.lt[i] + s.mr[i] * penalty;
+                return penalty;
+            }
+            var buttons = document.querySelectorAll('.widget button');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].addEventListener('click', function () {
+                    var s = scen[Number(this.dataset.sc)], a = amat(s);
+                    out.textContent = s.name + '：AMAT = ' + a.toFixed(2) + ' ns（相对内存 ≈ ' + (s.mem / a).toFixed(0) + '×）';
+                });
+            }
+        })();
+        </script>
+
         <p>下面是一个简单的Python脚本，可以帮你计算不同场景下的AMAT：</p>
 
-        <pre><code>def compute_amat(hit_times, miss_rates, memory_latency):
+        <pre style="overflow-x:auto"><code>def compute_amat(hit_times, miss_rates, memory_latency):
     """
     hit_times: 列表，从L1开始每层的命中时间
     miss_rates: 列表，从L1开始每层的缺失率
@@ -258,12 +317,22 @@ print(f"加速比 = {80 / amat:.1f}x")</code></pre>
 
         <p>好了，走到这一步，我们已经理解了"为什么要有多级存储"——因为局部性原理让层次化设计变得有效。下一章，我们就来深入探究Cache的设计细节，看看如何让缓存的命中率更高、延迟更低。准备好了吗？让我们走进<strong>第16章 Cache设计与优化</strong>。</p>
 
+        <section class="references" id="references" aria-labelledby="ref-heading">
+            <h2 id="ref-heading">参考资料</h2>
+            <ul>
+                <li>Hennessy, J. L., &amp; Patterson, D. A. <em>Computer Architecture: A Quantitative Approach</em> — 存储层次、AMAT 模型与 “processor–memory performance gap” 的经典论述。</li>
+                <li><a href="https://en.wikipedia.org/wiki/Locality_of_reference">Wikipedia: Locality of reference</a> — 时间 / 空间局部性的定义与来源。</li>
+                <li><a href="https://en.wikipedia.org/wiki/Raptor_Lake">Raptor Lake</a>、<a href="https://en.wikipedia.org/wiki/Zen_4">Zen 4</a>、<a href="https://en.wikipedia.org/wiki/Apple_M2">Apple M2</a> — 本章缓存层次对比表中各级容量 / 关联度的公开规格。</li>
+            </ul>
+            <p class="note">本章的缓存层次表（延迟、容量、带宽、成本/GB）与 AMAT 示例参数均为教学示意，用于展示数量级差异；真实芯片的 L1/L2/L3 规格与延迟因实现与频率而异。</p>
+        </section>
+
         <div class="footer-nav">
             <a href="14.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="16.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
