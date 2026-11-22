@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
         <h1>第9章 流水线技术原理</h1>
 
         <p>同学们好！上一章我们学习了单周期处理器——设计简单直观，但效率低下。
@@ -50,7 +51,7 @@
         这一章我们来学习计算机体系结构中最重要、最优雅的性能优化技术之一：
         流水线（Pipelining）。它解决了单周期的核心瓶颈，是现代处理器性能飞跃的起点。</p>
 
-        <h3>流水线的直觉：洗衣服的类比</h3>
+        <h2>流水线的直觉：洗衣服的类比</h2>
 
         <p>理解流水线的最好方法是从一个日常生活场景开始。
         假设洗衣服需要四个步骤：洗涤（30分钟）、烘干（30分钟）、
@@ -86,7 +87,7 @@
             用并行性换取吞吐量。
         </div>
 
-        <h3>五级流水线数据通路</h3>
+        <h2>五级流水线数据通路</h2>
 
         <p>从单周期到流水线，关键的变化是在每个阶段之间插入
         <strong>流水线寄存器（Pipeline Registers）</strong>。
@@ -123,7 +124,7 @@
         每一段只有原来最长路径的五分之一左右（理想情况下），
         因此时钟频率可以提升大约5倍。</p>
 
-        <h3>流水线的性能分析</h3>
+        <h2>流水线的性能分析</h2>
 
         <p>流水线性能的核心公式是加速比（Speedup）：</p>
 
@@ -144,6 +145,30 @@
         但如果n=5条指令，Speedup = 25 / 9 ≈ 2.8，远低于5倍。
         这说明<strong>流水线在长指令序列上才能充分发挥优势</strong>——
         短代码片段（如函数调用返回）无法填满流水线。</p>
+
+        <div class="widget">
+            <p>选择指令条数，观察理想加速比 <strong>nk / (n + k − 1)</strong>（此处固定 k = 5）：</p>
+            <p class="widget-buttons">
+                <button type="button" data-n="5">n = 5</button>
+                <button type="button" data-n="100">n = 100</button>
+                <button type="button" data-n="1000">n = 1000</button>
+            </p>
+            <p id="speedup-out" aria-live="polite">n = 100：理想加速比 ≈ 4.81×（理论上限 5×）</p>
+        </div>
+        <script>
+        (function () {
+            var k = 5;
+            var out = document.getElementById('speedup-out');
+            function render(n) {
+                var s = (n * k) / (n + k - 1);
+                out.textContent = 'n = ' + n + '：理想加速比 ≈ ' + s.toFixed(2) + '×（理论上限 ' + k + '×）';
+            }
+            var buttons = document.querySelectorAll('.widget button');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].addEventListener('click', function () { render(Number(this.dataset.n)); });
+            }
+        })();
+        </script>
 
         <p>当 n → ∞ 时，Speedup → k。
         也就是说，理想加速比等于流水线的级数。
@@ -169,6 +194,56 @@
 
         <p>下面是一个流水线时序图，展示5条指令在5级流水线中的执行过程：</p>
 
+        <figure class="figure" id="fig-pipeline-timeline">
+            <svg viewBox="0 0 760 350" role="img" aria-labelledby="fig-pl-t fig-pl-d" style="width:100%;height:auto;display:block">
+                <title id="fig-pl-t">五级流水线的时空图</title>
+                <desc id="fig-pl-d">横轴为时钟周期、纵轴为指令；每行一条指令依次经过 IF、ID、EX、MEM、WB 五个阶段，从第 5 个周期起五个阶段被同时占用，每个周期有一条指令完成。</desc>
+                <text x="150" y="42" font-size="12" fill="#475569" text-anchor="start">周期 →</text>
+                <text x="182" y="60" font-size="12" fill="#475569" text-anchor="middle">1</text>
+                <text x="246" y="60" font-size="12" fill="#475569" text-anchor="middle">2</text>
+                <text x="310" y="60" font-size="12" fill="#475569" text-anchor="middle">3</text>
+                <text x="374" y="60" font-size="12" fill="#475569" text-anchor="middle">4</text>
+                <text x="438" y="60" font-size="12" fill="#475569" text-anchor="middle">5</text>
+                <text x="502" y="60" font-size="12" fill="#475569" text-anchor="middle">6</text>
+                <text x="566" y="60" font-size="12" fill="#475569" text-anchor="middle">7</text>
+                <text x="630" y="60" font-size="12" fill="#475569" text-anchor="middle">8</text>
+                <text x="694" y="60" font-size="12" fill="#475569" text-anchor="middle">9</text>
+                <text x="136" y="99" font-size="12" fill="#0f172a" text-anchor="end">I0 lw</text>
+                <text x="136" y="143" font-size="12" fill="#0f172a" text-anchor="end">I1 add</text>
+                <text x="136" y="187" font-size="12" fill="#0f172a" text-anchor="end">I2 sw</text>
+                <text x="136" y="231" font-size="12" fill="#0f172a" text-anchor="end">I3 or</text>
+                <text x="136" y="275" font-size="12" fill="#0f172a" text-anchor="end">I4 sub</text>
+                <g font-size="12" fill="#0f172a" text-anchor="middle">
+                    <rect x="150" y="72" width="64" height="44" fill="#cfe8e8" stroke="#94a3b8"/><text x="182" y="99">IF</text>
+                    <rect x="214" y="72" width="64" height="44" fill="#dbe4ff" stroke="#94a3b8"/><text x="246" y="99">ID</text>
+                    <rect x="278" y="72" width="64" height="44" fill="#fde8dc" stroke="#94a3b8"/><text x="310" y="99">EX</text>
+                    <rect x="342" y="72" width="64" height="44" fill="#efeafc" stroke="#94a3b8"/><text x="374" y="99">MEM</text>
+                    <rect x="406" y="72" width="64" height="44" fill="#e6f5e0" stroke="#94a3b8"/><text x="438" y="99">WB</text>
+                    <rect x="214" y="116" width="64" height="44" fill="#cfe8e8" stroke="#94a3b8"/><text x="246" y="143">IF</text>
+                    <rect x="278" y="116" width="64" height="44" fill="#dbe4ff" stroke="#94a3b8"/><text x="310" y="143">ID</text>
+                    <rect x="342" y="116" width="64" height="44" fill="#fde8dc" stroke="#94a3b8"/><text x="374" y="143">EX</text>
+                    <rect x="406" y="116" width="64" height="44" fill="#efeafc" stroke="#94a3b8"/><text x="438" y="143">MEM</text>
+                    <rect x="470" y="116" width="64" height="44" fill="#e6f5e0" stroke="#94a3b8"/><text x="502" y="143">WB</text>
+                    <rect x="278" y="160" width="64" height="44" fill="#cfe8e8" stroke="#94a3b8"/><text x="310" y="187">IF</text>
+                    <rect x="342" y="160" width="64" height="44" fill="#dbe4ff" stroke="#94a3b8"/><text x="374" y="187">ID</text>
+                    <rect x="406" y="160" width="64" height="44" fill="#fde8dc" stroke="#94a3b8"/><text x="438" y="187">EX</text>
+                    <rect x="470" y="160" width="64" height="44" fill="#efeafc" stroke="#94a3b8"/><text x="502" y="187">MEM</text>
+                    <rect x="534" y="160" width="64" height="44" fill="#e6f5e0" stroke="#94a3b8"/><text x="566" y="187">WB</text>
+                    <rect x="342" y="204" width="64" height="44" fill="#cfe8e8" stroke="#94a3b8"/><text x="374" y="231">IF</text>
+                    <rect x="406" y="204" width="64" height="44" fill="#dbe4ff" stroke="#94a3b8"/><text x="438" y="231">ID</text>
+                    <rect x="470" y="204" width="64" height="44" fill="#fde8dc" stroke="#94a3b8"/><text x="502" y="231">EX</text>
+                    <rect x="534" y="204" width="64" height="44" fill="#efeafc" stroke="#94a3b8"/><text x="566" y="231">MEM</text>
+                    <rect x="598" y="204" width="64" height="44" fill="#e6f5e0" stroke="#94a3b8"/><text x="630" y="231">WB</text>
+                    <rect x="406" y="248" width="64" height="44" fill="#cfe8e8" stroke="#94a3b8"/><text x="438" y="275">IF</text>
+                    <rect x="470" y="248" width="64" height="44" fill="#dbe4ff" stroke="#94a3b8"/><text x="502" y="275">ID</text>
+                    <rect x="534" y="248" width="64" height="44" fill="#fde8dc" stroke="#94a3b8"/><text x="566" y="275">EX</text>
+                    <rect x="598" y="248" width="64" height="44" fill="#efeafc" stroke="#94a3b8"/><text x="630" y="275">MEM</text>
+                    <rect x="662" y="248" width="64" height="44" fill="#e6f5e0" stroke="#94a3b8"/><text x="694" y="275">WB</text>
+                </g>
+            </svg>
+            <figcaption>图 9-1　五级流水线的时空图：纵轴为指令、横轴为时钟周期。从第 5 个周期起 IF、ID、EX、MEM、WB 五个阶段同时被占用，之后每个周期都有一条指令完成（进入 WB）。阶段名称以单元格文字为准，颜色仅作辅助区分。</figcaption>
+        </figure>
+
         <table>
             <tr><th>指令 / 周期</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th></tr>
             <tr><td>I0: lw x1, 0(x2)</td><td>IF</td><td>ID</td><td>EX</td><td>MEM</td><td>WB</td><td></td><td></td><td></td><td></td></tr>
@@ -183,7 +258,7 @@
         在周期5之后，每个周期都有一条指令完成（WB阶段），
         处理器的吞吐量达到了每条指令一个周期。</p>
 
-        <h3>流水线的时序</h3>
+        <h2>流水线的时序</h2>
 
         <p>流水线的时钟周期计算方式与单周期截然不同：</p>
 
@@ -200,6 +275,11 @@
         如果加上流水线带来的CPI改善（从单周期的有效CPI≈1到流水线的
         有效CPI≈1——但时钟快了3倍），整体性能提升是显著的。</p>
 
+        <p class="note">说明：本节中的各阶段延迟（IF=1.8ns、ID=1.2ns、EX=2.0ns、
+        MEM=2.5ns、WB=1.0ns）与流水线寄存器开销 0.2ns 均为教学示意，
+        用于展示“时钟周期 = 最慢阶段 + 寄存器开销”的计算过程，
+        并非某一真实工艺节点的实测数据。</p>
+
         <p>这里有一个有趣的权衡：
         <strong>流水线级数越多，每级延迟越短，时钟频率越高；
         但流水线寄存器开销占总时间的比例越大，冒险代价也越高</strong>。
@@ -208,7 +288,7 @@
         而在5级流水线中，寄存器开销只占2.7ns中的0.2ns，约7%。
         这还不包括更深的流水线带来的分支误预测代价。</p>
 
-        <h3>流水线的开销与现实的妥协</h3>
+        <h2>流水线的开销与现实的妥协</h2>
 
         <p>流水线并非没有代价。流水线寄存器占用了额外的芯片面积（area）
         和功耗（power）。5级流水线大约增加15-20%的面积开销。
@@ -216,12 +296,11 @@
         但流水线架构强制它占用MEM阶段的硬件资源。
         这种"硬件资源的强制占用"在更深度的流水线中更加浪费。</p>
 
-        <p>流水线历史上最著名的"踩坑"故事当属Intel Pentium 4的
-        NetBurst架构。为了追求极限频率，Pentium 4将流水线深度扩展到了
-        31级（某些操作高达40级）。当时Intel的构思是：
-        通过更深的流水线大幅提升频率，用频率优势碾压对手。
-        初代Willamette核心确实达到了2.0GHz——当时无人能及。
-        Intel甚至规划了一条路线图，目标是在未来达到10GHz。</p>
+        <p>流水线历史上最著名的“踩坑”故事当属 Intel Pentium 4 的
+        NetBurst 架构。为了追求极限频率，Intel 把流水线从 Willamette 的
+        20 级加深到 Prescott 的 31 级。其构思是：通过更深的流水线
+        大幅提升频率，用频率优势碾压对手。Pentium 4 的标称主频
+        从 1.4GHz 一路推高到 3.8GHz，Intel 甚至规划过冲上 10GHz 的路线图。</p>
 
         <p>但深流水线的代价是惨烈的：
         每一次分支预测错误都需要清空31级流水线，浪费31个周期。
@@ -241,7 +320,7 @@
         <p>下面的Python代码模拟了一个理想流水线的吞吐量，
         直观展示流水线深度与加速比的关系：</p>
 
-        <pre><code># 理想流水线吞吐量模拟
+        <pre style="overflow-x:auto"><code># 理想流水线吞吐量模拟
 def pipeline_throughput(num_instructions, stages=5, cycles_per_stage=1):
     """模拟理想流水线的执行过程"""
     # 假设无冒险、无停顿
@@ -284,12 +363,22 @@ for n in [5, 10, 50, 100, 1000]:
         学习结构冲突、数据冲突和控制冲突的产生原因，
         以及转发、旁路和流水线停顿等优雅的解决方案。</p>
 
+        <section class="references" id="references" aria-labelledby="ref-heading">
+            <h2 id="ref-heading">参考资料</h2>
+            <ul>
+                <li>Patterson, D. A., &amp; Hennessy, J. L. <em>Computer Organization and Design: The Hardware/Software Interface</em> — 五级流水线数据通路、流水线寄存器与冒险分类。</li>
+                <li><a href="https://en.wikipedia.org/wiki/Pentium_4">Wikipedia: Pentium 4</a> — NetBurst 的流水线级数、主频区间与 Prescott 功耗的公开记录。</li>
+                <li><a href="https://en.wikipedia.org/wiki/NetBurst">Wikipedia: NetBurst (microarchitecture)</a> — 深流水线设计与 Intel 放弃该路线的背景。</li>
+            </ul>
+            <p class="note">本章的洗衣时序、各阶段延迟与寄存器开销均为教学示意；Pentium 4 / NetBurst 的流水线级数、主频与功耗引自上述公开记录。</p>
+        </section>
+
         <div class="footer-nav">
             <a href="08.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="10.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
