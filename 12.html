@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第12章 异常与中断处理</h1>
 
         <p>同学们好！到目前为止，我们一直假设程序是线性执行的
@@ -52,7 +53,7 @@
         处理器如何优雅地处理这些意外，然后无缝地回到被中断的程序？
         这就是本章的主题——异常与中断处理。</p>
 
-        <h3>异常 vs 中断</h3>
+        <h2>异常 vs 中断</h2>
 
         <p>在计算机体系结构中，
         "异常"和"中断"这两个术语经常被混用，但它们有本质区别：</p>
@@ -80,7 +81,7 @@
         <p>以下是RISC-V定义的主要异常和中断代码
         （mcause寄存器的值）：</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr><th>mcause值</th><th>类型</th><th>描述</th></tr>
             <tr><td>0</td><td>中断(0除外)</td><td>用户软件中断</td></tr>
             <tr><td>3</td><td>中断</td><td>机器软件中断</td></tr>
@@ -98,9 +99,9 @@
             <tr><td>12</td><td>异常</td><td>指令页错误</td></tr>
             <tr><td>13</td><td>异常</td><td>Load页错误</td></tr>
             <tr><td>15</td><td>异常</td><td>Store页错误</td></tr>
-        </table>
+        </table></div>
 
-        <h3>精确异常处理</h3>
+        <h2>精确异常处理</h2>
 
         <p>在流水线处理器中，异常处理面临一个独特的难题：
         当一条指令在EX阶段触发异常时，
@@ -142,7 +143,7 @@
             这个教训促使所有现代处理器都优先保证精确异常。
         </div>
 
-        <h3>RISC-V的异常处理机制</h3>
+        <h2>RISC-V的异常处理机制</h2>
 
         <p>RISC-V将异常处理机制设计得非常清晰和精简。
         与x86的复杂分段和特权级不同，
@@ -171,6 +172,26 @@
         </ul>
 
         <p>RISC-V的异常处理流程如下：</p>
+<figure class="figure" id="fig-trap-flow">
+  <svg viewBox="0 0 800 280" role="img" aria-labelledby="fig-tf-t fig-tf-d" style="width:100%;height:auto;display:block">
+    <title id="fig-tf-t">RISC-V 陷入（trap）处理流程：精确异常</title>
+    <desc id="fig-tf-d">触发异常时，硬件把当前 PC 存入 mepc、把原因码存入 mcause、把 PC 跳到 mtvec 指向的处理程序入口；处理完成后执行 mret，把 PC 恢复到 mepc，从被中断的指令继续执行，从而保证异常精确、状态可恢复。</desc>
+    <defs><marker id="tf-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+    <rect x="20" y="80" width="150" height="70" rx="10" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="95" y="112" text-anchor="middle" font-size="13" fill="#0f5c5c">执行指令</text><text x="95" y="134" text-anchor="middle" font-size="12" fill="#0f5c5c">异常发生</text>
+    <rect x="220" y="70" width="190" height="90" rx="10" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="315" y="100" text-anchor="middle" font-size="13" fill="#6b4a12">硬件原子动作</text><text x="315" y="124" text-anchor="middle" font-size="12" fill="#6b4a12">mepc ← PC</text><text x="315" y="144" text-anchor="middle" font-size="12" fill="#6b4a12">mcause ← 原因　PC ← mtvec</text>
+    <rect x="460" y="80" width="150" height="70" rx="10" fill="#dbe4ff" stroke="#7461ba" stroke-width="2"/><text x="535" y="112" text-anchor="middle" font-size="13" fill="#2f2a4a">处理程序</text><text x="535" y="134" text-anchor="middle" font-size="12" fill="#2f2a4a">trap handler</text>
+    <rect x="660" y="80" width="120" height="70" rx="10" fill="#efeafc" stroke="#7461ba" stroke-width="2"/><text x="720" y="112" text-anchor="middle" font-size="13" fill="#4b3d85">mret</text><text x="720" y="134" text-anchor="middle" font-size="11" fill="#4b3d85">PC ← mepc</text>
+    <line x1="170" y1="115" x2="216" y2="115" stroke="#147f80" stroke-width="2" marker-end="url(#tf-ar)"/>
+    <line x1="410" y1="115" x2="456" y2="115" stroke="#147f80" stroke-width="2" marker-end="url(#tf-ar)"/>
+    <line x1="610" y1="115" x2="656" y2="115" stroke="#147f80" stroke-width="2" marker-end="url(#tf-ar)"/>
+    <path d="M720,150 L720,215 L95,215 L95,154" fill="none" stroke="#d06d4d" stroke-width="2" marker-end="url(#tf-ar)"/>
+    <text x="410" y="208" text-anchor="middle" font-size="12" fill="#7a3a22">恢复到被中断指令继续执行 → 异常“精确”</text>
+    <text x="400" y="255" text-anchor="middle" font-size="12" fill="#475569">关键：mepc 保存的是“出错指令”的地址，而非已完成的后续指令，保证可重入与可恢复</text>
+  </svg>
+  <figcaption>图 12-1　RISC-V 的陷入流程：硬件把当前 PC 存入 <code>mepc</code>、原因码存入 <code>mcause</code>，并把 PC 跳到 <code>mtvec</code>；处理程序完成后执行 <code>mret</code> 恢复到 <code>mepc</code>。<code>mepc</code> 指向“出错的那条指令”而非后续指令，正是“精确异常”的含义。</figcaption>
+</figure>
+
+
 
         <ol>
             <li>将当前PC保存到mepc</li>
@@ -184,7 +205,7 @@
 
         <p>下面是一个简单的RISC-V陷阱处理程序框架：</p>
 
-        <pre><code># RISC-V Trap Handler (机器模式)
+        <pre style="overflow-x:auto"><code># RISC-V Trap Handler (机器模式)
 .section .text.trap
 .align 2
 trap_handler:
@@ -236,7 +257,7 @@ trap_return:
         所有具体的系统调用处理、设备驱动逻辑
         都是在这个框架中由软件实现的。</p>
 
-        <h3>中断控制器与优先级</h3>
+        <h2>中断控制器与优先级</h2>
 
         <p>在实际系统中，可能有几十个甚至上百个外部设备
         能够产生中断。如何管理这些中断的优先级、路由和嵌套？
@@ -274,7 +295,7 @@ trap_return:
             否则会重复触发。</li>
         </ul>
 
-        <h3>Syscall与陷入</h3>
+        <h2>Syscall与陷入</h2>
 
         <p>系统调用（System Call）是用户程序
         进入操作系统内核的标准途径。在RISC-V中，
@@ -322,12 +343,23 @@ trap_return:
         和异常处理之后，是时候探索指令级并行（ILP）
         的最高境界了：静态多发射与VLIW架构。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-12">
+  <h2 id="ref-12">参考资料</h2>
+  <ul>
+    <li>Waterman, A., Asanović, K. et al. <em>The RISC-V Instruction Set Manual, Volume II: Privileged Architecture</em> —— <code>mepc</code> / <code>mcause</code> / <code>mtvec</code> / <code>mret</code> 与陷入流程的一手规范。</li>
+    <li>Patterson, D. &amp; Hennessy, J. <em>Computer Organization and Design</em>（RISC-V Edition）—— 精确异常与异常处理机制。</li>
+    <li><a href="https://en.wikipedia.org/wiki/Interrupt">Wikipedia: Interrupt</a> —— 异常 / 中断、优先级与中断控制器的通用说明。</li>
+  </ul>
+  <p class="note">说明：图 12-1 为简化的机器模式（M-mode）陷入流程，未展开委托到 S-mode、嵌套中断与 <code>mtval</code> 等细节。</p>
+</section>
+
+<div class="footer-nav">
             <a href="11.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="13.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
