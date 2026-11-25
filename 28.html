@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html" class="active">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第28章 量子计算与体系结构的未来</h1>
         <p>同学们好！欢迎来到本课程的最后一章。28章、从布尔代数到乱序执行、从NAND门到Roofline模型——我们已经走完了计算机体系结构的完整旅程。但这不是终点。正如David Patterson在2018年的图灵奖演讲中所说，我们正处在计算机体系结构的新黄金时代。在这一章，我们将眺望那些正在重塑计算未来的前沿技术。</p>
 
@@ -52,6 +53,36 @@
         <p>但这还不是量子计算最强大的地方。更关键的是<strong>纠缠（entanglement）</strong>：两个qubit可以处于纠缠态，使得它们的状态不能独立描述。测量其中一个会立即影响另一个——无论它们在物理上相隔多远。这让量子计算机能够同时探索指数级多的可能性。</p>
 
         <p>量子计算使用<strong>量子门（quantum gates）</strong>来操作qubit。常见的量子门包括：</p>
+<figure class="figure" id="fig-qubit-circuit">
+  <svg viewBox="0 0 800 340" role="img" aria-labelledby="fig-qc-t fig-qc-d" style="width:100%;height:auto;display:block">
+    <title id="fig-qc-t">经典比特、量子比特与 H 门电路</title>
+    <desc id="fig-qc-d">经典比特只能取 0 或 1 两个确定状态；量子比特的状态是 |0> 与 |1> 的叠加，可表示为布洛赫球上的一个单位向量；对处于 |0> 的量子比特施加 H（Hadamard）门会得到等概率叠加态，测量时以各 50% 的概率坍缩到 0 或 1。</desc>
+    <defs><marker id="qc-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+    <text x="130" y="34" text-anchor="middle" font-size="14" fill="#7a3a22">经典比特</text>
+    <rect x="60" y="120" width="140" height="80" rx="10" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="130" y="155" text-anchor="middle" font-size="16" fill="#7a3a22">0 或 1</text><text x="130" y="180" text-anchor="middle" font-size="11" fill="#7a3a22">确定的单一状态</text>
+    <text x="370" y="34" text-anchor="middle" font-size="14" fill="#0f5c5c">量子比特（布洛赫球）</text>
+    <circle cx="370" cy="165" r="78" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/>
+    <ellipse cx="370" cy="165" rx="78" ry="26" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4 4"/>
+    <line x1="370" y1="240" x2="370" y2="90" stroke="#64748b" stroke-width="1.5" marker-end="url(#qc-ar)"/>
+    <text x="370" y="82" text-anchor="middle" font-size="12" fill="#0f5c5c">|0⟩</text>
+    <text x="370" y="258" text-anchor="middle" font-size="12" fill="#0f5c5c">|1⟩</text>
+    <line x1="370" y1="165" x2="425" y2="118" stroke="#d06d4d" stroke-width="2.5" marker-end="url(#qc-ar)"/>
+    <text x="446" y="112" font-size="11" fill="#7a3a22">α|0⟩+β|1⟩</text>
+    <text x="668" y="34" text-anchor="middle" font-size="14" fill="#4b3d85">H 门电路</text>
+    <line x1="600" y1="120" x2="770" y2="120" stroke="#475569" stroke-width="1.5"/>
+    <text x="588" y="125" text-anchor="end" font-size="13" fill="#0f5c5c">|0⟩</text>
+    <rect x="635" y="100" width="52" height="40" rx="6" fill="#dbe4ff" stroke="#7461ba" stroke-width="2"/><text x="661" y="126" text-anchor="middle" font-size="15" fill="#2f2a4a">H</text>
+    <line x1="687" y1="120" x2="720" y2="120" stroke="#475569" stroke-width="1.5"/>
+    <rect x="720" y="100" width="44" height="40" rx="6" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="742" y="126" text-anchor="middle" font-size="13" fill="#6b4a12">M</text>
+    <text x="668" y="180" text-anchor="middle" font-size="12" fill="#475569">测量：50% → 0</text>
+    <text x="668" y="202" text-anchor="middle" font-size="12" fill="#475569">50% → 1</text>
+    <text x="400" y="300" text-anchor="middle" font-size="12" fill="#475569">量子比特可处于叠加态，但一旦测量就坍缩为经典比特 —— 这决定了量子程序与纠错的根本不同</text>
+    <text x="400" y="326" text-anchor="middle" font-size="11" fill="#7a3a22">示意说明：本图不含具体振幅数值，仅展示概念</text>
+  </svg>
+  <figcaption>图 28-1　经典比特与量子比特的对比：经典比特是确定的 0 或 1；量子比特的状态是 |0⟩ 与 |1⟩ 的叠加，可表示为布洛赫球上的单位向量。对 |0⟩ 施加 H（Hadamard）门得到等权重叠加态，测量时以 50% 概率坍缩为 0 或 1。这种“叠加 + 坍缩 + 纠缠”的特性，正是量子计算与经典计算在体系结构上分道扬镳的根源。</figcaption>
+</figure>
+
+
         <ul>
             <li><strong>Hadamard门（H）</strong>——创建叠加态：H|0⟩ = (|0⟩+|1⟩)/√2</li>
             <li><strong>CNOT门（受控非门）</strong>——创建纠缠态：如果控制qubit为1，则翻转目标qubit</li>
@@ -61,7 +92,7 @@
 
         <p>量子线路模型（quantum circuit model）是描述量子计算最直观的方式：qubit用水平线表示，门操作从左到右依次施加，最后测量得到经典结果。下面是一个创建Bell态（纠缠态）的量子线路：</p>
 
-        <pre><code>// Bell State |Φ+⟩ = (|00⟩ + |11⟩) / √2
+        <pre style="overflow-x:auto"><code>// Bell State |Φ+⟩ = (|00⟩ + |11⟩) / √2
 // Quantum circuit using Hadamard + CNOT
 
 // Initialize two qubits in |0⟩ state
@@ -140,14 +171,14 @@ result = measure(q)
 
         <p><strong>模拟计算（Analog Computing）</strong>——在模拟域完成计算，再数字化结果。Mythic公司的模拟矩阵处理器（Mythic AI）使用flash晶体管作为可编程电阻，构成交叉开关阵列（crossbar array），在模拟域完成矩阵乘法。对于AI推理任务，能效比传统数字方案提升10倍。模拟计算的挑战在于精度和噪声——模拟计算对工艺偏差和环境温度敏感，不适合需要高精度计算的任务。</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr><th>计算范式</th><th>计算模型</th><th>核心优势</th><th>成熟度</th><th>主要玩家</th></tr>
             <tr><td>经典CMOS</td><td>布尔逻辑 + 冯诺依曼</td><td>通用、成熟、生态完善</td><td>大规模商用</td><td>Intel, AMD, Apple, NVIDIA</td></tr>
             <tr><td>量子计算</td><td>幺正变换 + 纠缠 + 干涉</td><td>特定问题指数加速</td><td>NISQ实验阶段</td><td>IBM, Google, Quantinuum, IonQ</td></tr>
             <tr><td>神经形态</td><td>脉冲神经网络 + 事件驱动</td><td>极致能效、事件驱动</td><td>原型/小批量</td><td>Intel Loihi, IBM TrueNorth</td></tr>
             <tr><td>光学计算</td><td>光子干涉 + 傅里叶变换</td><td>低延迟、高并行、低功耗</td><td>原型验证</td><td>Lightmatter, Lightelligence</td></tr>
             <tr><td>模拟计算</td><td>物理定律模拟 + crossbar阵列</td><td>高能效、适合矩阵运算</td><td>早期商用</td><td>Mythic AI, Syntiant</td></tr>
-        </table>
+        </table></div>
 
         <h2>体系结构教育的演变</h2>
         <p>计算机体系结构作为一门学科，在过去的十年中发生了深刻变化。这些变化不仅反映在学术界，也反映在我们这28章课程的内容中：</p>
@@ -196,12 +227,23 @@ result = measure(q)
 
         <p>再见，同学们！</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-28">
+  <h2 id="ref-28">参考资料</h2>
+  <ul>
+    <li>Nielsen, M. &amp; Chuang, I. <em>Quantum Computation and Quantum Information</em>, Cambridge University Press —— 量子比特、布洛赫球与量子门的标准教材。</li>
+    <li>Preskill, J. “Quantum Computing in the NISQ Era and Beyond,” <em>Quantum</em>, 2018 —— 含噪中等规模量子（NISQ）时代的现状与挑战。</li>
+    <li><a href="https://en.wikipedia.org/wiki/Bloch_sphere">Wikipedia: Bloch sphere</a> —— 布洛赫球表示法与量子门作用的通用说明。</li>
+  </ul>
+  <p class="note">说明：图 28-1 为概念示意，未标注具体振幅；正文中的量子比特数、纠错阈值等若出现具体数值，均以所引论文与厂商发布为准。</p>
+</section>
+
+<div class="footer-nav">
             <a href="27.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="javascript:void(0)" style="opacity:0.5;pointer-events:none;">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
