@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第7章 汇编与机器码实战</h1>
 
         <p>同学们好！前面几章我们学习了ISA的抽象概念和RISC-V的指令格式。今天，我们来点实际的——<strong>动手将汇编代码变成机器码</strong>，再从机器码变回汇编。这就像学语言时从"能看懂"到"能写作"的跨越。</p>
@@ -52,8 +53,29 @@
         <h2>7.1 从C到汇编再到机器码</h2>
 
         <p>让我们跟踪一个完整的从C到机器码的编译流程。假设我们有一个极简的C程序：</p>
+<figure class="figure" id="fig-encode-addi">
+  <svg viewBox="0 0 800 300" role="img" aria-labelledby="fig-en-t fig-en-d" style="width:100%;height:auto;display:block">
+    <title id="fig-en-t">把一条汇编指令编码成机器码：addi x5, x6, 10</title>
+    <desc id="fig-en-d">addi 属于 I 型格式。立即数 imm=10 占 12 位，rs1=6 占 5 位，funct3=000 占 3 位，rd=5 占 5 位，opcode=0010011 占 7 位；按 imm[11:0] | rs1 | funct3 | rd | opcode 拼成 32 位，得到十六进制 0x00a30293。</desc>
+    <text x="20" y="34" font-size="16" fill="#0f5c5c" font-family="monospace">addi x5, x6, 10</text>
+    <text x="240" y="34" font-size="12" fill="#64748b">→ I 型：rd=x5, rs1=x6, imm=10</text>
+    <rect x="20" y="70" width="269" height="40" fill="#fde8dc" stroke="#d06d4d" stroke-width="1.5"/><text x="154" y="96" text-anchor="middle" font-size="12" fill="#7a3a22">imm[11:0]=10</text>
+    <rect x="289" y="70" width="112" height="40" fill="#dbe4ff" stroke="#7461ba" stroke-width="1.5"/><text x="345" y="96" text-anchor="middle" font-size="12" fill="#2f2a4a">rs1=6</text>
+    <rect x="401" y="70" width="67" height="40" fill="#fffbeb" stroke="#916c22" stroke-width="1.5"/><text x="434" y="96" text-anchor="middle" font-size="12" fill="#6b4a12">f3=000</text>
+    <rect x="468" y="70" width="112" height="40" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/><text x="524" y="96" text-anchor="middle" font-size="12" fill="#0f5c5c">rd=5</text>
+    <rect x="580" y="70" width="157" height="40" fill="#efeafc" stroke="#7461ba" stroke-width="1.5"/><text x="658" y="96" text-anchor="middle" font-size="12" fill="#4b3d85">opcode=0010011</text>
+    <text x="20" y="145" font-size="12" fill="#64748b">bit31</text><text x="737" y="145" text-anchor="end" font-size="12" fill="#64748b">bit0</text>
+    <text x="20" y="185" font-size="12" fill="#475569">二进制（按位拼接）：</text>
+    <text x="20" y="210" font-size="13" fill="#1f2937" font-family="monospace">0000 0000 1010 0011 0000 0010 1001 0011</text>
+    <text x="20" y="248" font-size="13" fill="#1f2937" font-family="monospace">十六进制：0x00a30293</text>
+    <text x="20" y="284" font-size="12" fill="#7a3a22">imm(12) | rs1(5) | funct3(3) | rd(5) | opcode(7)　—— 定长 32 位，字段位置固定</text>
+  </svg>
+  <figcaption>图 7-1　把 <code>addi x5, x6, 10</code> 编码成机器码：按 I 型的 <code>imm[11:0] | rs1 | funct3 | rd | opcode</code> 顺序拼接 32 位，得到 <code>0x00a30293</code>。字段宽度与位置都由 RV32I 规范固定，这正是反汇编可以逐位“读回来”的原因。</figcaption>
+</figure>
 
-        <pre><code>// add.c
+
+
+        <pre style="overflow-x:auto"><code>// add.c
 int add(int a, int b) {
     return a + b;
 }
@@ -65,7 +87,7 @@ int main() {
 
         <p>使用RISC-V交叉编译工具链：</p>
 
-        <pre><code># 第一步：编译到汇编文件
+        <pre style="overflow-x:auto"><code># 第一步：编译到汇编文件
 riscv64-unknown-elf-gcc -S add.c -o add.s
 
 # 第二步：汇编到目标文件(机器码+符号表)
@@ -79,7 +101,7 @@ riscv64-unknown-elf-objdump -d add.elf</code></pre>
 
         <p>生成的汇编（<code>add.s</code>）大致如下：</p>
 
-        <pre><code>add:
+        <pre style="overflow-x:auto"><code>add:
     addi  sp, sp, -16
     sw    ra, 12(sp)
     sw    s0, 8(sp)
@@ -121,7 +143,7 @@ main:
 
         <p>伪指令（Pseudo-Instruction）是汇编器提供的一种便利——它们看起来像真指令，但被汇编器展开为一条或多条真实指令。下面是RISC-V中常见的伪指令及其展开：</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <thead>
                 <tr>
                     <th>伪指令</th>
@@ -141,7 +163,7 @@ main:
                 <tr><td><code>call func</code></td><td>函数调用</td><td><code>auipc ra, offset_hi</code> + <code>jalr ra, ra, offset_lo</code></td></tr>
                 <tr><td><code>la rd, sym</code></td><td>加载符号地址</td><td><code>auipc rd, offset_hi</code> + <code>addi rd, rd, offset_lo</code></td></tr>
             </tbody>
-        </table>
+        </table></div>
 
         <p>理解伪指令的展开非常有实际价值。例如，当你看到反汇编代码中<code>auipc</code>紧跟着<code>addi</code>时，你就知道这是编译器用<code>la</code>或<code>call</code>的结果。</p>
 
@@ -232,12 +254,23 @@ main:
 
         <p>下一章，我们将把这些知识付诸实践——设计一个真正的单周期RISC-V处理器！从指令集理论到汇编实践，再到硬件设计，你正一步步接近计算机体系结构的核心。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-07">
+  <h2 id="ref-07">参考资料</h2>
+  <ul>
+    <li>Waterman, A. &amp; Asanović, K. <em>The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA</em>, 2019 —— 指令编码与立即数位段的一手规范。</li>
+    <li>GNU Binutils, <em>objdump</em> 手册 —— <code>objdump -d</code> 反汇编输出格式与地址/机器码列的说明。</li>
+    <li>Patterson, D. &amp; Hennessy, J. <em>Computer Organization and Design</em>（RISC-V Edition）—— 汇编与机器码对应关系的标准教材。</li>
+  </ul>
+  <p class="note">说明：图 7-1 中 <code>addi x5, x6, 10</code> 的编码 <code>0x00a30293</code> 可由 RV32I 字段定义逐位验证（opcode=0010011、rd=00101、rs1=00110、imm=10）。</p>
+</section>
+
+<div class="footer-nav">
             <a href="06.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="08.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>

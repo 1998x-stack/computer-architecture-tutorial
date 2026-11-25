@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第10章 流水线冲突与解决</h1>
 
         <p>同学们好！上一章我们学了流水线的美妙之处——
@@ -55,7 +56,7 @@
         结构冲突、数据冲突、控制冲突——以及它们对应的优雅解决方案。
         理解这些冲突和解决方案，是成为合格的计算机架构师的第一步。</p>
 
-        <h3>结构冲突（Structural Hazard）</h3>
+        <h2>结构冲突（Structural Hazard）</h2>
 
         <p>结构冲突发生在两条指令同时需要访问同一个硬件资源的时候。
         最典型的例子是：当指令和数据共用同一个存储器时（冯·诺依曼结构），
@@ -89,7 +90,7 @@
             <li>只有一个写端口时，两条指令同时需要写回寄存器堆</li>
         </ul>
 
-        <h3>数据冲突（Data Hazard）</h3>
+        <h2>数据冲突（Data Hazard）</h2>
 
         <p>数据冲突是最常见、最复杂的一类冲突，
         发生在后续指令依赖前面指令的计算结果时。
@@ -135,7 +136,7 @@
         <p>下面展示数据冲突的示例代码，
         以RISC-V汇编的格式呈现每种冲突的场景和解决方法：</p>
 
-        <pre><code>// 数据冲突示例 (RISC-V汇编)
+        <pre style="overflow-x:auto"><code>// 数据冲突示例 (RISC-V汇编)
 
 // 场景1: EX Hazard (可完全通过转发解决)
 add x1, x2, x3    // 周期1: IF, 周期2: ID, 周期3: EX
@@ -154,7 +155,7 @@ lw  x1, 0(x2)     // MEM阶段得到x1(周期4末)
 nop               // 填充气泡(编译器插入)
 add x3, x1, x4    // stall后安全执行(周期5进入EX)</code></pre>
 
-        <h3>转发/旁路（Forwarding/Bypassing）</h3>
+        <h2>转发/旁路（Forwarding/Bypassing）</h2>
 
         <p>转发是流水线处理器中最优雅的设计之一。
         核心洞察是：
@@ -165,6 +166,37 @@ add x3, x1, x4    // stall后安全执行(周期5进入EX)</code></pre>
         这就像建筑工地上的材料传送带——
         砖块不需要先搬回仓库、再取出使用，
         而是直接在施工点之间传递。</p>
+<figure class="figure" id="fig-forwarding">
+  <svg viewBox="0 0 760 300" role="img" aria-labelledby="fig-fw-t fig-fw-d" style="width:100%;height:auto;display:block">
+    <title id="fig-fw-t">数据冲突与转发（旁路）消除停顿</title>
+    <desc id="fig-fw-d">add 在第 3 周期 EX 阶段算出 x1，紧接着的 sub 在第 4 周期 EX 阶段就需要 x1。转发把结果从 add 的 EX/MEM 流水寄存器直接送到 sub 的 EX 输入，sub 无需等待 add 写回，从而避免流水线停顿。</desc>
+    <defs><marker id="fw-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d06d4d"/></marker></defs>
+    <text x="120" y="34" text-anchor="end" font-size="12" fill="#475569">周期</text>
+    <text x="177" y="34" text-anchor="middle" font-size="12" fill="#475569">CC1</text><text x="272" y="34" text-anchor="middle" font-size="12" fill="#475569">CC2</text>
+    <text x="367" y="34" text-anchor="middle" font-size="12" fill="#475569">CC3</text><text x="462" y="34" text-anchor="middle" font-size="12" fill="#475569">CC4</text>
+    <text x="557" y="34" text-anchor="middle" font-size="12" fill="#475569">CC5</text><text x="652" y="34" text-anchor="middle" font-size="12" fill="#475569">CC6</text>
+    <text x="120" y="86" text-anchor="end" font-size="13" fill="#0f5c5c" font-family="monospace">add x1,x2,x3</text>
+    <rect x="130" y="60" width="95" height="40" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/><text x="177" y="85" text-anchor="middle" font-size="12" fill="#0f5c5c">IF</text>
+    <rect x="225" y="60" width="95" height="40" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/><text x="272" y="85" text-anchor="middle" font-size="12" fill="#0f5c5c">ID</text>
+    <rect x="320" y="60" width="95" height="40" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="367" y="85" text-anchor="middle" font-size="12" fill="#7a3a22">EX</text>
+    <rect x="415" y="60" width="95" height="40" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/><text x="462" y="85" text-anchor="middle" font-size="12" fill="#0f5c5c">MEM</text>
+    <rect x="510" y="60" width="95" height="40" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/><text x="557" y="85" text-anchor="middle" font-size="12" fill="#0f5c5c">WB</text>
+    <text x="120" y="146" text-anchor="end" font-size="13" fill="#7a3a22" font-family="monospace">sub x4,x1,x5</text>
+    <rect x="225" y="120" width="95" height="40" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/><text x="272" y="145" text-anchor="middle" font-size="12" fill="#0f5c5c">IF</text>
+    <rect x="320" y="120" width="95" height="40" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/><text x="367" y="145" text-anchor="middle" font-size="12" fill="#0f5c5c">ID</text>
+    <rect x="415" y="120" width="95" height="40" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="462" y="145" text-anchor="middle" font-size="12" fill="#7a3a22">EX</text>
+    <rect x="510" y="120" width="95" height="40" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/><text x="557" y="145" text-anchor="middle" font-size="12" fill="#0f5c5c">MEM</text>
+    <rect x="605" y="120" width="95" height="40" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/><text x="652" y="145" text-anchor="middle" font-size="12" fill="#0f5c5c">WB</text>
+    <line x1="380" y1="100" x2="455" y2="120" stroke="#d06d4d" stroke-width="2" marker-end="url(#fw-ar)"/>
+    <text x="470" y="112" font-size="12" fill="#d06d4d">转发 x1（EX/MEM → EX）</text>
+    <text x="380" y="210" text-anchor="middle" font-size="12" fill="#475569">add 在 CC3 的 EX 算出 x1，sub 在 CC4 的 EX 就需要它</text>
+    <text x="380" y="238" text-anchor="middle" font-size="12" fill="#0f5c5c">→ 结果从 EX/MEM 流水寄存器直送 sub 的 EX 输入，无需停顿</text>
+    <text x="380" y="272" text-anchor="middle" font-size="12" fill="#7a3a22">若只能等写回（CC5）再用，则必须插入 2 个停顿周期（气泡）</text>
+  </svg>
+  <figcaption>图 10-1　数据冲突（RAW）与转发：<code>add</code> 在 CC3 的 EX 阶段算出 x1，紧接着的 <code>sub</code> 在 CC4 的 EX 就需要它。转发把结果从 EX/MEM 流水寄存器直接送到 sub 的 EX 输入，因而不必等 <code>add</code> 写回；没有转发就得插入停顿（气泡）。</figcaption>
+</figure>
+
+
 
         <p>具体来说，转发需要以下硬件支持：</p>
 
@@ -200,7 +232,7 @@ add x3, x1, x4    // stall后安全执行(周期5进入EX)</code></pre>
             剩下的5%是load-use hazard，需要1个周期的stall。
         </div>
 
-        <h3>控制冲突（Control Hazard）</h3>
+        <h2>控制冲突（Control Hazard）</h2>
 
         <p>控制冲突发生在分支指令（如beq）改变程序执行流的时候。
         在五级流水线中，分支条件通常在EX阶段才计算出来，
@@ -236,7 +268,7 @@ add x3, x1, x4    // stall后安全执行(周期5进入EX)</code></pre>
         现代处理器已经不再使用延迟槽，
         而是依赖分支预测技术（下一章的主题）。</p>
 
-        <h3>完整的数据通路与冲突处理</h3>
+        <h2>完整的数据通路与冲突处理</h2>
 
         <p>综合起来，一个完整的五级流水线处理器
         包含以下关键组件来处理各种冲突：</p>
@@ -258,14 +290,14 @@ add x3, x1, x4    // stall后安全执行(周期5进入EX)</code></pre>
 
         <p>下面是各种数据冲突的分类和解决方案总结：</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr><th>冲突类型</th><th>指令序列示例</th><th>解决方案</th><th>性能损失</th></tr>
             <tr><td>EX Hazard</td><td>add → sub (ALU→ALU)</td><td>转发(Forwarding)</td><td>0周期</td></tr>
             <tr><td>MEM Hazard</td><td>add → lw (ALU→load地址)</td><td>转发</td><td>0周期</td></tr>
             <tr><td>Load-Use Hazard</td><td>lw → add (load→ALU)</td><td>Stall + 转发</td><td>1周期</td></tr>
             <tr><td>Load-Store Hazard</td><td>lw → sw (load→store数据)</td><td>转发 (通过LSQ)</td><td>0周期</td></tr>
             <tr><td>Control Hazard</td><td>beq → 后续指令</td><td>分支预测 + 冲刷</td><td>1-2周期</td></tr>
-        </table>
+        </table></div>
 
         <p>关于冒险检测单元，有一个亲历的"踩坑"故事：
         我曾参与一个RISC-V核的RTL调试，
@@ -291,12 +323,23 @@ add x3, x1, x4    // stall后安全执行(周期5进入EX)</code></pre>
         下一章我们就来全面学习分支预测技术——
         从简单的静态预测到现代处理器中99%准确率的动态预测器。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-10">
+  <h2 id="ref-10">参考资料</h2>
+  <ul>
+    <li>Hennessy, J. &amp; Patterson, D. <em>Computer Architecture: A Quantitative Approach</em> —— 结构/数据/控制冲突与转发（旁路）的经典讲解。</li>
+    <li>Patterson, D. &amp; Hennessy, J. <em>Computer Organization and Design</em>（RISC-V Edition）—— 5 级流水线的冲突检测与转发单元设计。</li>
+    <li><a href="https://en.wikipedia.org/wiki/Hazard_(computer_architecture)">Wikipedia: Hazard (computer architecture)</a> —— 三类冲突与停顿 / 转发的通用说明。</li>
+  </ul>
+  <p class="note">说明：图 10-1 采用经典 5 级流水线（IF/ID/EX/MEM/WB）模型；真实处理器流水线更深，转发路径与停顿逻辑更复杂。</p>
+</section>
+
+<div class="footer-nav">
             <a href="09.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="11.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>

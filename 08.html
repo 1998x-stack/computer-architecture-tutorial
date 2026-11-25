@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第8章 单周期处理器设计</h1>
 
         <p>同学们好！经过前面几章的铺垫——数字逻辑、数据表示、
@@ -53,7 +54,7 @@
         理解每条指令如何在硬件中一步步执行，
         以及为什么这种最简单的实现方式并不是最有效的。</p>
 
-        <h3>处理器设计的五阶段模型</h3>
+        <h2>处理器设计的五阶段模型</h2>
 
         <p>任何一个RISC处理器的指令执行都可以分解为五个基本阶段。
         无论你面对的是MIPS、RISC-V还是ARM，这五个阶段都大同小异。
@@ -113,11 +114,41 @@
         简单来说：<strong>最复杂的指令（lw）决定了最坏情况的延迟</strong>，
         而这个延迟就是单周期处理器的时钟周期。</p>
 
-        <h3>数据通路设计</h3>
+        <h2>数据通路设计</h2>
 
         <p>理解了五个阶段的抽象模型之后，我们现在来画数据通路（Datapath）
         ——处理器内部数据流动的物理结构。
         单周期处理器的数据通路由以下核心组件串联而成：</p>
+<figure class="figure" id="fig-single-cycle">
+  <svg viewBox="0 0 820 420" role="img" aria-labelledby="fig-sc-t fig-sc-d" style="width:100%;height:auto;display:block">
+    <title id="fig-sc-t">单周期处理器的数据通路</title>
+    <desc id="fig-sc-d">一个时钟周期内依次完成：PC 取指、指令存储器读出指令、控制单元译码、寄存器堆读操作数、ALU 运算、数据存储器读写、结果写回寄存器堆，并更新 PC。整条链路在一个周期内走完，周期长度由最长路径决定。</desc>
+    <defs><marker id="sc-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+    <rect x="20" y="80" width="90" height="60" rx="10" fill="#dbe4ff" stroke="#7461ba" stroke-width="2"/><text x="65" y="115" text-anchor="middle" font-size="14" fill="#2f2a4a">PC</text>
+    <rect x="150" y="70" width="160" height="80" rx="10" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="230" y="105" text-anchor="middle" font-size="13" fill="#0f5c5c">指令存储器</text><text x="230" y="127" text-anchor="middle" font-size="12" fill="#0f5c5c">Instruction Mem</text>
+    <rect x="150" y="250" width="160" height="80" rx="10" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="230" y="285" text-anchor="middle" font-size="13" fill="#6b4a12">控制单元</text><text x="230" y="307" text-anchor="middle" font-size="12" fill="#6b4a12">Control Unit</text>
+    <rect x="370" y="70" width="150" height="140" rx="10" fill="#efeafc" stroke="#7461ba" stroke-width="2"/><text x="445" y="130" text-anchor="middle" font-size="13" fill="#4b3d85">寄存器堆</text><text x="445" y="152" text-anchor="middle" font-size="12" fill="#4b3d85">Register File</text><text x="445" y="174" text-anchor="middle" font-size="11" fill="#4b3d85">rs1 / rs2 / rd</text>
+    <rect x="580" y="90" width="130" height="90" rx="10" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="645" y="130" text-anchor="middle" font-size="15" fill="#7a3a22">ALU</text><text x="645" y="152" text-anchor="middle" font-size="11" fill="#7a3a22">运算/地址</text>
+    <rect x="580" y="250" width="130" height="80" rx="10" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="645" y="285" text-anchor="middle" font-size="13" fill="#0f5c5c">数据存储器</text><text x="645" y="307" text-anchor="middle" font-size="12" fill="#0f5c5c">Data Mem</text>
+    <line x1="110" y1="110" x2="146" y2="110" stroke="#147f80" stroke-width="2" marker-end="url(#sc-ar)"/>
+    <line x1="310" y1="100" x2="366" y2="120" stroke="#147f80" stroke-width="2" marker-end="url(#sc-ar)"/>
+    <text x="335" y="98" text-anchor="middle" font-size="11" fill="#0f5c5c">指令</text>
+    <line x1="230" y1="150" x2="230" y2="246" stroke="#147f80" stroke-width="2" marker-end="url(#sc-ar)"/>
+    <text x="252" y="205" font-size="11" fill="#0f5c5c">opcode</text>
+    <line x1="520" y1="120" x2="576" y2="128" stroke="#147f80" stroke-width="2" marker-end="url(#sc-ar)"/>
+    <text x="548" y="110" text-anchor="middle" font-size="11" fill="#0f5c5c">操作数</text>
+    <line x1="645" y1="180" x2="645" y2="246" stroke="#147f80" stroke-width="2" marker-end="url(#sc-ar)"/>
+    <line x1="430" y1="250" x2="650" y2="210" stroke="#d06d4d" stroke-width="2" marker-end="url(#sc-ar)" stroke-dasharray="5 4"/>
+    <line x1="310" y1="300" x2="576" y2="290" stroke="#d06d4d" stroke-width="2" marker-end="url(#sc-ar)" stroke-dasharray="5 4"/>
+    <text x="420" y="345" text-anchor="middle" font-size="12" fill="#7a3a22">控制信号 → ALU / 数据存储器 / 写回</text>
+    <path d="M645,330 L645,390 L445,390 L445,214" fill="none" stroke="#147f80" stroke-width="2" marker-end="url(#sc-ar)"/>
+    <text x="540" y="384" text-anchor="middle" font-size="11" fill="#0f5c5c">写回（load 结果）</text>
+    <text x="410" y="404" text-anchor="middle" font-size="12" fill="#475569">一整条链路必须在一个时钟周期内走完 → 周期长度由最长路径决定</text>
+  </svg>
+  <figcaption>图 8-1　单周期处理器的核心数据通路：PC → 指令存储器 → 寄存器堆/ALU → 数据存储器 → 写回。每个时钟周期只执行一条指令，所有步骤串行完成，周期长度由最长路径（通常是 load）决定，这也是单周期设计吞吐率低、后来被流水线取代的根本原因。</figcaption>
+</figure>
+
+
 
         <ul>
             <li><strong>程序计数器（PC）</strong>：一个32位的寄存器，
@@ -151,7 +182,7 @@
         这正是"单周期"名字的由来：
         一条指令的所有阶段在一个周期内一气呵成。</p>
 
-        <h3>控制单元设计</h3>
+        <h2>控制单元设计</h2>
 
         <p>数据通路只是骨架，控制单元（Control Unit）才是灵魂。
         控制单元解析指令的opcode，
@@ -180,19 +211,19 @@
 
         <p>下面是RISC-V中四种主要指令类别的完整控制信号真值表：</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr><th>指令类型</th><th>RegDst</th><th>ALUSrc</th><th>MemtoReg</th><th>RegWrite</th><th>MemRead</th><th>MemWrite</th><th>Branch</th><th>ALUOp</th></tr>
             <tr><td>R-type</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>10</td></tr>
             <tr><td>lw (I-type load)</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>00</td></tr>
             <tr><td>sw (I-type store)</td><td>X</td><td>1</td><td>X</td><td>0</td><td>0</td><td>1</td><td>0</td><td>00</td></tr>
             <tr><td>beq (B-type)</td><td>X</td><td>0</td><td>X</td><td>0</td><td>0</td><td>0</td><td>1</td><td>01</td></tr>
-        </table>
+        </table></div>
 
         <p>ALU控制单元接收主控制单元输出的2位ALUOp以及指令中的
         funct3/funct7字段，产生精确的ALU操作选择信号。
         其逻辑可以用以下Verilog代码来描述：</p>
 
-        <pre><code>// ALU控制单元 (RISC-V RV32I)
+        <pre style="overflow-x:auto"><code>// ALU控制单元 (RISC-V RV32I)
 always @(*) begin
     case (ALUOp)
         2'b00: ALU_control = 3'b010;  // 加法 (lw/sw: 计算地址)
@@ -214,7 +245,7 @@ always @(*) begin
     endcase
 end</code></pre>
 
-        <h3>RISC-V单周期实现</h3>
+        <h2>RISC-V单周期实现</h2>
 
         <p>将上述数据通路、控制单元和ALU控制组合在一起，
         就构成了一个完整的RISC-V RV32I单周期处理器。
@@ -255,7 +286,7 @@ end</code></pre>
             导致整体性能远低于硬件的潜力。
         </div>
 
-        <h3>单周期的局限性</h3>
+        <h2>单周期的局限性</h2>
 
         <p>我们用计算机体系结构中最经典的性能公式
         来量化分析单周期的局限性：</p>
@@ -300,12 +331,23 @@ end</code></pre>
         在保持CPI≈1的前提下大幅提升时钟频率。
         这正是现代处理器性能飞跃的起点。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-08">
+  <h2 id="ref-08">参考资料</h2>
+  <ul>
+    <li>Patterson, D. &amp; Hennessy, J. <em>Computer Organization and Design</em>（RISC-V Edition）—— 单周期数据通路与控制单元设计的标准教材。</li>
+    <li>Harris, D. &amp; Harris, S. <em>Digital Design and Computer Architecture</em>（RISC-V Edition）—— 从门级到单周期处理器的完整构建过程。</li>
+    <li><a href="https://en.wikipedia.org/wiki/Instruction_cycle">Wikipedia: Instruction cycle</a> —— 取指、译码、执行、访存、写回阶段的通用说明。</li>
+  </ul>
+  <p class="note">说明：图 8-1 为教学用的简化数据通路，省略了分支比较、立即数生成与写回多路选择器等细节；真实单周期实现会将它们一并画入。</p>
+</section>
+
+<div class="footer-nav">
             <a href="07.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="09.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
