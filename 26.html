@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第26章 从零构建计算机</h1>
         <p>同学们好！今天我们要做一件非常酷的事情——从零开始，自己动手构建一台完整的计算机。不是纸上谈兵，而是真正地从最底层的NAND门开始，一层一层搭上去，直到跑起来一个高级语言程序。这听起来像是在做梦？Noam Nisan和Shimon Schocken在2005年就让它变成了现实。</p>
 
@@ -54,6 +55,26 @@
 
         <h2>第1-5章：从NAND到计算机硬件</h2>
         <p>Nand to Tetris的前5个项目专注于硬件层面，从逻辑门一路构建到完整的计算机。我们来逐一走过这些项目。</p>
+<figure class="figure" id="fig-nand2tetris">
+  <svg viewBox="0 0 800 360" role="img" aria-labelledby="fig-nt-t fig-nt-d" style="width:100%;height:auto;display:block">
+    <title id="fig-nt-t">从 NAND 门到完整计算机的抽象阶梯</title>
+    <desc id="fig-nt-d">自下而上：只用一个 NAND 门作为原子，逐层构造基本逻辑门、组合与时序芯片、ALU 与寄存器堆、CPU 与内存，直到能运行高级语言的完整计算机；每一层都只依赖下一层的抽象接口，把复杂性逐层封装。</desc>
+    <defs><marker id="nt-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+    <rect x="120" y="40" width="560" height="42" rx="8" fill="#efeafc" stroke="#7461ba" stroke-width="2"/><text x="400" y="67" text-anchor="middle" font-size="13" fill="#4b3d85">高级语言 / 编译器 / 操作系统</text>
+    <rect x="120" y="88" width="560" height="42" rx="8" fill="#dbe4ff" stroke="#7461ba" stroke-width="2"/><text x="400" y="115" text-anchor="middle" font-size="13" fill="#2f2a4a">计算机系统（CPU + 内存 + I/O）</text>
+    <rect x="120" y="136" width="560" height="42" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="400" y="163" text-anchor="middle" font-size="13" fill="#0f5c5c">处理单元：ALU / 寄存器堆 / PC</text>
+    <rect x="120" y="184" width="560" height="42" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="400" y="211" text-anchor="middle" font-size="13" fill="#0f5c5c">组合 / 时序芯片：加法器、MUX、触发器、RAM</text>
+    <rect x="120" y="232" width="560" height="42" rx="8" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="400" y="259" text-anchor="middle" font-size="13" fill="#6b4a12">基本逻辑门：AND / OR / NOT / XOR</text>
+    <rect x="120" y="280" width="560" height="46" rx="8" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="400" y="309" text-anchor="middle" font-size="13" fill="#7a3a22">原子：NAND 门</text>
+    <line x1="700" y1="300" x2="700" y2="60" stroke="#147f80" stroke-width="2" marker-end="url(#nt-ar)"/>
+    <text x="712" y="185" font-size="12" fill="#147f80" transform="rotate(90 712 185)">抽象层次上升</text>
+    <text x="70" y="90" font-size="11" fill="#64748b">软件</text><text x="70" y="300" font-size="11" fill="#64748b">硬件</text>
+    <text x="60" y="195" font-size="11" fill="#64748b" transform="rotate(90 60 195)">每一层只依赖下一层</text>
+  </svg>
+  <figcaption>图 26-1　“从零构建计算机”的抽象阶梯：以单个 NAND 门为原子，逐层构造逻辑门、组合/时序芯片、ALU 与寄存器，最终搭出能运行高级语言的计算机。每一层只依赖下一层的接口——这正是 Nand2Tetris 与真实体系结构共通的“分层抽象”思想。</figcaption>
+</figure>
+
+
 
         <p><strong>Project 1：布尔逻辑</strong>（Boolean Logic）。一切从NAND门开始。为什么是NAND？因为NAND是通用的（functionally complete）——你可以用NAND门构造出任何其他逻辑门。你需要实现AND、OR、NOT、XOR、Mux（多路选择器）、DMux（多路分配器）等芯片。每个芯片的HDL描述只有几行，但你必须理解它们的真值表和行为。</p>
 
@@ -82,7 +103,7 @@
 
         <p>完成这6个项目后，你的完整软件栈是：Jack应用程序 → Jack编译器 → VM翻译器 → Hack汇编器 → 机器码 → 在Hack计算机上运行。这是一个完整的、端到端的系统，每一步都是你亲手构建的。</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr><th>项目</th><th>构建内容</th><th>使用工具</th><th>核心概念</th></tr>
             <tr><td>1</td><td>布尔逻辑门（AND, OR, NOT, XOR等）</td><td>HDL + 硬件模拟器</td><td>功能完备性、真值表、多路选择</td></tr>
             <tr><td>2</td><td>布尔算术单元（加法器、ALU）</td><td>HDL + 硬件模拟器</td><td>补码运算、ALU设计</td></tr>
@@ -96,14 +117,14 @@
             <tr><td>10</td><td>编译器 I（词法/语法分析）</td><td>高级语言</td><td>Tokenizer、Parser、AST</td></tr>
             <tr><td>11</td><td>编译器 II（代码生成）</td><td>高级语言</td><td>递归下降生成、符号表</td></tr>
             <tr><td>12</td><td>操作系统（内存管理、I/O驱动）</td><td>Jack语言</td><td>多任务、屏幕绘制、键盘输入</td></tr>
-        </table>
+        </table></div>
 
         <h2>硬件描述语言与FPGA原型验证</h2>
         <p>Nand to Tetris中的硬件描述使用的是课程自研的HDL和硬件模拟器。但在真实的工业界和学术界，<strong>Verilog</strong>是硬件描述语言的标准。如果你未来想设计真正的芯片，Verilog是必须掌握的工具。</p>
 
         <p>Verilog的核心概念相当简洁：<code>module</code>（模块——一切硬件的封装单元）、<code>wire</code>（连线——模块间的信号连接）、<code>reg</code>（寄存器——存储状态）、<code>assign</code>（连续赋值——组合逻辑）、<code>always @(posedge clk)</code>（时序逻辑——在时钟上升沿触发）。下面是一个典型的5级RISC-V流水线的Verilog描述示例，展示IF/ID/EX/MEM/WB各阶段：</p>
 
-        <pre><code>// 5-stage RISC-V pipeline core (RV32I)
+        <pre style="overflow-x:auto"><code>// 5-stage RISC-V pipeline core (RV32I)
 // Simplified structural description showing IF/ID/EX/MEM/WB stages
 
 module riscv_pipeline (
@@ -305,12 +326,23 @@ endmodule</code></pre>
 
         <p>好了，现在你已经有了一台自己的计算机——不论是Nand to Tetris中的Hack计算机还是一个在FPGA上运行的RISC-V核。但一台计算机好不好用，不只看它能不能跑，更要看它跑得多快。下一章，我们将学习如何测量和优化计算机系统的性能。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-26">
+  <h2 id="ref-26">参考资料</h2>
+  <ul>
+    <li>Nisan, N. &amp; Schocken, S. <em>The Elements of Computing Systems</em>（第 2 版），MIT Press —— Nand2Tetris 课程的官方教材。</li>
+    <li><a href="https://www.nand2tetris.org/">nand2tetris.org</a> —— 项目 1–12 的规格与工具链。</li>
+    <li>IEEE Std 1364 / 1800 —— Verilog / SystemVerilog 硬件描述语言标准。</li>
+  </ul>
+  <p class="note">说明：图 26-1 的分层与 Nand2Tetris 的章节顺序一致；Hack 计算机是教学用简化 ISA，与工业级处理器在流水线、缓存等方面差异很大。</p>
+</section>
+
+<div class="footer-nav">
             <a href="25.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="27.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>

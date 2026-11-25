@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html" class="active">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第27章 性能建模与仿真工具</h1>
         <p>同学们好！上一章我们亲手构建了一台计算机。但计算机设计的好与坏，不能靠感觉来判断——我们需要科学的测量和分析方法。这一章我们学习如何"测量"一台计算机的性能，如何使用工业界和学术界的主流性能分析工具。记住一句话：<strong>没有测量就没有优化</strong>。</p>
 
@@ -64,7 +65,7 @@
 
         <p><strong>基本用法</strong>——<code>perf stat</code>是最简单的入门命令：</p>
 
-        <pre><code># 统计程序运行的整体性能指标
+        <pre style="overflow-x:auto"><code># 统计程序运行的整体性能指标
 $ perf stat ./my_program
 
  Performance counter stats for './my_program':
@@ -112,7 +113,7 @@ $ perf top</code></pre>
 
         <p>下面是一个简单的gem5配置脚本，建立一个单核RISC-V O3处理器，带三级Cache：</p>
 
-        <pre><code># simple_gem5_config.py
+        <pre style="overflow-x:auto"><code># simple_gem5_config.py
 # A basic RISC-V out-of-order CPU system with 3-level cache hierarchy
 
 import m5
@@ -209,6 +210,33 @@ print(f"IPC: {system.cpu.numInsts.value() / system.cpu.numCycles.value():.2f}")<
         <p>SPEC CPU 2006尽管已被2017取代，但在学术界仍有大量使用——因为2017的负载太大，每个基准测试要运行数小时，在gem5这样的模拟器上跑完一个负载可能需要数周甚至数月。因此许多论文仍然使用SPEC CPU 2006的子集做实验。</p>
 
         <p><strong>Roofline模型</strong>是一种可视化性能分析方法，由UC Berkeley的研究人员提出。它将性能瓶颈直观地展示在二维图上：</p>
+<figure class="figure" id="fig-roofline">
+  <svg viewBox="0 0 800 400" role="img" aria-labelledby="fig-rf-t fig-rf-d" style="width:100%;height:auto;display:block">
+    <title id="fig-rf-t">Roofline 性能模型：内存墙与计算屋顶</title>
+    <desc id="fig-rf-d">横轴为算术强度（每字节内存流量对应的浮点运算数），纵轴为可达性能，均为对数坐标。斜线是内存带宽屋顶（性能=带宽×算术强度），水平线是处理器的峰值算力屋顶；两者交点称为屋脊点。强度低于屋脊点的程序受内存带宽限制，高于屋脊点的程序受计算吞吐限制。</desc>
+    <defs><marker id="rf-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+    <line x1="80" y1="330" x2="740" y2="330" stroke="#475569" stroke-width="2" marker-end="url(#rf-ar)"/>
+    <line x1="80" y1="330" x2="80" y2="40" stroke="#475569" stroke-width="2" marker-end="url(#rf-ar)"/>
+    <text x="740" y="355" text-anchor="end" font-size="12" fill="#475569">算术强度 AI（FLOP/Byte，对数）</text>
+    <text x="40" y="45" font-size="12" fill="#475569">性能</text>
+    <text x="46" y="62" font-size="12" fill="#475569">(GFLOP/s)</text>
+    <polyline points="80,296 520,136 740,136" fill="none" stroke="#d06d4d" stroke-width="2.5"/>
+    <line x1="520" y1="136" x2="740" y2="136" stroke="#147f80" stroke-width="2.5"/>
+    <line x1="80" y1="296" x2="520" y2="136" stroke="#d06d4d" stroke-width="2.5" stroke-dasharray="6 4"/>
+    <circle cx="520" cy="136" r="5" fill="#916c22"/>
+    <text x="534" y="126" font-size="12" fill="#6b4a12">屋脊点 AI = 峰值算力 / 带宽</text>
+    <text x="300" y="200" text-anchor="middle" font-size="12" fill="#7a3a22">内存带宽屋顶：性能 = 带宽 × AI</text>
+    <text x="640" y="120" text-anchor="middle" font-size="12" fill="#0f5c5c">峰值算力屋顶</text>
+    <text x="210" y="322" text-anchor="middle" font-size="12" fill="#7a3a22">内存受限区</text>
+    <text x="640" y="160" text-anchor="middle" font-size="12" fill="#0f5c5c">计算受限区</text>
+    <text x="80" y="360" font-size="11" fill="#64748b">低强度：每字节算得少</text>
+    <text x="740" y="360" text-anchor="end" font-size="11" fill="#64748b">高强度：数据复用充分</text>
+    <text x="410" y="392" text-anchor="middle" font-size="12" fill="#475569">优化方向：左区提算术强度（分块/复用），右区提指令级与数据级并行</text>
+  </svg>
+  <figcaption>图 27-1　Roofline 性能模型（示意图，双对数坐标）：斜线是内存带宽屋顶（性能 = 带宽 × 算术强度），水平线是处理器峰值算力屋顶，两者交于“屋脊点”。算术强度低于屋脊点的内核受内存带宽限制，应通过分块、数据复用提高强度；高于屋脊点的内核则受计算吞吐限制，应优化指令级/数据级并行。具体带宽、峰值与屋脊点位置随硬件而变。</figcaption>
+</figure>
+
+
         <ul>
             <li><strong>x轴</strong>：运算强度（Operational Intensity）= FLOPs / 字节（从内存读取的字节数）。</li>
             <li><strong>y轴</strong>：可达到的性能（Attainable Performance）= FLOPs/s。</li>
@@ -231,7 +259,7 @@ print(f"IPC: {system.cpu.numInsts.value() / system.cpu.numCycles.value():.2f}")<
 
         <p>性能分析归根结底是一门实验科学：<strong>提出假设 → 设计测量 → 收集数据 → 分析 → 迭代</strong>。永远不要猜测瓶颈在哪里——让数据说话。</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr><th>指标</th><th>含义</th><th>健康范围</th><th>警戒范围</th></tr>
             <tr><td>IPC</td><td>每周期指令数</td><td>1.5 - 3.5（O3处理器）</td><td>&lt; 0.5</td></tr>
             <tr><td>Branch Mispredict Rate</td><td>分支误预测比例</td><td>&lt; 2%</td><td>&gt; 10%</td></tr>
@@ -241,7 +269,7 @@ print(f"IPC: {system.cpu.numInsts.value() / system.cpu.numCycles.value():.2f}")<
             <tr><td>TLB Miss Rate</td><td>页表缓存缺失率</td><td>&lt; 1%</td><td>&gt; 5%</td></tr>
             <tr><td>Page Fault Rate</td><td>缺页异常率</td><td>&lt; 0.01%</td><td>&gt; 0.1%</td></tr>
             <tr><td>CPI</td><td>每指令周期数（IPC倒数）</td><td>0.3 - 0.7（O3处理器）</td><td>&gt; 2.0</td></tr>
-        </table>
+        </table></div>
 
         <div class="warning">
             <p><strong>警告：</strong>没有测量就没有优化——这是我见过的最常见的性能问题来源：开发者在不知道瓶颈在哪里的情况下就开始"优化"。很多人花了一周时间"优化"了一段代码，结果性能不升反降，或者提升的只是无关紧要的路径。在开始任何优化之前，请先用perf stat或VTune做个基线测量。让数据指引你的方向。</p>
@@ -249,12 +277,23 @@ print(f"IPC: {system.cpu.numInsts.value() / system.cpu.numCycles.value():.2f}")<
 
         <p>掌握了性能分析的方法和工具之后，我们就能科学地评估一台计算机的设计质量了。但计算机体系结构的演进远未止步于此——在传统CMOS工艺逼近物理极限的今天，一批全新的计算范式正在兴起。下一章，也是本课程的最后一章，我们将展望量子计算与体系结构更遥远的未来。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-27">
+  <h2 id="ref-27">参考资料</h2>
+  <ul>
+    <li>Williams, S., Waterman, A. &amp; Patterson, D. “Roofline: An Insightful Visual Performance Model for Multicore Architectures,” <em>Communications of the ACM</em>, 2009 —— Roofline 模型的原始论文。</li>
+    <li>Binkert, N. et al. “The gem5 Simulator,” <em>ACM SIGARCH Computer Architecture News</em>, 2011 —— gem5 模拟器。</li>
+    <li><a href="https://www.spec.org/cpu2017/">SPEC CPU 2017</a> —— 官方基准套件与工作负载说明。</li>
+  </ul>
+  <p class="note">说明：图 27-1 为 Roofline 示意图，坐标轴为对数刻度但未标注具体数值；实际屋顶线由目标硬件的峰值算力与内存带宽决定。</p>
+</section>
+
+<div class="footer-nav">
             <a href="26.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="28.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>

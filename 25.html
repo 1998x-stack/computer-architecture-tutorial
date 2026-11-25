@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第25章 AI加速器与领域专用架构</h1>
 
         <p>同学们好！上一章我们聊了Chiplet——芯片在物理形态上的变革。今天我们要聊的是体系结构层面最激动人心的话题：AI加速器与领域专用架构（Domain-Specific Architecture, DSA）。如果说过去50年计算机体系结构的故事是"通用处理器一统天下"，那么现在这个故事正在被重写——当AI工作负载成为计算需求的主要驱动力时，"专用的、为特定领域设计的"正在取代"通用的、什么都能跑的"。这不是渐进式的改进，而是范式级的颠覆。</p>
@@ -72,6 +73,78 @@
         <h2>25.2 Google TPU：DSA的教科书案例</h2>
 
         <p>如果要用一个案例来理解DSA的精髓，Google TPU（Tensor Processing Unit）是完美的教材。</p>
+<figure class="figure" id="fig-systolic-array">
+  <svg viewBox="0 0 820 560" role="img" aria-labelledby="fig-sa-t fig-sa-d" style="width:100%;height:auto;display:block">
+    <title id="fig-sa-t">脉动阵列（Systolic Array）的矩阵乘数据流</title>
+    <desc id="fig-sa-d">激活值按行从左向右流动，权重按列从上向下流动，每个 MAC 单元在数据经过时完成一次乘加并把部分和向下传递；数据在阵列中“脉动”式流动，一次即可完成整块矩阵乘。</desc>
+    <defs><marker id="sa-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+    <rect x="180" y="110" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="235.0" y="144.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="290" y1="139.0" x2="324" y2="139.0" stroke="#147f80" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <line x1="235.0" y1="168" x2="235.0" y2="208" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="324" y="110" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="379.0" y="144.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="434" y1="139.0" x2="468" y2="139.0" stroke="#147f80" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <line x1="379.0" y1="168" x2="379.0" y2="208" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="468" y="110" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="523.0" y="144.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="578" y1="139.0" x2="612" y2="139.0" stroke="#147f80" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <line x1="523.0" y1="168" x2="523.0" y2="208" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="612" y="110" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="667.0" y="144.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="667.0" y1="168" x2="667.0" y2="208" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="180" y="208" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="235.0" y="242.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="290" y1="237.0" x2="324" y2="237.0" stroke="#147f80" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <line x1="235.0" y1="266" x2="235.0" y2="306" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="324" y="208" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="379.0" y="242.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="434" y1="237.0" x2="468" y2="237.0" stroke="#147f80" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <line x1="379.0" y1="266" x2="379.0" y2="306" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="468" y="208" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="523.0" y="242.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="578" y1="237.0" x2="612" y2="237.0" stroke="#147f80" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <line x1="523.0" y1="266" x2="523.0" y2="306" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="612" y="208" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="667.0" y="242.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="667.0" y1="266" x2="667.0" y2="306" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="180" y="306" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="235.0" y="340.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="290" y1="335.0" x2="324" y2="335.0" stroke="#147f80" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <line x1="235.0" y1="364" x2="235.0" y2="404" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="324" y="306" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="379.0" y="340.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="434" y1="335.0" x2="468" y2="335.0" stroke="#147f80" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <line x1="379.0" y1="364" x2="379.0" y2="404" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="468" y="306" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="523.0" y="340.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="578" y1="335.0" x2="612" y2="335.0" stroke="#147f80" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <line x1="523.0" y1="364" x2="523.0" y2="404" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="612" y="306" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="667.0" y="340.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="667.0" y1="364" x2="667.0" y2="404" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="180" y="404" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="235.0" y="438.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="290" y1="433.0" x2="324" y2="433.0" stroke="#147f80" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="324" y="404" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="379.0" y="438.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="434" y1="433.0" x2="468" y2="433.0" stroke="#147f80" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="468" y="404" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="523.0" y="438.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <line x1="578" y1="433.0" x2="612" y2="433.0" stroke="#147f80" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <rect x="612" y="404" width="110" height="58" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="667.0" y="438.0" text-anchor="middle" font-size="14" fill="#0f5c5c">MAC</text>
+    <text x="170" y="94" font-size="13" fill="#0f5c5c">激活值 →（按行从左向右）</text>
+    <text x="400" y="70" text-anchor="middle" font-size="13" fill="#7a3a22">↓ 权重（按列从上向下）</text>
+    <text x="732" y="139.0" font-size="12" fill="#147f80">部分和 →</text>
+    <line x1="667.0" y1="462" x2="667.0" y2="492" stroke="#d06d4d" stroke-width="2" marker-end="url(#sa-ar)"/>
+    <text x="667.0" y="512" text-anchor="middle" font-size="12" fill="#7a3a22">↓ 累加输出</text>
+    <text x="410" y="540" text-anchor="middle" font-size="12" fill="#475569">每个 MAC 单元只在数据“路过”时做一次乘加 —— 规则的数据复用让能效远高于通用处理器</text>
+  </svg>
+  <figcaption>图 25-1　脉动阵列（systolic array）：激活值按行从左向右、权重按列从上向下流动，每个 MAC（乘加）单元在数据经过时完成一次乘法并累加，部分和沿对角线方向向下/向右传递。规整的数据复用让同样的数据被多次使用、访存极少，这正是 TPU 这类 AI 加速器高能效的来源。</figcaption>
+</figure>
+
+
 
         <p><strong>TPU v1（2015年）：</strong>Google看到了一个关键洞察：神经网络推理不需要训练那么高的精度和灵活性。推理可以用8位整数运算，不需要32位浮点；推理不需要分支预测和乱序执行等复杂功能；推理的数据流是高度规则的——矩阵乘以矩阵。基于这些洞察，TPU v1采用了一个极简但极致的设计：</p>
 
@@ -153,7 +226,7 @@
 
         <p><strong>为什么那么多AI芯片初创公司失败了？</strong>我参加过几个AI芯片初创公司的技术交流会，几乎所有的创始人都能画出漂亮的架构图、写出亮眼的TOPS数字。但绝大多数失败在了软件栈上。造芯片只是DSA成功的20%，80%的工作是让芯片"好用"——这包括编译器（把PyTorch/TensorFlow模型映射到芯片上）、运行时库、调试工具、profiler、算子库。一家公司可能花了3年和1亿美元造出了一块完美的芯片，然后又花了3年和1.5亿美元把软件栈补齐。大多数初创公司倒在了"等软件栈"的这段黑暗时光里。所以，如果你问我DSA设计的最大教训是什么，我的回答是：<strong>在画第一版RTL之前，先想想软件栈怎么搞。</strong></p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr>
                 <th>加速器</th>
                 <th>架构类型</th>
@@ -208,9 +281,9 @@
                 <td>5nm</td>
                 <td>无需HBM，4万亿晶体管/wafer</td>
             </tr>
-        </table>
+        </table></div>
 
-        <pre><code>// 简化的Systolic Array（Weight-Stationary）伪代码
+        <pre style="overflow-x:auto"><code>// 简化的Systolic Array（Weight-Stationary）伪代码
 // 矩阵乘法 C[M][N] += A[M][K] × B[K][N]
 // Weight-Stationary: 权重 B 固定在PE中，激活 A 流过PE阵列
 
@@ -297,12 +370,23 @@ endmodule
 
         <p>学完了所有理论，下一章终于到了动手环节——我们要从零构建一台计算机！是的，从NAND门开始，一步步搭建出能运行程序的完整计算机。这是我们这个课程理论部分的终点，也是实战的起点。准备好了吗？让我们开始吧。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-25">
+  <h2 id="ref-25">参考资料</h2>
+  <ul>
+    <li>Jouppi, N. et al. “In-Datacenter Performance Analysis of a Tensor Processing Unit,” <em>ISCA</em>, 2017 —— TPU v1 架构与脉动阵列的一手论文。</li>
+    <li>Kung, H. T. “Why Systolic Architectures?,” <em>IEEE Computer</em>, 1982 —— 脉动阵列概念的原始来源。</li>
+    <li>Hennessy, J. &amp; Patterson, D. <em>Computer Architecture: A Quantitative Approach</em> —— 领域专用架构（DSA）与数据流计算。</li>
+  </ul>
+  <p class="note">说明：正文中的 TPU 指标（如 92 TOPS/75W、v5p 的 459 TFLOPS BF16 等）来自 Google 官方论文与发布材料；图 25-1 为 4×4 教学示意，真实阵列规模更大。</p>
+</section>
+
+<div class="footer-nav">
             <a href="24.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="26.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
