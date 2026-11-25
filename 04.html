@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
         <h1>第4章 指令集架构(ISA)</h1>
 
         <p>同学们好！上一章我们研究了计算机如何表示和操作数据。但数据本身不会自动产生有用的结果——我们需要<strong>指令</strong>来告诉处理器做什么：从内存读取数据、执行加法、比较大小、跳转到不同的代码路径。</p>
@@ -89,12 +90,35 @@
         <p>伯克利的RISC-I芯片在测试中展示了惊人的效果：虽然只有44条指令和78,000个晶体管（当时的Motorola 68000有68,000个晶体管但只实现了少量指令），RISC-I的性能却超过了当时大多数CISC处理器。这个令人震惊的结果点燃了RISC与CISC之间持续至今的争论。</p>
 
         <p>如今，纯粹意义上的CISC已经不存在了——现代x86处理器内部将x86指令翻译为RISC风格的微操作（μops）。而RISC也在吸收CISC的优点（如x86-64中的一些字符串操作指令）。两者在趋同。</p>
+<figure class="figure" id="fig-risc-cisc">
+  <svg viewBox="0 0 760 260" role="img" aria-labelledby="fig-rc-t fig-rc-d" style="width:100%;height:auto;display:block">
+    <title id="fig-rc-t">RISC 定长指令与 CISC 变长指令的取指译码对比</title>
+    <desc id="fig-rc-d">左图为 RISC（如 RISC-V）：每条指令固定 32 位，边界对齐，译码器可同时看到下一条指令边界；右图为 CISC（如 x86）：指令长度 1 到 15 字节不等，必须逐条扫描才能确定边界，译码更复杂。</desc>
+    <text x="190" y="30" text-anchor="middle" font-size="15" fill="#0f5c5c">RISC：定长指令</text>
+    <text x="570" y="30" text-anchor="middle" font-size="15" fill="#7a3a22">CISC：变长指令</text>
+    <rect x="40" y="50" width="300" height="42" rx="6" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="190" y="77" text-anchor="middle" font-size="13" fill="#0f5c5c">指令 1（32 位）</text>
+    <rect x="40" y="102" width="300" height="42" rx="6" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="190" y="129" text-anchor="middle" font-size="13" fill="#0f5c5c">指令 2（32 位）</text>
+    <rect x="40" y="154" width="300" height="42" rx="6" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="190" y="181" text-anchor="middle" font-size="13" fill="#0f5c5c">指令 3（32 位）</text>
+    <text x="190" y="222" text-anchor="middle" font-size="12" fill="#475569">边界对齐 → 可一次取多条、译码器简单</text>
+    <text x="190" y="242" text-anchor="middle" font-size="12" fill="#475569">约 2000 个门即可完成译码</text>
+    <rect x="420" y="50" width="90" height="42" rx="6" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="465" y="77" text-anchor="middle" font-size="12" fill="#7a3a22">2B</text>
+    <rect x="510" y="50" width="200" height="42" rx="6" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="610" y="77" text-anchor="middle" font-size="12" fill="#7a3a22">指令：5 字节</text>
+    <rect x="420" y="102" width="60" height="42" rx="6" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="450" y="129" text-anchor="middle" font-size="12" fill="#6b4a12">3B</text>
+    <rect x="480" y="102" width="120" height="42" rx="6" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="540" y="129" text-anchor="middle" font-size="12" fill="#6b4a12">指令：2 字节</text>
+    <rect x="420" y="154" width="290" height="42" rx="6" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="565" y="181" text-anchor="middle" font-size="12" fill="#7a3a22">前缀 + 操作码 + ModRM + 位移：最长 15 字节</text>
+    <text x="570" y="222" text-anchor="middle" font-size="12" fill="#475569">必须逐条扫描才能确定边界</text>
+    <text x="570" y="242" text-anchor="middle" font-size="12" fill="#475569">译码器需数万个门</text>
+  </svg>
+  <figcaption>图 4-1　定长与变长指令的取指译码对比：RISC（如 RISC-V）每条指令固定 32 位、边界对齐，译码器可以一次看到多条；CISC（如 x86）指令长度从 1 到 15 字节不等，必须逐条扫描确定边界，译码逻辑复杂得多——这正是 x86 前端要用微码/微操作把变长指令翻译成类 RISC 操作的原因。</figcaption>
+</figure>
+
+
 
         <h2>4.3 寻址模式全景</h2>
 
         <p>寻址模式（Addressing Mode）指定了指令如何找到它的操作数。不同的ISA提供了不同的寻址模式组合：</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <thead>
                 <tr>
                     <th>寻址模式</th>
@@ -112,7 +136,7 @@
                 <tr><td>PC相对（PC-Relative）</td><td><code>beq x1, x2, label</code></td><td>PC + offset</td><td>条件分支</td></tr>
                 <tr><td>索引（Indexed）</td><td><code>lw x1, base(x2, x3)</code></td><td>base+Reg[x2]+Reg[x3]</td><td>二维数组、查表</td></tr>
             </tbody>
-        </table>
+        </table></div>
 
         <p>每种寻址模式都有其适用场景，也都有其硬件代价。RISC-V的哲学是提供最少的寻址模式（主要就是寄存器、立即数和基址+偏移），但足以高效地实现任何程序。x86则提供了10多种寻址模式，有些模式虽然方便，但增加了译码器的复杂度。</p>
 
@@ -154,7 +178,7 @@
 
         <p>下面是一个简单的RISC-V汇编片段，展示了基本的指令格式：</p>
 
-        <pre><code># RISC-V汇编示例：计算数组元素之和
+        <pre style="overflow-x:auto"><code># RISC-V汇编示例：计算数组元素之和
         .text
         .globl sum_array
 sum_array:
@@ -192,7 +216,7 @@ done:
 
         <p>下面是一个简要的ISA特征对比，我们将在第6章进一步展开：</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <thead>
                 <tr>
                     <th>特性</th>
@@ -210,16 +234,27 @@ done:
                 <tr><td>授权模式</td><td>开放标准</td><td>授权</td><td>授权</td><td>授权</td></tr>
                 <tr><td>当前应用</td><td>新兴生态</td><td>学术界/嵌入式</td><td>桌面/服务器</td><td>移动/服务器</td></tr>
             </tbody>
-        </table>
+        </table></div>
 
         <p>理解了ISA的基本概念后，下一章我们将深入RISC-V指令集——逐一学习六种指令格式、常用的汇编指令、以及如何编写正确的RISC-V汇编代码。从那里开始，我们将真正"摆弄"硬件能直接理解的语言。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-04">
+  <h2 id="ref-04">参考资料</h2>
+  <ul>
+    <li>Patterson, D. &amp; Hennessy, J. <em>Computer Architecture: A Quantitative Approach</em>. Morgan Kaufmann —— RISC/CISC 争论与量化设计方法的标准教材。</li>
+    <li>Waterman, A. &amp; Asanović, K. <em>The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA</em>, 2019 —— 指令编码与设计哲学的一手规范。</li>
+    <li><a href="https://en.wikipedia.org/wiki/Reduced_instruction_set_computer">Wikipedia: RISC</a> —— RISC/CISC 历史与寻址模式的通用说明。</li>
+  </ul>
+  <p class="note">说明：正文提到的 RISC-I（44 条指令、78,000 晶体管）与 Motorola 68000（68,000 晶体管）等数字来自伯克利 RISC-I 论文与公开芯片资料；“译码器约 2000 / 数万个门”为量级示意，随实现方式而变。</p>
+</section>
+
+<div class="footer-nav">
             <a href="03.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="05.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>

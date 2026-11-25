@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
         <h1>第6章 MIPS与x86指令集对比</h1>
 
         <p>同学们好！深入学习了RISC-V之后，今天我们把视野拉宽一些。RISC-V不是凭空产生的——它站在MIPS、DEC Alpha、ARM等RISC处理器的肩膀上。与此同时，世界上运行数量最多的指令集架构x86选择了完全不同的进化路线。</p>
@@ -98,6 +99,22 @@
         </ol>
 
         <p>Intel的微操作缓存（DSB, Decoded Stream Buffer）可以缓存之前译码过的μops，避免了重复译码的热指令的性能损失。而AMD也有类似的技术（Op Cache）。</p>
+<figure class="figure" id="fig-x86-frontend">
+  <svg viewBox="0 0 780 220" role="img" aria-labelledby="fig-xf-t fig-xf-d" style="width:100%;height:auto;display:block">
+    <title id="fig-xf-t">x86 前端：把变长指令翻译成类 RISC 微操作</title>
+    <desc id="fig-xf-d">变长的 x86 指令（CISC 指令集）先由译码器/微码翻译成定长、类 RISC 的微操作 micro-ops，再交给乱序执行核心调度；对外保持复杂指令集兼容，内部执行却像 RISC，兼顾兼容性与性能。</desc>
+    <defs><marker id="xf-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+    <rect x="20" y="70" width="200" height="80" rx="12" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="120" y="105" text-anchor="middle" font-size="14" fill="#7a3a22">x86 变长指令流</text><text x="120" y="128" text-anchor="middle" font-size="12" fill="#7a3a22">1–15 字节（CISC）</text>
+    <rect x="290" y="70" width="200" height="80" rx="12" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="390" y="100" text-anchor="middle" font-size="14" fill="#6b4a12">译码 / 微码</text><text x="390" y="122" text-anchor="middle" font-size="12" fill="#6b4a12">翻译 &amp; 拆解</text><text x="390" y="140" text-anchor="middle" font-size="11" fill="#6b4a12">复杂指令→多条微操作</text>
+    <rect x="560" y="70" width="200" height="80" rx="12" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="660" y="105" text-anchor="middle" font-size="14" fill="#0f5c5c">类 RISC 微操作</text><text x="660" y="128" text-anchor="middle" font-size="12" fill="#0f5c5c">定长、简单、可乱序</text>
+    <line x1="220" y1="110" x2="286" y2="110" stroke="#147f80" stroke-width="2" marker-end="url(#xf-ar)"/>
+    <line x1="490" y1="110" x2="556" y2="110" stroke="#147f80" stroke-width="2" marker-end="url(#xf-ar)"/>
+    <text x="390" y="190" text-anchor="middle" font-size="12" fill="#475569">对外：向后兼容的复杂指令集　|　对内：简洁的类 RISC 执行引擎</text>
+  </svg>
+  <figcaption>图 6-1　x86 前端的两层结构：对外的变长 CISC 指令先经译码器 / 微码翻译成定长、类 RISC 的微操作，再交给后端的乱序执行核心。这样既保住了几十年积累的二进制兼容性，又能用简单的类 RISC 内核换取高性能。</figcaption>
+</figure>
+
+
 
         <p>这个"CISC前端+RISC后端"的结构是当今x86处理器的标准架构。它完美地说明了ISA和微架构的区别——ISA是对外的"契约"，微架构是内部的实现。RISC-V处理器也可以用微码（尽管很少需要），而x86处理器也可以（并且在事实上）用RISC流水线来执行指令。</p>
 
@@ -109,7 +126,7 @@
 
         <p>下面我们从多个维度对比RISC-V、MIPS和x86-64这三个重要ISA：</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <thead>
                 <tr>
                     <th>维度</th>
@@ -131,11 +148,11 @@
                 <tr><td>授权</td><td>开放标准</td><td>授权（现转向RISC-V）</td><td>Intel/AMD交叉授权</td></tr>
                 <tr><td>应用场景</td><td>嵌入式到HPC</td><td>嵌入式/教育</td><td>桌面/服务器</td></tr>
             </tbody>
-        </table>
+        </table></div>
 
         <p>为了直观地展示差异，让我们用三个版本的汇编实现同一个简单函数——计算数组元素之和：</p>
 
-        <pre><code>// C版本：所有三个ISA实现的目标
+        <pre style="overflow-x:auto"><code>// C版本：所有三个ISA实现的目标
 // int sum_array(int *arr, int n) {
 //     int sum = 0;
 //     for (int i = 0; i &lt; n; i++) sum += arr[i];
@@ -213,12 +230,23 @@ sum_array:
 
         <p>下一章，我们将进入一个非常实操的环节——手工汇编与机器码。你将看到你写的汇编指令是如何变成二进制字节的，以及如何用工具来逆向工程这个过程。这是从"理解ISA"到"设计处理器"的必经之路。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-06">
+  <h2 id="ref-06">参考资料</h2>
+  <ul>
+    <li>Intel, <em>Intel 64 and IA-32 Architectures Software Developer's Manual</em> —— x86 指令编码（前缀 / ModRM / SIB / 位移）与微操作（μops）的一手资料。</li>
+    <li>AMD, <em>AMD64 Architecture Programmer's Manual</em> —— x86-64 指令集与译码实现。</li>
+    <li>Hennessy, J. &amp; Patterson, D. <em>Computer Architecture: A Quantitative Approach</em> —— ISA 与微架构分离（“CISC 前端 + RISC 后端”）的体系结构讲解。</li>
+  </ul>
+  <p class="note">说明：x86 指令“最长 15 字节”为 Intel SDM 规定的编码上限；正文中 RISC-I、68000 晶体管数与 MIPS/x86/ARM 的对比数字来自公开资料，属教学性概览。</p>
+</section>
+
+<div class="footer-nav">
             <a href="05.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="07.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>

@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
         <h1>第5章 RISC-V指令集精讲</h1>
 
         <p>同学们好！上一章我们学习了ISA的基本概念和RISC-V的总体设计哲学。今天，我们要"把手弄脏"——深入RISC-V指令集的每一个细节。到本章结束时，你将能够阅读和理解RISC-V汇编代码，甚至手动编写一些简单的程序。</p>
@@ -55,7 +56,7 @@
 
         <p>六种指令格式的位布局如下：</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <thead>
                 <tr>
                     <th>格式</th>
@@ -76,9 +77,91 @@
                 <tr><td><strong>U-type</strong></td><td colspan="3">imm[31:12]</td><td></td><td></td><td>rd[11:7]</td><td>opcode[6:0]</td></tr>
                 <tr><td><strong>J-type</strong></td><td colspan="3">imm[31:12]</td><td></td><td></td><td>rd[11:7]</td><td>opcode[6:0]</td></tr>
             </tbody>
-        </table>
+        </table></div>
 
-        <p>注意观察几个关键的设计细节：</p>
+        
+<figure class="figure" id="fig-rv32i-formats">
+  <svg viewBox="0 0 820 430" role="img" aria-labelledby="fig-rv-t fig-rv-d" style="width:100%;height:auto;display:block">
+    <title id="fig-rv-t">RV32I 的六种指令格式（R/I/S/B/U/J）</title>
+    <desc id="fig-rv-d">六种 32 位指令格式的字段划分：R 型为寄存器间运算，I 型含 12 位立即数，S 型为存储，B 型为分支，U 型装入 20 位高位立即数，J 型为跳转；所有格式的最低 7 位都是操作码 opcode。</desc>
+    <text x="10" y="97" font-size="14" fill="#0f5c5c">R-type</text>
+    <rect x="140.0" y="74" width="144.4" height="34" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="212.2" y="95" text-anchor="middle" font-size="12" fill="#1f2937">funct7</text>
+    <rect x="284.4" y="74" width="103.1" height="34" fill="#dbe4ff" stroke="#7461ba" stroke-width="1.5"/>
+    <text x="335.9" y="95" text-anchor="middle" font-size="12" fill="#1f2937">rs2</text>
+    <rect x="387.5" y="74" width="103.1" height="34" fill="#fde8dc" stroke="#d06d4d" stroke-width="1.5"/>
+    <text x="439.1" y="95" text-anchor="middle" font-size="12" fill="#1f2937">rs1</text>
+    <rect x="490.6" y="74" width="61.9" height="34" fill="#fffbeb" stroke="#916c22" stroke-width="1.5"/>
+    <text x="521.6" y="95" text-anchor="middle" font-size="10" fill="#1f2937">funct3</text>
+    <rect x="552.5" y="74" width="103.1" height="34" fill="#efeafc" stroke="#7461ba" stroke-width="1.5"/>
+    <text x="604.1" y="95" text-anchor="middle" font-size="12" fill="#1f2937">rd</text>
+    <rect x="655.6" y="74" width="144.4" height="34" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="727.8" y="95" text-anchor="middle" font-size="12" fill="#1f2937">opcode</text>
+    <text x="10" y="153" font-size="14" fill="#0f5c5c">I-type</text>
+    <rect x="140.0" y="130" width="247.5" height="34" fill="#dbe4ff" stroke="#7461ba" stroke-width="1.5"/>
+    <text x="263.8" y="151" text-anchor="middle" font-size="12" fill="#1f2937">imm[11:0]</text>
+    <rect x="387.5" y="130" width="103.1" height="34" fill="#fde8dc" stroke="#d06d4d" stroke-width="1.5"/>
+    <text x="439.1" y="151" text-anchor="middle" font-size="12" fill="#1f2937">rs1</text>
+    <rect x="490.6" y="130" width="61.9" height="34" fill="#fffbeb" stroke="#916c22" stroke-width="1.5"/>
+    <text x="521.6" y="151" text-anchor="middle" font-size="10" fill="#1f2937">funct3</text>
+    <rect x="552.5" y="130" width="103.1" height="34" fill="#efeafc" stroke="#7461ba" stroke-width="1.5"/>
+    <text x="604.1" y="151" text-anchor="middle" font-size="12" fill="#1f2937">rd</text>
+    <rect x="655.6" y="130" width="144.4" height="34" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="727.8" y="151" text-anchor="middle" font-size="12" fill="#1f2937">opcode</text>
+    <text x="10" y="209" font-size="14" fill="#0f5c5c">S-type</text>
+    <rect x="140.0" y="186" width="144.4" height="34" fill="#fde8dc" stroke="#d06d4d" stroke-width="1.5"/>
+    <text x="212.2" y="207" text-anchor="middle" font-size="12" fill="#1f2937">imm[11:5]</text>
+    <rect x="284.4" y="186" width="103.1" height="34" fill="#fffbeb" stroke="#916c22" stroke-width="1.5"/>
+    <text x="335.9" y="207" text-anchor="middle" font-size="12" fill="#1f2937">rs2</text>
+    <rect x="387.5" y="186" width="103.1" height="34" fill="#efeafc" stroke="#7461ba" stroke-width="1.5"/>
+    <text x="439.1" y="207" text-anchor="middle" font-size="12" fill="#1f2937">rs1</text>
+    <rect x="490.6" y="186" width="61.9" height="34" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="521.6" y="207" text-anchor="middle" font-size="10" fill="#1f2937">funct3</text>
+    <rect x="552.5" y="186" width="103.1" height="34" fill="#dbe4ff" stroke="#7461ba" stroke-width="1.5"/>
+    <text x="604.1" y="207" text-anchor="middle" font-size="12" fill="#1f2937">imm[4:0]</text>
+    <rect x="655.6" y="186" width="144.4" height="34" fill="#fde8dc" stroke="#d06d4d" stroke-width="1.5"/>
+    <text x="727.8" y="207" text-anchor="middle" font-size="12" fill="#1f2937">opcode</text>
+    <text x="10" y="265" font-size="14" fill="#0f5c5c">B-type</text>
+    <rect x="140.0" y="242" width="144.4" height="34" fill="#fffbeb" stroke="#916c22" stroke-width="1.5"/>
+    <text x="212.2" y="263" text-anchor="middle" font-size="12" fill="#1f2937">imm[12|10:5]</text>
+    <rect x="284.4" y="242" width="103.1" height="34" fill="#efeafc" stroke="#7461ba" stroke-width="1.5"/>
+    <text x="335.9" y="263" text-anchor="middle" font-size="12" fill="#1f2937">rs2</text>
+    <rect x="387.5" y="242" width="103.1" height="34" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="439.1" y="263" text-anchor="middle" font-size="12" fill="#1f2937">rs1</text>
+    <rect x="490.6" y="242" width="61.9" height="34" fill="#dbe4ff" stroke="#7461ba" stroke-width="1.5"/>
+    <text x="521.6" y="263" text-anchor="middle" font-size="10" fill="#1f2937">funct3</text>
+    <rect x="552.5" y="242" width="103.1" height="34" fill="#fde8dc" stroke="#d06d4d" stroke-width="1.5"/>
+    <text x="604.1" y="263" text-anchor="middle" font-size="12" fill="#1f2937">imm[4:1|11]</text>
+    <rect x="655.6" y="242" width="144.4" height="34" fill="#fffbeb" stroke="#916c22" stroke-width="1.5"/>
+    <text x="727.8" y="263" text-anchor="middle" font-size="12" fill="#1f2937">opcode</text>
+    <text x="10" y="321" font-size="14" fill="#0f5c5c">U-type</text>
+    <rect x="140.0" y="298" width="412.5" height="34" fill="#efeafc" stroke="#7461ba" stroke-width="1.5"/>
+    <text x="346.2" y="319" text-anchor="middle" font-size="12" fill="#1f2937">imm[31:12]</text>
+    <rect x="552.5" y="298" width="103.1" height="34" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="604.1" y="319" text-anchor="middle" font-size="12" fill="#1f2937">rd</text>
+    <rect x="655.6" y="298" width="144.4" height="34" fill="#dbe4ff" stroke="#7461ba" stroke-width="1.5"/>
+    <text x="727.8" y="319" text-anchor="middle" font-size="12" fill="#1f2937">opcode</text>
+    <text x="10" y="377" font-size="14" fill="#0f5c5c">J-type</text>
+    <rect x="140.0" y="354" width="412.5" height="34" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/>
+    <text x="346.2" y="375" text-anchor="middle" font-size="12" fill="#1f2937">imm[20|10:1|11|19:12]</text>
+    <rect x="552.5" y="354" width="103.1" height="34" fill="#dbe4ff" stroke="#7461ba" stroke-width="1.5"/>
+    <text x="604.1" y="375" text-anchor="middle" font-size="12" fill="#1f2937">rd</text>
+    <rect x="655.6" y="354" width="144.4" height="34" fill="#fde8dc" stroke="#d06d4d" stroke-width="1.5"/>
+    <text x="727.8" y="375" text-anchor="middle" font-size="12" fill="#1f2937">opcode</text>
+    <text x="140.0" y="58" text-anchor="middle" font-size="11" fill="#64748b">31</text>
+    <text x="284.4" y="58" text-anchor="middle" font-size="11" fill="#64748b">24</text>
+    <text x="366.9" y="58" text-anchor="middle" font-size="11" fill="#64748b">20</text>
+    <text x="470.0" y="58" text-anchor="middle" font-size="11" fill="#64748b">15</text>
+    <text x="531.9" y="58" text-anchor="middle" font-size="11" fill="#64748b">12</text>
+    <text x="635.0" y="58" text-anchor="middle" font-size="11" fill="#64748b">7</text>
+    <text x="779.4" y="58" text-anchor="middle" font-size="11" fill="#64748b">0</text>
+    <text x="470" y="44" text-anchor="middle" font-size="11" fill="#64748b">← 高位 bit31　　bit0 →</text>
+    <text x="470" y="424" text-anchor="middle" font-size="12" fill="#475569">所有格式宽度固定为 32 位；最低 7 位 opcode 决定格式与操作</text>
+  </svg>
+  <figcaption>图 5-1　RV32I 的六种指令格式：R 型做寄存器间运算，I/S/B 型把 12 位立即数拆开编码，U 型一次装入 20 位高位立即数，J 型用于跳转。所有格式都是固定 32 位宽，最低 7 位为 opcode——固定长度正是 RISC 取指与译码简单的关键。</figcaption>
+</figure>
+
+<p>注意观察几个关键的设计细节：</p>
         <ul>
             <li>所有格式中，rs1、funct3、rd、opcode这四个字段的位置完全一致——这意味着译码器可以先不看具体指令类型，直接把这几个字段提取出来。</li>
             <li>S-type和B-type的立即数被"打散"分布在指令的不同位置，这是为了保持rs2和rs1字段位置的统一。</li>
@@ -130,7 +213,7 @@
 
         <p>来看一个递归计算阶乘的完整例子：</p>
 
-        <pre><code># RISC-V 递归阶乘
+        <pre style="overflow-x:auto"><code># RISC-V 递归阶乘
 # int factorial(int n)
 # 参数: a0 = n
 # 返回值: a0 = n!
@@ -178,7 +261,7 @@ done:
 
         <p>最后，让我们来看一个完整的汇编程序——冒泡排序，它展示了本章所学的大多数概念：</p>
 
-        <pre><code># RISC-V 冒泡排序
+        <pre style="overflow-x:auto"><code># RISC-V 冒泡排序
 # void bubble_sort(int arr[], int n)
         .text
         .globl bubble_sort
@@ -211,12 +294,23 @@ done:
 
         <p>下一章，我们将把RISC-V放在更大的历史背景中，与MIPS和x86进行对比。理解这些ISA的异同，不仅有助于你做出架构设计决策，也能让你理解为什么计算机生态呈现出今天的面貌。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-05">
+  <h2 id="ref-05">参考资料</h2>
+  <ul>
+    <li>Waterman, A. &amp; Asanović, K. <em>The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA</em>, 2019 —— R/I/S/B/U/J 六种格式与立即数编码的一手规范（第 2 章）。</li>
+    <li>RISC-V <em>ABI / calling convention</em>（psABI 文档）—— 章节 5.3 中 a0–a7、ra、sp、s0–s11 等寄存器角色与调用约定。</li>
+    <li><a href="https://en.wikipedia.org/wiki/RISC-V">Wikipedia: RISC-V</a> —— 模块化扩展（IMAFDC）与生态概览。</li>
+  </ul>
+  <p class="note">说明：图 5-1 的字段宽度（funct7=7、rs1/rs2/rd=5、funct3=3、opcode=7 位）严格取自 RV32I 规范；正文“译码器约 2000 个门”为量级示意。</p>
+</section>
+
+<div class="footer-nav">
             <a href="04.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="06.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
