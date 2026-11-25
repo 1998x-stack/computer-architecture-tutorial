@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第23章 RISC-V开放生态与香山处理器</h1>
 
         <p>同学们好！上一章我们学习了GPU体系结构，见识了大规模并行计算的力量。今天我们要聊一个更具革命性的话题——RISC-V。如果说x86和ARM代表了老牌帝国和移动新贵的垄断，那么RISC-V就是那个要打破一切封锁的开源挑战者。更令人兴奋的是，中国团队开发的"香山"处理器正在这个世界舞台上书写自己的传奇。准备好了吗？让我们开始吧。</p>
@@ -52,6 +53,26 @@
         <p>让我们把时间拨回到2010年，美国加州大学伯克利分校。Krste Asanović、David Patterson教授和他们的团队面临一个尴尬的局面：想做一个新的研究项目，却发现市面上几乎找不到一款开放的指令集。MIPS需要授权费，ARM需要授权费，x86更是想都别想。他们厌倦了。"既然没有开放的ISA，那我们就自己造一个。"于是，RISC-V诞生了。</p>
 
         <p>"V"代表第五代，意味着这是伯克利团队在RISC架构上的第五次迭代。最初的RISC-V只是一份技术报告（UCB/EECS-2014-146），没人想到它会发展成为改变全球芯片格局的力量。</p>
+<figure class="figure" id="fig-riscv-ecosystem">
+  <svg viewBox="0 0 800 320" role="img" aria-labelledby="fig-re-t fig-re-d" style="width:100%;height:auto;display:block">
+    <title id="fig-re-t">RISC-V 开放生态的分层结构</title>
+    <desc id="fig-re-d">自下而上：规范层定义 ISA 与扩展（由 RISC-V International 维护），IP 核层提供开源或商用的处理器实现（如 Rocket、BOOM、香山昆明湖），SoC/芯片层把核与外围集成为芯片，软件层提供编译器、操作系统与应用。越靠下层越标准、越可复用，越靠上层越多样。</desc>
+    <defs><marker id="re-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+    <rect x="60" y="40" width="680" height="52" rx="10" fill="#efeafc" stroke="#7461ba" stroke-width="2"/><text x="400" y="72" text-anchor="middle" font-size="14" fill="#4b3d85">软件层：编译器（GCC/LLVM）、OS（Linux）、运行时与应用</text>
+    <rect x="60" y="108" width="680" height="52" rx="10" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="400" y="140" text-anchor="middle" font-size="14" fill="#0f5c5c">SoC / 芯片层：把处理器核与缓存、外设、互连集成为芯片</text>
+    <rect x="60" y="176" width="680" height="52" rx="10" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="400" y="208" text-anchor="middle" font-size="14" fill="#6b4a12">IP 核层：Rocket / BOOM / 香山·昆明湖 等微架构实现</text>
+    <rect x="60" y="244" width="680" height="56" rx="10" fill="#dbe4ff" stroke="#7461ba" stroke-width="2"/><text x="400" y="270" text-anchor="middle" font-size="14" fill="#2f2a4a">规范层：RV32I / RV64 GC 及扩展（RISC-V International 维护）</text><text x="400" y="290" text-anchor="middle" font-size="11" fill="#2f2a4a">开放的 ISA 是所有层共同的“契约”</text>
+    <line x1="120" y1="244" x2="120" y2="232" stroke="#147f80" stroke-width="2" marker-end="url(#re-ar)"/>
+    <line x1="120" y1="176" x2="120" y2="164" stroke="#147f80" stroke-width="2" marker-end="url(#re-ar)"/>
+    <line x1="120" y1="108" x2="120" y2="96" stroke="#147f80" stroke-width="2" marker-end="url(#re-ar)"/>
+    <text x="150" y="238" font-size="11" fill="#147f80">基于</text>
+    <text x="150" y="170" font-size="11" fill="#147f80">集成</text>
+    <text x="150" y="102" font-size="11" fill="#147f80">支撑</text>
+  </svg>
+  <figcaption>图 23-1　RISC-V 开放生态的分层：最底层是开放、稳定的 ISA 规范（契约），往上是多样化的 IP 核实现（Rocket、BOOM、香山等），再往上是被集成为芯片的 SoC，最上层是编译器、操作系统与应用。分层让不同团队可以独立创新而保持二进制兼容。</figcaption>
+</figure>
+
+
 
         <p>2015年，RISC-V基金会成立，开始系统化管理ISA的演进。2020年，基金会迁至瑞士，更名为RISC-V International。为什么搬家？一个重要原因是规避美国的出口管制——包括EAR（出口管理条例）带来的不确定性。RISC-V的核心理念是：ISA标准本身不应受任何单一国家法律的约束。这是一个原则性的选择，也体现了RISC-V作为"全球标准"的定位。</p>
 
@@ -80,7 +101,7 @@
             <li><strong>灵睿智芯</strong>——P100处理器，一个动态多线程的RISC-V服务器核心，宣称达到20+ SPEC/GHz的能效比，正在向Intel Xeon的领地发起冲击。</li>
         </ul>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr>
                 <th>公司/项目</th>
                 <th>代表产品</th>
@@ -126,7 +147,7 @@
                 <td>14nm</td>
                 <td>开源/研究</td>
             </tr>
-        </table>
+        </table></div>
 
         <h2>23.3 香山处理器：中国开源硬件的里程碑</h2>
 
@@ -177,7 +198,7 @@
 
         <p><strong>一个有趣的轶事：</strong>我在参加一次RISC-V研讨会时，遇到了一位来自Intel的工程师。我问他站在Intel的角度怎么看RISC-V，他笑了笑说："x86是30年积累形成的护城河，但护城河的深度并不能阻止新技术的发展——它只是让防守方更习惯于自己的优势。我们内部已经在用RISC-V做某些微控制器了，原因很简单：它更简单、更容易验证。"</p>
 
-        <pre><code>// RISC-V自定义指令扩展示例
+        <pre style="overflow-x:auto"><code>// RISC-V自定义指令扩展示例
 // 假设我们为AI推理添加一条自定义矩阵点积累加指令
 
 // 编码格式: R-type custom-0 (funct3=0, funct7=custom)
@@ -203,12 +224,23 @@
 
         <p>好了，同学们，RISC-V的故事就讲到这里。下一章我们将看到另一个同样激动人心的硬件发展趋势——Chiplet与先进封装。如果说RISC-V是在ISA层面打破垄断，那么Chiplet就是在物理层面重构芯片设计范式。当一个芯片不再是一整块硅，而是由多个小芯片拼装而成时，设计、制造、验证的规则都将被重写。我们下一章见。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-23">
+  <h2 id="ref-23">参考资料</h2>
+  <ul>
+    <li>Waterman, A. &amp; Asanović, K. <em>The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA</em>, 2019 —— 开放 ISA 规范本身。</li>
+    <li>Xu, Y. et al. “Towards Developing High Performance RISC-V Processors Using Open-Source Infrastructure,” <em>MICRO</em>, 2022 —— 香山（XiangShan）开源处理器项目。</li>
+    <li>RISC-V International, <a href="https://riscv.org/">riscv.org</a> —— 基金会治理、会员规模与扩展标准的一手来源。</li>
+  </ul>
+  <p class="note">说明：正文涉及的厂商动态（SiFive、Ventana、Meta 收购 Rivos、英伟达投资 SiFive 等）为公开报道的行业事件，具体细节请以官方公告为准；本页只作生态格局的教学性概览。</p>
+</section>
+
+<div class="footer-nav">
             <a href="22.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="24.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>

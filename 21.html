@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第21章 SIMD与向量处理器</h1>
 
         <p>同学们好！上一章我们聊了多核架构——多份数据、多条指令并行处理。今天我们来探讨另一种形态的并行：<strong>同一指令、同时处理多份数据</strong>。这就是SIMD（Single Instruction, Multiple Data）和向量处理器的世界。从1976年的Cray-1超级计算机到今天智能手机中ARM芯片的NEON单元，SIMD技术跨越了近50年的历史，至今仍是AI时代最关键的加速引擎之一。</p>
@@ -52,6 +53,31 @@
         <p>Flynn分类法将计算机架构分为四种：SISD（单指令单数据，标准标量处理器）、SIMD（单指令多数据）、MISD（多指令单数据，很少用）和MIMD（多指令多数据，即多核处理器）。SIMD就是"一条指令，同时对多个数据元素执行相同操作"。</p>
 
         <p>SIMD的应用场景非常广泛：图像处理（每个像素做同样的颜色变换）、矩阵乘法（同时做多个乘加运算）、音频视频编解码（大量对数据流的变换）、字符串处理（同时比较多个字符）、以及当前最热门的——机器学习推理（矩阵运算）。</p>
+<figure class="figure" id="fig-simd-lanes">
+  <svg viewBox="0 0 800 300" role="img" aria-labelledby="fig-sl-t fig-sl-d" style="width:100%;height:auto;display:block">
+    <title id="fig-sl-t">标量逐元素运算与 SIMD 单指令多数据的对比</title>
+    <desc id="fig-sl-d">标量方式要执行 4 条独立加法，每次只处理一个元素；SIMD 方式用一条向量加法指令同时在 4 个通道（lane）上完成同样的计算，数据通路更宽、指令数更少，适合数组与多媒体这类规整并行计算。</desc>
+    <defs><marker id="sl-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+    <text x="30" y="28" font-size="14" fill="#7a3a22">标量：4 条指令，逐元素处理</text>
+    <rect x="30" y="42" width="150" height="30" fill="#fde8dc" stroke="#d06d4d"/><text x="105" y="63" text-anchor="middle" font-size="12" fill="#7a3a22">a0</text>
+    <rect x="190" y="42" width="150" height="30" fill="#fde8dc" stroke="#d06d4d"/><text x="265" y="63" text-anchor="middle" font-size="12" fill="#7a3a22">a1</text>
+    <rect x="350" y="42" width="150" height="30" fill="#fde8dc" stroke="#d06d4d"/><text x="425" y="63" text-anchor="middle" font-size="12" fill="#7a3a22">a2</text>
+    <rect x="510" y="42" width="150" height="30" fill="#fde8dc" stroke="#d06d4d"/><text x="585" y="63" text-anchor="middle" font-size="12" fill="#7a3a22">a3</text>
+    <text x="30" y="110" font-size="12" fill="#475569">add c0, a0, b0</text><text x="210" y="110" font-size="12" fill="#475569">add c1, a1, b1</text>
+    <text x="390" y="110" font-size="12" fill="#475569">add c2, a2, b2</text><text x="570" y="110" font-size="12" fill="#475569">add c3, a3, b3</text>
+    <text x="30" y="138" font-size="12" fill="#7a3a22">→ 4 个周期，4 次取指/译码</text>
+    <text x="30" y="182" font-size="14" fill="#0f5c5c">SIMD：1 条向量指令，4 通道并行</text>
+    <rect x="30" y="198" width="630" height="42" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="345" y="224" text-anchor="middle" font-size="13" fill="#0f5c5c">vadd vc, va, vb　—　一条指令，4 个通道同时相加</text>
+    <rect x="30" y="252" width="150" height="30" fill="#dbe4ff" stroke="#7461ba"/><text x="105" y="272" text-anchor="middle" font-size="12" fill="#2f2a4a">c0</text>
+    <rect x="190" y="252" width="150" height="30" fill="#dbe4ff" stroke="#7461ba"/><text x="265" y="272" text-anchor="middle" font-size="12" fill="#2f2a4a">c1</text>
+    <rect x="350" y="252" width="150" height="30" fill="#dbe4ff" stroke="#7461ba"/><text x="425" y="272" text-anchor="middle" font-size="12" fill="#2f2a4a">c2</text>
+    <rect x="510" y="252" width="150" height="30" fill="#dbe4ff" stroke="#7461ba"/><text x="585" y="272" text-anchor="middle" font-size="12" fill="#2f2a4a">c3</text>
+    <line x1="345" y1="240" x2="345" y2="250" stroke="#147f80" stroke-width="2" marker-end="url(#sl-ar)"/>
+  </svg>
+  <figcaption>图 21-1　标量与 SIMD 的对比：标量要把加法写 4 遍、逐元素执行；SIMD 用一条向量指令让 4 个通道（lane）同时参与运算，把“数据并行”交给更宽的数据通路。通道数越多（如 AVX-512 的 16 路），规整数组运算的吞吐越高，但对非规整、含分支的代码帮助有限。</figcaption>
+</figure>
+
+
 
         <p>最早的真正向量处理器是Cray-1（1976年），由超级计算机先驱Seymour Cray设计。Cray-1拥有64个元素的向量寄存器，每个元素64位，支持向量化的加减乘除和逻辑操作。程序员编写<strong>向量代码</strong>——例如 <code>VADD V1, V2, V3</code> 表示V2和V3的64个对应元素相加存入V1。这比用标量循环快了几十倍，代价是硬件复杂度大大增加——Cray-1需要64个浮点加法器并行工作。</p>
 
@@ -59,7 +85,7 @@
 
         <p>x86平台是SIMD技术最丰富的试验场，我们来看看这个30年的演进过程：</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr>
                 <th>ISA扩展</th>
                 <th>年份</th>
@@ -116,7 +142,7 @@
                 <td>32</td>
                 <td>Mask寄存器、广播、嵌入式Rounding</td>
             </tr>
-        </table>
+        </table></div>
 
         <p>这个演进揭示了一个规律：<strong>Intel每一次SIMD升级都将寄存器宽度翻倍</strong>（64→128→256→512）。每次翻倍，向量化的操作数翻倍，理论性能翻倍。但代价也很明显：AVX-512的512位数据路径占用了大量芯片面积，频繁使用会导致频率降低（"AVX-512降频"），甚至在某些Intel处理器上被禁用。</p>
 
@@ -130,7 +156,7 @@
 
         <p>而RISC-V的<strong>向量扩展</strong>（RVV, RISC-V Vector Extension）把可伸缩向量的设计理念推向了极致：</p>
 
-        <pre><code>  // RISC-V Vector 伪代码示例
+        <pre style="overflow-x:auto"><code>  // RISC-V Vector 伪代码示例
   // VLEN 是硬件的向量长度（实现相关），vl 是动态设置的
 
   .equ N, 1024
@@ -164,7 +190,7 @@
 
         <p>来看一个经典例子：</p>
 
-        <pre><code>// 原始C代码 — 简单的数组相加
+        <pre style="overflow-x:auto"><code>// 原始C代码 — 简单的数组相加
 void vec_add(float* a, float* b, float* c, int n) {
     for (int i = 0; i &lt; n; i++) {
         c[i] = a[i] + b[i];
@@ -192,7 +218,7 @@ void vec_add(float* a, float* b, float* c, int n) {
 
         <p>当编译器自动向量化不能满足需求时（例如需要访问AES/SHA/CRC专用指令，或者需要精细控制寄存器分配），你可以在C/C++中直接使用<strong>内建函数</strong>（Intrinsics）。Intrinsics让你写出类似汇编的代码，但仍然享受编译器的寄存器分配和指令调度。</p>
 
-        <pre><code>// x86 AVX2 Intrinsics 示例 — 向量乘加
+        <pre style="overflow-x:auto"><code>// x86 AVX2 Intrinsics 示例 — 向量乘加
 #include &lt;immintrin.h&gt;
 
 void vec_fma_avx2(float* a, float* b, float* c, float* d, int n) {
@@ -222,12 +248,23 @@ void vec_fma_neon(float* a, float* b, float* c, float* d, int n) {
 
         <p>好，SIMD的故事就讲到这里。我们从Cray-1的向量机一路走到了AVX-512和RVV。下一章我们将探讨SIMD的"终极进化版"——<strong>GPU体系结构</strong>。如果说SIMD是十级百级的并行，那GPU就是成千上万级的并行。我们下章见！</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-21">
+  <h2 id="ref-21">参考资料</h2>
+  <ul>
+    <li>Flynn, M. J. “Very High-Speed Computing Systems,” <em>Proceedings of the IEEE</em>, 1966 —— SISD/SIMD/MIMD 分类法的原始来源。</li>
+    <li>Hennessy, J. &amp; Patterson, D. <em>Computer Architecture: A Quantitative Approach</em> —— 数据级并行（DLP）、向量与 SIMD 扩展。</li>
+    <li><a href="https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html">Intel Intrinsics Guide</a> —— SSE/AVX/AVX-512 指令与通道宽度的官方参考。</li>
+  </ul>
+  <p class="note">说明：图 21-1 以 4 通道示意；实际 SIMD 宽度随指令集而变（SSE=4×32 位、AVX2=8×32 位、AVX-512=16×32 位）。</p>
+</section>
+
+<div class="footer-nav">
             <a href="20.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="22.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>

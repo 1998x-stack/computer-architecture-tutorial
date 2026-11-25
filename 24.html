@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第24章 Chiplet与先进封装</h1>
 
         <p>同学们好！上一章我们讨论了RISC-V如何在ISA层面打破传统垄断，今天我们来聊一个在物理层面同样具有革命性的趋势——Chiplet（芯粒）与先进封装。如果你用近两年的高端CPU或GPU（比如AMD的Ryzen或NVIDIA的H100），你手里其实已经拿了一个"拼接怪"——里面根本不是一整块硅，而是多个小芯片通过高速接口拼在一起的。这个从"单体"到"乐高"的转变，是后摩尔时代芯片设计最重要的范式转移之一。</p>
@@ -83,6 +84,29 @@
         <h2>24.3 先进封装技术全景</h2>
 
         <p>UCIe定义了逻辑层面的互连，但物理上如何把多个Chiplet拼在一起，则是先进封装技术的领域。这里的技术栈非常丰富，让我一一为你们道来。</p>
+<figure class="figure" id="fig-chiplet-package">
+  <svg viewBox="0 0 800 320" role="img" aria-labelledby="fig-cp-t fig-cp-d" style="width:100%;height:auto;display:block">
+    <title id="fig-cp-t">Chiplet 与先进封装：2.5D 中介层与 3D 堆叠</title>
+    <desc id="fig-cp-d">在封装基板之上放置硅中介层（2.5D）：计算裸片、I/O 裸片与 HBM 存储堆栈并排放置，裸片之间用 UCIe 芯粒间互连通信；也可以把裸片垂直堆叠（3D），进一步缩短连线。相比一整块大芯片，芯粒方案能提高良率、复用已验证的裸片。</desc>
+    <defs><marker id="cp-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d06d4d"/></marker></defs>
+    <rect x="40" y="270" width="720" height="34" rx="6" fill="#cbd5e1" stroke="#64748b" stroke-width="2"/><text x="400" y="293" text-anchor="middle" font-size="13" fill="#334155">封装基板（Package Substrate）</text>
+    <rect x="60" y="232" width="680" height="38" rx="6" fill="#dbe4ff" stroke="#7461ba" stroke-width="2"/><text x="400" y="257" text-anchor="middle" font-size="13" fill="#2f2a4a">硅中介层 Interposer（2.5D）</text>
+    <rect x="90" y="150" width="230" height="82" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="205" y="185" text-anchor="middle" font-size="14" fill="#0f5c5c">计算裸片</text><text x="205" y="207" text-anchor="middle" font-size="11" fill="#0f5c5c">CPU / NPU</text>
+    <rect x="360" y="150" width="200" height="82" rx="8" fill="#efeafc" stroke="#7461ba" stroke-width="2"/><text x="460" y="185" text-anchor="middle" font-size="14" fill="#4b3d85">I/O 裸片</text><text x="460" y="207" text-anchor="middle" font-size="11" fill="#4b3d85">内存 / PCIe PHY</text>
+    <rect x="600" y="130" width="140" height="102" rx="8" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="670" y="170" text-anchor="middle" font-size="13" fill="#7a3a22">HBM 堆栈</text><text x="670" y="192" text-anchor="middle" font-size="11" fill="#7a3a22">多层 DRAM</text><text x="670" y="212" text-anchor="middle" font-size="11" fill="#7a3a22">（3D 堆叠）</text>
+    <line x1="320" y1="191" x2="356" y2="191" stroke="#d06d4d" stroke-width="3" marker-end="url(#cp-ar)"/>
+    <text x="338" y="180" text-anchor="middle" font-size="11" fill="#d06d4d">UCIe</text>
+    <line x1="560" y1="191" x2="596" y2="191" stroke="#d06d4d" stroke-width="3" marker-end="url(#cp-ar)"/>
+    <text x="578" y="180" text-anchor="middle" font-size="11" fill="#d06d4d">UCIe</text>
+    <rect x="90" y="64" width="230" height="60" rx="8" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="205" y="92" text-anchor="middle" font-size="13" fill="#6b4a12">3D 堆叠裸片</text><text x="205" y="112" text-anchor="middle" font-size="11" fill="#6b4a12">（如 SRAM / cache）</text>
+    <line x1="205" y1="124" x2="205" y2="148" stroke="#916c22" stroke-width="2" marker-end="url(#cp-ar)"/>
+    <text x="215" y="142" font-size="11" fill="#6b4a12">TSV 垂直互连</text>
+    <text x="400" y="40" text-anchor="middle" font-size="12" fill="#475569">同一个封装内，用芯粒互连把不同工艺、不同功能的裸片拼在一起</text>
+  </svg>
+  <figcaption>图 24-1　Chiplet 与先进封装：计算裸片、I/O 裸片与 HBM 存储堆栈并排放置在硅中介层上（2.5D），裸片之间用 UCIe 等芯粒互连通信；也可以把裸片垂直堆叠（3D，用 TSV 互连）。按功能拆分裸片能提高大芯片的良率、复用已验证的 IP，代价是引入芯粒间互连的延迟与带宽开销。</figcaption>
+</figure>
+
+
 
         <p><strong>2.5D封装——Silicon Interposer（硅中介层）：</strong>最经典的2.5D方案。一个硅中介层放在Chiplet和封装基板之间，中介层上用硅的微细布线连接Chiplet。TSMC的CoWoS（Chip-on-Wafer-on-Substrate）是2.5D封装的行业标杆。NVIDIA从Pascal时代的GP100就开始使用CoWoS，到H100/B100时代已经是第二代CoWoS-S。CoWoS-S可以支持最多2倍reticle size的interposer，是当前AI训练GPU的首选封装方案。</p>
 
@@ -92,7 +116,7 @@
 
         <p><strong>AMD 3D V-Cache</strong>是3D堆叠的一个精彩应用。在Zen 3的CCD（计算Chiplet）上，AMD直接堆叠了一个额外的64MB L3 Cache芯片。这使得每个CCD的总L3 Cache从32MB暴增到96MB。在游戏场景中，这个"缓存堆叠"带来了平均15%的性能提升——原因很简单，更大的L3可以减少对内存的访问，而内存访问是最大的性能瓶颈之一。有趣的是，AMD实际上是把一个"缓存Chiplet"用3D方式放在计算Chiplet上面，两者通过hybrid bonding连接。这是Chiplet理念的终极体现——不只是"CPU + I/O分离"，连缓存都可以做成独立的Chiplet。</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr>
                 <th>封装技术</th>
                 <th>类型</th>
@@ -147,7 +171,7 @@
                 <td>极高</td>
                 <td>3D V-Cache, 传感器+逻辑</td>
             </tr>
-        </table>
+        </table></div>
 
         <h2>24.4 开源Chiplet：Occamy及未来</h2>
 
@@ -179,7 +203,7 @@
 
         <p>让我分享一个亲身经历的"踩坑"故事。我曾参与一个内部Chiplet项目，规划得相当完美：UCIe接口、混合工艺、复用I/O Chiplet。但当我们拿到第一批封装好的样品时，发现Chiplet启动时UCIe链路的training phase总是失败。排查了整整三周，最后发现原因让人哭笑不得——我在设计Chiplet A时的参考时钟频率与Chiplet B差了25ppm（百万分之二十五）。对于低速设计，25ppm根本不影响；但在UCIe的32Gbps链路上，25ppm的频率偏差会导致时钟数据恢复（CDR）电路无法锁定。从那以后，我们的Checklist上多了一条铁律：所有Chiplet必须共享同一个参考时钟源，或者采用独立的clock recovery机制。</p>
 
-        <pre><code>// UCIe Streaming Interface 简化伪代码
+        <pre style="overflow-x:auto"><code>// UCIe Streaming Interface 简化伪代码
 // 模拟Die-to-Die数据传输的基本握手
 
 module ucie_stream_tx (
@@ -236,12 +260,23 @@ endmodule
 
         <p>好了，同学们，Chiplet的故事就讲到这里。我们从一个巨大的芯片拆成小芯片，用标准接口互连，封装在一起。下一章我们将看到另一个同样激动人心的领域——AI加速器与领域专用架构。如果说Chiplet改变了芯片的"形状"，那么DSA就是改变了芯片的"灵魂"——为特定领域量身定做的处理器，正在重塑整个体系结构的版图。我们下一章见。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-24">
+  <h2 id="ref-24">参考资料</h2>
+  <ul>
+    <li>UCIe Consortium, <em>Universal Chiplet Interconnect Express (UCIe) Specification</em> —— 芯粒间互连的分层协议规范。</li>
+    <li>Bruel, P. et al. “Occamy: A 432-Core 28nm Dual-Chiplet RISC-V SoC,” <em>ISSCC</em>, 2023 —— 开源 Chiplet 的设计实例。</li>
+    <li><a href="https://en.wikipedia.org/wiki/Chiplet">Wikipedia: Chiplet</a> —— 2.5D/3D 封装、中介层与扇出封装的通用说明。</li>
+  </ul>
+  <p class="note">说明：图 24-1 为封装截面示意；真实中介层/基板层数、凸点与 TSV 密度随工艺而异，HBM 堆栈层数亦随代际变化。</p>
+</section>
+
+<div class="footer-nav">
             <a href="23.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="25.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
