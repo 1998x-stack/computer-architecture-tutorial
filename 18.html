@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第18章 总线与I/O系统</h1>
 
         <p>同学们好！前面17章一直围绕处理器和内存打转——处理器架构、流水线、缓存、虚拟内存。但是，一台计算机不能只算数——它得从用户那里接受输入，得把结果展示出来，得读写硬盘，得连接网络。这些与外部世界的交互，就是<strong>I/O系统</strong>（Input/Output System）的职责。而连接一切的核心，就是<strong>总线</strong>（Bus）。这一章，我们要从底层的总线仲裁讲到最新的CXL缓存一致性互连——你会发现，总线技术在最近十年里经历了一场静悄悄的革命。</p>
@@ -81,6 +82,28 @@
         <h2>DMA：让数据自己移动</h2>
 
         <p>在早期的计算机系统中，CPU必须亲自参与每一次I/O数据传输。</p>
+<figure class="figure" id="fig-dma">
+  <svg viewBox="0 0 800 280" role="img" aria-labelledby="fig-dm-t fig-dm-d" style="width:100%;height:auto;display:block">
+    <title id="fig-dm-t">DMA 传输：数据不经过 CPU</title>
+    <desc id="fig-dm-d">CPU 先把源、目的地址和长度写入 DMA 控制器寄存器（建立传输），随后 DMA 控制器直接在内存与设备之间搬运数据，CPU 同时可以执行其他任务；传输完成后 DMA 控制器发出中断通知 CPU。</desc>
+    <defs><marker id="dm-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+    <rect x="40" y="40" width="150" height="70" rx="10" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="115" y="72" text-anchor="middle" font-size="14" fill="#0f5c5c">CPU</text><text x="115" y="94" text-anchor="middle" font-size="11" fill="#0f5c5c">发起 / 处理中断</text>
+    <rect x="300" y="40" width="200" height="70" rx="10" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="400" y="72" text-anchor="middle" font-size="14" fill="#6b4a12">DMA 控制器</text><text x="400" y="94" text-anchor="middle" font-size="11" fill="#6b4a12">源/目的地址、长度、状态</text>
+    <rect x="610" y="40" width="150" height="70" rx="10" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="685" y="72" text-anchor="middle" font-size="14" fill="#7a3a22">外设 / 设备</text><text x="685" y="94" text-anchor="middle" font-size="11" fill="#7a3a22">磁盘 / 网卡等</text>
+    <rect x="300" y="170" width="200" height="70" rx="10" fill="#dbe4ff" stroke="#7461ba" stroke-width="2"/><text x="400" y="202" text-anchor="middle" font-size="14" fill="#2f2a4a">主存（内存）</text><text x="400" y="224" text-anchor="middle" font-size="11" fill="#2f2a4a">数据缓冲区</text>
+    <line x1="190" y1="70" x2="296" y2="70" stroke="#147f80" stroke-width="2" marker-end="url(#dm-ar)"/>
+    <text x="243" y="60" text-anchor="middle" font-size="11" fill="#0f5c5c">① 编程寄存器</text>
+    <line x1="610" y1="80" x2="504" y2="80" stroke="#d06d4d" stroke-width="2" marker-end="url(#dm-ar)"/>
+    <text x="557" y="70" text-anchor="middle" font-size="11" fill="#7a3a22">② 中断通知完成</text>
+    <path d="M500,200 L610,200 L610,114" fill="none" stroke="#147f80" stroke-width="2" marker-end="url(#dm-ar)"/>
+    <path d="M610,140 L610,160 L500,160 L500,180" fill="none" stroke="#147f80" stroke-width="2" marker-end="url(#dm-ar)"/>
+    <text x="560" y="156" text-anchor="middle" font-size="11" fill="#0f5c5c">③ 直接搬运数据</text>
+    <text x="400" y="268" text-anchor="middle" font-size="12" fill="#475569">数据在内存与外设之间直接流动，CPU 只负责“启动”和“收到完成通知”，可并行处理其他任务</text>
+  </svg>
+  <figcaption>图 18-1　DMA 传输的典型流程：CPU 先编程 DMA 控制器（源、目的、长度），DMA 控制器随后在内存与外设之间直接搬运数据，CPU 在此期间可继续执行其他工作；传输完成后由 DMA 发出中断。相比程序控制 I/O（PIO，CPU 亲自逐字搬运），DMA 把 CPU 从数据搬运中解放出来，代价是需要处理缓存一致性与总线争用。</figcaption>
+</figure>
+
+
         <ul>
             <li><strong>轮询（Polling）</strong>：CPU不停检测设备状态寄存器——"数据来了吗？来了吗？来了吗？"——整个过程CPU被占用，不能做有用的事情。</li>
             <li><strong>中断驱动（Interrupt-Driven）</strong>：设备准备好后通过中断通知CPU。CPU在中断处理中亲自把数据从设备拷贝到内存（或反向）。每次中断都有保存/恢复上下文的开销，高吞吐量场景下CPU还是受不了。</li>
@@ -88,7 +111,7 @@
 
         <p><strong>DMA</strong>（Direct Memory Access，直接内存访问）解决了这个问题：CPU设置好传输参数（源地址、目标地址、传输大小），然后DMA控制器接管，直接在设备和内存之间搬运数据，完成后发送一个中断通知CPU。CPU在DMA传输期间可以继续执行其他任务。</p>
 
-        <pre><code>// DMA控制器的简化配置流程（C伪代码）
+        <pre style="overflow-x:auto"><code>// DMA控制器的简化配置流程（C伪代码）
 
 // 1. CPU配置DMA控制器
 dma_ctrl-&gt;src_addr  = (uint32_t)device_data_register; // 从设备读
@@ -128,7 +151,7 @@ if (dma_ctrl-&gt;control &amp; DMA_INTERRUPT_ENABLE) {
 
         <p>PCIe 6.0是一个重大飞跃：它使用<strong>PAM-4</strong>信号编码（每符号2比特，而非传统的NRZ每符号1比特），达到64 GT/s。同时引入了前向纠错（Forward Error Correction, FEC）来处理PAM-4更高的信号噪声。x16通道提供约128 GB/s的双向带宽。PCIe 6.0还引入了Flit-based编码（固定大小的流量单元），进一步降低延迟。</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr>
                 <th>标准</th>
                 <th>发布时间</th>
@@ -217,7 +240,7 @@ if (dma_ctrl-&gt;control &amp; DMA_INTERRUPT_ENABLE) {
                 <td>同PCIe 6.0</td>
                 <td>多级交换，内存共享</td>
             </tr>
-        </table>
+        </table></div>
 
         <h2>CXL：缓存一致性互连</h2>
 
@@ -241,12 +264,24 @@ if (dma_ctrl-&gt;control &amp; DMA_INTERRUPT_ENABLE) {
 
         <p>好了，总线与I/O系统就先讲到这里。我们覆盖了从最基础的总线仲裁、DMA，到现代PCIe的串行链路架构，再到最新的CXL缓存一致性互连。搞定了数据供应问题（存储层次、I/O系统），下一章我们再回来看如何让处理器的"并行度"更上一层楼——<strong>第19章：超标量与前瞻执行</strong>——我们上次讲到乱序执行和动态调度，这一章在此基础上引入更激进的并行策略。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-18">
+  <h2 id="ref-18">参考资料</h2>
+  <ul>
+    <li>Patterson, D. &amp; Hennessy, J. <em>Computer Organization and Design</em>（RISC-V Edition）—— 总线、DMA 与 I/O 子系统。</li>
+    <li>PCI-SIG, <em>PCI Express Base Specification</em> —— PCIe 分层与链路速率的一手规范。</li>
+    <li>CXL Consortium, <em>Compute Express Link Specification</em> —— 缓存一致性互连（CXL）的标准文档。</li>
+    <li><a href="https://en.wikipedia.org/wiki/Direct_memory_access">Wikipedia: Direct memory access</a> —— DMA 传输与程序控制 I/O 的对比。</li>
+  </ul>
+  <p class="note">说明：图 18-1 为 DMA 的概念流程，未展开缓存一致性处理（如内存屏障、cache 刷新）与总线争用等实现细节。</p>
+</section>
+
+<div class="footer-nav">
             <a href="17.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="19.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>

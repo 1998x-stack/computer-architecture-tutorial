@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第17章 虚拟内存与TLB</h1>
 
         <p>上一章我们看到了缓存如何通过局部性原理把慢速内存"伪装"成快速存储。现在我们要继续深入——不仅仅是性能问题，还有一个更根本的需求：如何让多个程序安全、高效地共享内存？答案就是<strong>虚拟内存</strong>（Virtual Memory）。如果说Cache是对程序员<strong>透明</strong>的硬件优化，那虚拟内存就是操作系统和硬件一起为我们构建的<strong>美丽幻觉</strong>——每个程序都觉得自己拥有整个地址空间。这一章，我们来揭开这个幻觉背后的硬件机制。</p>
@@ -64,8 +65,31 @@
         <p>虚拟内存以<strong>页</strong>（Page）为单位进行管理。物理内存被划分为相同大小的帧（Frame）。现代系统通常使用4KB作为标准页面大小——这个选择是基于平衡考虑的：页面太小则页表太大，页面太大则内部碎片严重。</p>
 
         <p>地址转换的基本结构：</p>
+<figure class="figure" id="fig-address-translation">
+  <svg viewBox="0 0 800 300" role="img" aria-labelledby="fig-at-t fig-at-d" style="width:100%;height:auto;display:block">
+    <title id="fig-at-t">虚拟地址到物理地址的转换（含 TLB 命中）</title>
+    <desc id="fig-at-d">虚拟地址拆成虚拟页号 VPN 与页内偏移 offset；VPN 先查 TLB，命中则直接得到物理页号 PFN，未命中则遍历页表得到 PFN；把 PFN 与 offset 拼接就得到物理地址。页内偏移在转换前后保持不变。</desc>
+    <defs><marker id="at-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+    <text x="30" y="34" font-size="13" fill="#0f5c5c">虚拟地址（Virtual Address）</text>
+    <rect x="30" y="45" width="470" height="44" fill="#e6f5e0" stroke="#147f80" stroke-width="1.5"/><text x="265" y="73" text-anchor="middle" font-size="13" fill="#0f5c5c">虚拟页号 VPN（高位）</text>
+    <rect x="500" y="45" width="250" height="44" fill="#dbe4ff" stroke="#7461ba" stroke-width="1.5"/><text x="625" y="73" text-anchor="middle" font-size="13" fill="#2f2a4a">页内偏移 offset（12 位）</text>
+    <line x1="265" y1="89" x2="265" y2="120" stroke="#147f80" stroke-width="2" marker-end="url(#at-ar)"/>
+    <rect x="120" y="122" width="290" height="62" rx="10" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="265" y="150" text-anchor="middle" font-size="13" fill="#6b4a12">TLB（页表项缓存）</text><text x="265" y="171" text-anchor="middle" font-size="12" fill="#6b4a12">VPN → PFN 的快速查找</text>
+    <line x1="265" y1="184" x2="265" y2="212" stroke="#147f80" stroke-width="2" marker-end="url(#at-ar)"/>
+    <text x="285" y="204" font-size="11" fill="#147f80">命中</text>
+    <rect x="410" y="122" width="330" height="62" rx="10" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/><text x="575" y="150" text-anchor="middle" font-size="13" fill="#7a3a22">未命中 → 遍历页表（PTE walk）</text><text x="575" y="171" text-anchor="middle" font-size="12" fill="#7a3a22">访问多级页表，回填 TLB</text>
+    <line x1="410" y1="153" x2="412" y2="153" stroke="#d06d4d" stroke-width="2" marker-end="url(#at-ar)"/>
+    <line x1="265" y1="212" x2="265" y2="240" stroke="#147f80" stroke-width="2" marker-end="url(#at-ar)"/>
+    <text x="30" y="240" font-size="13" fill="#0f5c5c">物理地址（Physical Address）</text>
+    <rect x="30" y="250" width="470" height="40" fill="#efeafc" stroke="#7461ba" stroke-width="1.5"/><text x="265" y="275" text-anchor="middle" font-size="13" fill="#4b3d85">物理页号 PFN</text>
+    <rect x="500" y="250" width="250" height="40" fill="#dbe4ff" stroke="#7461ba" stroke-width="1.5"/><text x="625" y="275" text-anchor="middle" font-size="13" fill="#2f2a4a">offset（不变）</text>
+  </svg>
+  <figcaption>图 17-1　虚拟地址到物理地址的转换：虚拟地址拆成 VPN 与 offset，VPN 先查 TLB，命中则直接得到 PFN，未命中再遍历页表并回填 TLB；最后把 PFN 与 offset 拼接成物理地址。页内偏移在转换前后完全不变，这也是页大小取 2 的幂的原因。</figcaption>
+</figure>
 
-        <pre><code>虚拟地址分解（以4KB页，48位虚拟地址为例）：
+
+
+        <pre style="overflow-x:auto"><code>虚拟地址分解（以4KB页，48位虚拟地址为例）：
 
 | 63:48 | 47:39 | 38:30 | 29:21 | 20:12 | 11:0 |
 | 符号扩展 | PML4 | PDP  |  PD   |  PT   | Offset |
@@ -85,7 +109,7 @@
 
         <p>来看一个完整的地址转换的例子。假设有一个虚拟地址0x7F3A8B1C，4KB页面大小：</p>
 
-        <pre><code>虚拟地址: 0x7F3A8B1C
+        <pre style="overflow-x:auto"><code>虚拟地址: 0x7F3A8B1C
 二进制:    0111 1111 0011 1010 1000 1011 0001 1100
 
 4KB页 => Offset = 12 bits
@@ -112,7 +136,7 @@ VPN:      0111 1111 0011 1010 1000 (0x7F3A8)
 
         <p>关键参数——<strong>TLB Reach</strong>（覆盖范围）：</p>
 
-        <pre><code>TLB Reach = TLB 条目数 × 页面大小
+        <pre style="overflow-x:auto"><code>TLB Reach = TLB 条目数 × 页面大小
 
 L1 D-TLB (64 entries, 4KB pages):
   Reach = 64 × 4KB = 256KB
@@ -122,7 +146,7 @@ L2 TLB (2048 entries, 4KB pages):
 
         <p>64个条目×4KB = 只有256KB的覆盖范围！一个典型工作集动辄数MB乃至GB，L1 TLB的覆盖范围完全不够。这就是<strong>大页面（Huge Pages）</strong>的价值所在——如果使用2MB页面，64个条目×2MB = 128MB覆盖范围，一个数量级的提升。很多数据库和虚拟机管理程序强制启用透明大页（Transparent Huge Pages，THP）就是为了减少TLB缺失。在Linux上设置 <code>echo always > /sys/kernel/mm/transparent_hugepage/enabled</code> 后，TLB缺失率可以大幅降低。</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr>
                 <th>处理器</th>
                 <th>L1 I-TLB</th>
@@ -158,7 +182,7 @@ L2 TLB (2048 entries, 4KB pages):
                 <td>~1024 entries</td>
                 <td>4K, 16K, 64K, 2M, 1G</td>
             </tr>
-        </table>
+        </table></div>
 
         <h2>TLB缺失处理</h2>
 
@@ -184,7 +208,7 @@ L2 TLB (2048 entries, 4KB pages):
 
         <p>这背后更深远的教训是：传统上，体系结构假设"软件是可信的"，所有优化都围绕这一假设。但现实世界不是这样的——软件中有各种各样的攻击面。从那以后，<strong>安全成为微架构设计的首要约束之一</strong>，与性能、功耗同等重要。Intel的Golden Cove微架构、AMD的Zen 3/4都大幅加强了安全边界（更精细的分支预测隔离、更严格的推测窗口控制）。</p>
 
-        <pre><code>// 演示TLB友好的内存访问 vs TLB不友好的访问
+        <pre style="overflow-x:auto"><code>// 演示TLB友好的内存访问 vs TLB不友好的访问
 
 #include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
@@ -218,12 +242,23 @@ void tlb_unfriendly_access(char *mem) {
 
         <p>好了，虚拟内存和TLB这一块，我们讲得差不多了。从下往上，我们已经覆盖了从寄存器到虚拟内存的整个存储层次。下一章，我们要把目光从处理器内部转向外部——看看处理器是如何与外部世界通信的。让我们走进<strong>第18章 总线与I/O系统</strong>。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-17">
+  <h2 id="ref-17">参考资料</h2>
+  <ul>
+    <li>Patterson, D. &amp; Hennessy, J. <em>Computer Organization and Design</em>（RISC-V Edition）—— 虚拟内存、页表与 TLB 的标准讲解。</li>
+    <li>Kocher, P. et al. “Spectre Attacks: Exploiting Speculative Execution,” <em>IEEE S&amp;P</em>, 2019 —— 利用地址转换与推测执行侧信道的一手论文。</li>
+    <li>Lipp, M. et al. “Meltdown: Reading Kernel Memory from User Space,” <em>USENIX Security</em>, 2018 —— 乱序执行与页表权限检查的侧信道漏洞。</li>
+  </ul>
+  <p class="note">说明：图 17-1 以简化的一级转换示意页码拆分；真实系统用多级页表与页表项权限位（R/W/X/U），并有 TLB 缺失时的硬件或软件遍历。</p>
+</section>
+
+<div class="footer-nav">
             <a href="16.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="18.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>

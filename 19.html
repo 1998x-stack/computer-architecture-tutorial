@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content" style="overflow-wrap:anywhere">
         <h1>第19章 超标量与前瞻执行</h1>
 
         <p>同学们好！经过前面几章的学习，我们已经掌握了流水线、分支预测、乱序执行这些现代处理器的"基本功"。今天我们要上一道真正的硬菜——把所有这些技术融合到一起，看看一台真正的顶级处理器内部是如何同时发射、乱序执行、甚至"猜测"未来指令结果的。这就是<strong>超标量</strong>（Superscalar）和<strong>前瞻执行</strong>（Speculative Execution）的世界。准备好了吗？让我们开始吧！</p>
@@ -61,12 +62,43 @@
         <p>超标量处理器的设计需要在各个阶段保持平衡——<strong>取指宽度</strong>（Fetch Width）、<strong>解码宽度</strong>（Decode Width）、<strong>发射宽度</strong>（Issue Width）、<strong>执行宽度</strong>（Execute Width）、<strong>提交宽度</strong>（Commit Width）。任何一个阶段的宽度不足都会成为整个流水线的瓶颈。这就好比一条高速公路，不管是入口匝道窄了、收费站慢了、还是出口堵了，整条路的通行能力都会被最窄的那个点限制住。</p>
 
         <p>历史上，Intel Pentium（1993）是第一个商用超标量处理器，实现2发射。从那时起，超标量宽度就是微架构竞争的核心指标。</p>
+<figure class="figure" id="fig-ooo-rob">
+  <svg viewBox="0 0 800 320" role="img" aria-labelledby="fig-oo-t fig-oo-d" style="width:100%;height:auto;display:block">
+    <title id="fig-oo-t">乱序执行：顺序前端、乱序发射、顺序提交</title>
+    <desc id="fig-oo-d">前端按程序顺序取指、译码、重命名并写入重排序缓冲 ROB；执行阶段由保留站把互不依赖的指令乱序发射到多个功能单元；提交阶段仍按程序顺序 retire，保证精确异常；一旦发现分支预测错误，就冲刷 ROB 中所有推测执行的指令。</desc>
+    <defs><marker id="oo-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#147f80"/></marker></defs>
+    <text x="30" y="28" font-size="13" fill="#0f5c5c">① 顺序前端（in-order）</text>
+    <rect x="30" y="40" width="130" height="52" rx="8" fill="#e6f5e0" stroke="#147f80"/><text x="95" y="71" text-anchor="middle" font-size="13" fill="#0f5c5c">取指 / 译码</text>
+    <rect x="180" y="40" width="130" height="52" rx="8" fill="#e6f5e0" stroke="#147f80"/><text x="245" y="71" text-anchor="middle" font-size="13" fill="#0f5c5c">重命名</text>
+    <rect x="330" y="40" width="150" height="52" rx="8" fill="#fffbeb" stroke="#916c22" stroke-width="2"/><text x="405" y="71" text-anchor="middle" font-size="13" fill="#6b4a12">写入 ROB</text>
+    <line x1="160" y1="66" x2="178" y2="66" stroke="#147f80" stroke-width="2" marker-end="url(#oo-ar)"/>
+    <line x1="310" y1="66" x2="328" y2="66" stroke="#147f80" stroke-width="2" marker-end="url(#oo-ar)"/>
+    <text x="30" y="128" font-size="13" fill="#147f80">② 乱序发射（out-of-order）</text>
+    <rect x="30" y="140" width="300" height="80" rx="10" fill="#dbe4ff" stroke="#7461ba" stroke-width="2"/><text x="180" y="170" text-anchor="middle" font-size="13" fill="#2f2a4a">保留站 / 发射队列</text><text x="180" y="194" text-anchor="middle" font-size="12" fill="#2f2a4a">操作数就绪即可发射，与前后顺序无关</text>
+    <line x1="405" y1="92" x2="250" y2="138" stroke="#147f80" stroke-width="2" marker-end="url(#oo-ar)"/>
+    <rect x="420" y="140" width="110" height="36" rx="8" fill="#efeafc" stroke="#7461ba"/><text x="475" y="163" text-anchor="middle" font-size="12" fill="#4b3d85">ALU</text>
+    <rect x="545" y="140" width="110" height="36" rx="8" fill="#efeafc" stroke="#7461ba"/><text x="600" y="163" text-anchor="middle" font-size="12" fill="#4b3d85">ALU</text>
+    <rect x="670" y="140" width="100" height="36" rx="8" fill="#efeafc" stroke="#7461ba"/><text x="720" y="163" text-anchor="middle" font-size="12" fill="#4b3d85">访存</text>
+    <line x1="330" y1="170" x2="416" y2="158" stroke="#147f80" stroke-width="2" marker-end="url(#oo-ar)"/>
+    <line x1="330" y1="180" x2="541" y2="162" stroke="#147f80" stroke-width="2" marker-end="url(#oo-ar)"/>
+    <line x1="330" y1="190" x2="666" y2="166" stroke="#147f80" stroke-width="2" marker-end="url(#oo-ar)"/>
+    <text x="30" y="262" font-size="13" fill="#0f5c5c">③ 顺序提交（in-order retire）</text>
+    <rect x="330" y="242" width="440" height="46" rx="8" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="550" y="270" text-anchor="middle" font-size="13" fill="#0f5c5c">按程序顺序写回寄存器堆 / 提交存储</text>
+    <line x1="475" y1="176" x2="475" y2="240" stroke="#147f80" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <line x1="600" y1="176" x2="600" y2="240" stroke="#147f80" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <line x1="95" y1="76" x2="95" y2="120" stroke="#d06d4d" stroke-width="2" marker-end="url(#oo-ar)"/>
+    <text x="104" y="112" font-size="11" fill="#d06d4d">预测错误 → 冲刷 ROB 内全部推测指令</text>
+  </svg>
+  <figcaption>图 19-1　乱序执行的三段式结构：前端按程序顺序取指 / 译码 / 重命名并写入 ROB；执行阶段依据操作数是否就绪乱序发射到多个功能单元；提交阶段仍严格按程序顺序 retire，从而保持精确异常。一旦分支预测错误，就把 ROB 里所有推测指令一并冲刷，重新从正确路径取指。</figcaption>
+</figure>
+
+
 
         <h2>19.2 现代超标量处理器的真实参数</h2>
 
         <p>让我们看看当前顶级处理器的超标量参数。这些数据来自芯片手册和逆向工程分析，它们展示了各家的设计哲学。</p>
 
-        <table>
+        <div class="table-scroll" style="overflow-x:auto"><table>
             <tr>
                 <th>参数</th>
                 <th>Intel Golden Cove (12代 P-core)</th>
@@ -116,7 +148,7 @@
                 <td>32KB, 8-way</td>
                 <td>64KB, 8-way</td>
             </tr>
-        </table>
+        </table></div>
 
         <p>看到Apple M1 Firestorm的8发射了吗？这是目前商用处理器中最宽的解码宽度，配合高达630项的ROB，M1在单线程性能上击败了所有x86竞争对手。有趣的是，AMD Zen采用了不同的策略：受限的前端（4-wide decode），但用大型μop Cache来绕过解码瓶颈，在功耗和性能之间取得了很好的平衡。</p>
 
@@ -126,7 +158,7 @@
 
         <p>寄存器重命名（Register Renaming）是超标量处理器的核心技术之一。我们来深入它的原理。先看一个简单的汇编片段：</p>
 
-        <pre><code>  // 假设RISC-V汇编
+        <pre style="overflow-x:auto"><code>  // 假设RISC-V汇编
   // 注意同一个架构寄存器 a0 被反复写入
   addi   a0, zero, 1       // I1: a0 = 1
   addi   a1, zero, 2       // I2: a1 = 2
@@ -140,7 +172,7 @@
 
         <p>没有重命名，我们必须插入nop或者等待I1完成才能执行I4。有了重命名，事情就不同了：</p>
 
-        <pre><code>  // 物理寄存器重命名后的内部视图
+        <pre style="overflow-x:auto"><code>  // 物理寄存器重命名后的内部视图
   // 假设物理寄存器池有 P0-P255
 
   addi   a0, zero, 1       // I1: RAT[a0] → P10, P10=1
@@ -173,7 +205,7 @@
 
         <p>攻击的原理既巧妙又可怕：处理器在推测执行路径上访问了它本不该访问的数据，虽然推测状态最终被回滚，但<strong>Cache的状态没有被回滚</strong>。攻击者可以通过测量特定内存位置的访问时间来推断被推测执行的代码访问了什么数据。一个典型的Spectre攻击流程如下：</p>
 
-        <pre><code>  // Spectre v1 攻击的简化示意
+        <pre style="overflow-x:auto"><code>  // Spectre v1 攻击的简化示意
   // 假设 array2 = 敏感数据数组, array1 = 探针数组
   // x 是攻击者控制的值（越界）
 
@@ -193,12 +225,23 @@
 
         <p>好，我们花了整整一章来深入超标量和前瞻执行——这是现代高性能处理器的"内功心法"。下一章，我们将从单核的超标量世界进入多核的平行宇宙，看看<strong>多核与多处理器架构</strong>如何应对功耗墙带来的挑战。敬请期待！</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-19">
+  <h2 id="ref-19">参考资料</h2>
+  <ul>
+    <li>Hennessy, J. &amp; Patterson, D. <em>Computer Architecture: A Quantitative Approach</em> —— 超标量、重排序缓冲（ROB）与前瞻执行。</li>
+    <li>Tomasulo, R. M. “An Efficient Algorithm for Exploiting Multiple Arithmetic Units,” <em>IBM Journal</em>, 1967 —— 动态调度与寄存器重命名的源头工作。</li>
+    <li>Kocher, P. et al. “Spectre Attacks,” <em>IEEE S&amp;P</em>, 2019 —— 推测执行的微架构侧信道安全问题。</li>
+  </ul>
+  <p class="note">说明：图 19-1 为乱序执行与 ROB 的概念示意（3 个功能单元）；真实处理器的发射宽度、ROB 深度与功能单元数量随实现差异很大。</p>
+</section>
+
+<div class="footer-nav">
             <a href="18.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="20.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
