@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
         <h1>第2章 数字逻辑基础</h1>
 
         <p>同学们好，欢迎回到计算机体系结构课堂。在上一章中，我们俯瞰了计算机体系结构的全貌——从冯·诺依曼结构到现代处理器的五大部件。今天，我们要潜入最底层，看看支撑这一切的基石究竟是什么。</p>
@@ -105,6 +106,34 @@
         </ul>
 
         <p>一个4位行波进位加法器的结构如下：最低位（bit 0）的两个输入A0、B0和进位输入C0（通常为0）进入第一个全加器，产生S0和进位C1；C1与A1、B1进入第二个全加器，产生S1和C2；以此类推，直到产生S3和最终的进位输出C4。这个结构很直观，但有一个严重问题：进位必须从最低位逐级"行波"到最高位，对于32位加法器，在最坏情况下需要等待32级门延迟。这也是为什么现代处理器使用更快的进位结构（如超前进位加法器）。</p>
+<figure class="figure" id="fig-ripple-adder">
+  <svg viewBox="0 0 760 250" role="img" aria-labelledby="fig-ra-t fig-ra-d" style="width:100%;height:auto;display:block">
+    <title id="fig-ra-t">4 位行波进位加法器（Ripple-Carry Adder）</title>
+    <desc id="fig-ra-d">四个全加器串联，最低位 bit0 的进位输出 C1 送入 bit1 的进位输入，逐级向上传播到最终进位 C4；关键路径上进位必须从最低位一路“行波”到最高位，最坏情况需要与位数成正比的门延迟。</desc>
+    <defs><marker id="ra-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d06d4d"/></marker></defs>
+    <text x="95" y="40" text-anchor="middle" font-size="13" fill="#0f5c5c">A3 B3</text>
+    <text x="285" y="40" text-anchor="middle" font-size="13" fill="#0f5c5c">A2 B2</text>
+    <text x="475" y="40" text-anchor="middle" font-size="13" fill="#0f5c5c">A1 B1</text>
+    <text x="665" y="40" text-anchor="middle" font-size="13" fill="#0f5c5c">A0 B0</text>
+    <rect x="20" y="60" width="150" height="80" rx="10" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="95" y="95" text-anchor="middle" font-size="14" fill="#0f5c5c">全加器 FA</text><text x="95" y="118" text-anchor="middle" font-size="12" fill="#475569">bit 3（最高位）</text>
+    <rect x="210" y="60" width="150" height="80" rx="10" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="285" y="95" text-anchor="middle" font-size="14" fill="#0f5c5c">全加器 FA</text><text x="285" y="118" text-anchor="middle" font-size="12" fill="#475569">bit 2</text>
+    <rect x="400" y="60" width="150" height="80" rx="10" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="475" y="95" text-anchor="middle" font-size="14" fill="#0f5c5c">全加器 FA</text><text x="475" y="118" text-anchor="middle" font-size="12" fill="#475569">bit 1</text>
+    <rect x="590" y="60" width="150" height="80" rx="10" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/><text x="665" y="95" text-anchor="middle" font-size="14" fill="#0f5c5c">全加器 FA</text><text x="665" y="118" text-anchor="middle" font-size="12" fill="#475569">bit 0（最低位）</text>
+    <text x="95" y="200" text-anchor="middle" font-size="13" fill="#475569">S3</text>
+    <text x="285" y="200" text-anchor="middle" font-size="13" fill="#475569">S2</text>
+    <text x="475" y="200" text-anchor="middle" font-size="13" fill="#475569">S1</text>
+    <text x="665" y="200" text-anchor="middle" font-size="13" fill="#475569">S0</text>
+    <text x="30" y="212" font-size="13" fill="#7a3a22">C4</text>
+    <text x="742" y="150" text-anchor="end" font-size="13" fill="#7a3a22">C0=0</text>
+    <line x1="170" y1="100" x2="206" y2="100" stroke="#d06d4d" stroke-width="2" marker-end="url(#ra-ar)"/><text x="188" y="92" text-anchor="middle" font-size="11" fill="#7a3a22">C3</text>
+    <line x1="360" y1="100" x2="396" y2="100" stroke="#d06d4d" stroke-width="2" marker-end="url(#ra-ar)"/><text x="378" y="92" text-anchor="middle" font-size="11" fill="#7a3a22">C2</text>
+    <line x1="550" y1="100" x2="586" y2="100" stroke="#d06d4d" stroke-width="2" marker-end="url(#ra-ar)"/><text x="568" y="92" text-anchor="middle" font-size="11" fill="#7a3a22">C1</text>
+    <text x="380" y="238" text-anchor="middle" font-size="12" fill="#7a3a22">关键路径：C0 → C1 → C2 → C3 → C4（随位数线性增长）</text>
+  </svg>
+  <figcaption>图 2-1　4 位行波进位加法器：每个全加器把低位的进位输出当作自己的进位输入。结构直观，但进位必须从 bit0 逐级“行波”到最高位，最坏情况的门延迟与位数成正比；现代处理器因此改用超前进位等更快的进位结构。</figcaption>
+</figure>
+
+
 
         <p>虽然简单，但行波进位加法器完美体现了"用基础门构造复杂功能"这个核心思想。从AND/OR/NOT门到全加器，从全加器到ALU，这种层层抽象正是计算机体系结构的精髓。</p>
 
@@ -122,7 +151,7 @@
 
         <p>下面是用Verilog描述的D触发器，这在数字芯片设计中是最常用的基本单元：</p>
 
-        <pre><code>module d_flip_flop (
+        <pre style="overflow-x:auto"><code>module d_flip_flop (
     input wire clk,      // 时钟信号
     input wire rst_n,    // 异步复位（低有效）
     input wire d,        // 数据输入
@@ -180,12 +209,23 @@ endmodule</code></pre>
 
         <p>这一切都建立在第一章提到的冯·诺依曼结构框架内，用本章学习的门级构件填充了细节。下一章，我们将探讨计算机如何表示和操作数据——从整数到浮点数，从二进制补码到IEEE 754标准。理解了数据表示，你才能真正理解为什么你的程序有时会给出"错误"的答案（提示：不是bug，是浮点精度问题），以及为什么-1的二进制表示是32个1。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-02">
+  <h2 id="ref-02">参考资料</h2>
+  <ul>
+    <li>Harris, D. &amp; Harris, S. <em>Digital Design and Computer Architecture</em>. Morgan Kaufmann —— 逻辑门、组合/时序逻辑、全加器与行波进位加法器的标准教材。</li>
+    <li>Wakerly, J. <em>Digital Design: Principles and Practices</em>. Pearson —— 功能完备性（NAND/NOR）与 CMOS 门级实现的入门参考。</li>
+    <li><a href="https://en.wikipedia.org/wiki/Adder_(electronics)">Wikipedia: Adder (electronics)</a> —— 半加器、全加器与进位传播结构的通用说明。</li>
+  </ul>
+  <p class="note">说明：正文中“32 位加法器最坏情况约 32 级门延迟”是按每个全加器一级进位延迟做的教学简化；实际 CMOS 全加器内部含多级门，真实关键路径延迟更大，现代设计改用超前进位（Carry-Lookahead）等结构。</p>
+</section>
+
+<div class="footer-nav">
             <a href="01.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="03.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>

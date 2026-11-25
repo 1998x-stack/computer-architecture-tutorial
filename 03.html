@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="double-border">
 <div class="container">
-    <div class="sidebar">
+    <nav class="sidebar" aria-label="章节目录">
         <h3>🖥️ 课程目录</h3>
         <ul class="chapter-list">
             <li><a href="01.html">第1章 体系结构概述</a></li>
@@ -41,8 +42,8 @@
             <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
             <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
         </ul>
-    </div>
-    <div class="main-content">
+    </nav>
+    <main class="main-content" id="content">
         <h1>第3章 数据表示与运算</h1>
 
         <p>同学们好！上一章我们学习了支撑计算机的砖石——逻辑门和触发器。但是，有了这些硬件后，计算机怎样"理解"数字呢？当你写下 <code>int a = -42;</code> 或 <code>double pi = 3.14159;</code> 时，这些数字在硬件层面是如何表示的？为什么有些运算结果看起来"不对"？</p>
@@ -120,6 +121,29 @@
         <p>整数很好用，但现实中我们需要表示非整数（如3.14）和非常大的数（如光速3×10<sup>8</sup> m/s）或非常小的数（如普朗克常量6.626×10<sup>-34</sup>）。这就是浮点数（floating-point number）的用武之地。</p>
 
         <p>浮点数的核心思想是<strong>科学记数法</strong>：把一个数表示为 ± significand × base<sup>exponent</sup>。在二进制中：± significand × 2<sup>exponent</sup>。</p>
+<figure class="figure" id="fig-ieee754">
+  <svg viewBox="0 0 760 240" role="img" aria-labelledby="fig-ie-t fig-ie-d" style="width:100%;height:auto;display:block">
+    <title id="fig-ie-t">IEEE 754 单精度（binary32）的字段划分</title>
+    <desc id="fig-ie-d">32 位被划分为 1 位符号 S、8 位阶码 E、23 位尾数 M。阶码采用偏移表示（bias=127），尾数隐含一个前导 1，因此实际有效精度为 24 位。数值等于 (-1)^S × 1.M × 2^(E-127)。</desc>
+    <text x="50" y="40" font-size="13" fill="#0f5c5c">符号 S</text>
+    <text x="150" y="40" font-size="13" fill="#2f2a4a">阶码 E（8 位）</text>
+    <text x="420" y="40" font-size="13" fill="#7a3a22">尾数 M（23 位）</text>
+    <rect x="40" y="55" width="20" height="58" fill="#fde8dc" stroke="#d06d4d" stroke-width="2"/>
+    <rect x="60" y="55" width="170" height="58" fill="#dbe4ff" stroke="#7461ba" stroke-width="2"/>
+    <rect x="230" y="55" width="490" height="58" fill="#e6f5e0" stroke="#147f80" stroke-width="2"/>
+    <text x="50" y="90" text-anchor="middle" font-size="12" fill="#7a3a22">1</text>
+    <text x="145" y="90" text-anchor="middle" font-size="12" fill="#2f2a4a">8</text>
+    <text x="475" y="90" text-anchor="middle" font-size="12" fill="#0f5c5c">23</text>
+    <text x="40" y="132" font-size="11" fill="#64748b">bit 31</text>
+    <text x="720" y="132" text-anchor="end" font-size="11" fill="#64748b">bit 0</text>
+    <text x="380" y="168" text-anchor="middle" font-size="14" fill="#0f5c5c">值 = (-1)^S × 1.M × 2^(E − 127)</text>
+    <text x="380" y="196" text-anchor="middle" font-size="12" fill="#475569">阶码偏移 bias = 127；尾数隐含前导 1，故有效精度 24 位</text>
+    <text x="380" y="222" text-anchor="middle" font-size="12" fill="#7a3a22">E 全 1：±∞（M=0）或 NaN（M≠0）　|　E 全 0：0 或非规范数</text>
+  </svg>
+  <figcaption>图 3-1　IEEE 754 单精度（binary32）的字段划分：1 位符号、8 位阶码、23 位尾数。阶码用偏移表示（bias = 127），尾数隐含一个前导 1，所以有效精度是 24 位；指数全 1 / 全 0 保留了 ±∞、NaN 与非规范数等特殊编码。</figcaption>
+</figure>
+
+
 
         <p>IEEE 754 标准规定了两种常用精度：</p>
 
@@ -159,7 +183,7 @@
 
         <p>下面这段C代码展示了经典的"灾难性抵消"（catastrophic cancellation）现象：</p>
 
-        <pre><code>#include &lt;stdio.h&gt;
+        <pre style="overflow-x:auto"><code>#include &lt;stdio.h&gt;
 #include &lt;math.h&gt;
 
 int main() {
@@ -216,12 +240,23 @@ int main() {
 
         <p>理解了数据是如何表示的，我们终于可以进入计算机体系结构中最核心的抽象层——指令集架构（ISA）。ISA定义了处理器能够理解和执行的所有指令，是软件与硬件之间的分界线。下一章，我们将探讨RISC与CISC之间持续了四十年的争论，以及为什么RISC-V是当下最适合学习的ISA。</p>
 
-        <div class="footer-nav">
+        
+<section class="references" id="references" aria-labelledby="ref-03">
+  <h2 id="ref-03">参考资料</h2>
+  <ul>
+    <li>IEEE Std 754-2019, <em>IEEE Standard for Floating-Point Arithmetic</em> —— binary32/binary64 的字段划分、舍入规则与特殊值定义。</li>
+    <li>Goldberg, D. “What Every Computer Scientist Should Know About Floating-Point Arithmetic,” <em>ACM Computing Surveys</em>, 1991 —— 浮点精度与结合律失效的经典综述。</li>
+    <li>Lions, J.-L. et al. <em>Ariane 5 Flight 501 Failure: Report by the Inquiry Board</em>, 1996 —— 64 位浮点转 16 位整数溢出导致首飞失败的官方调查报告。</li>
+  </ul>
+  <p class="note">说明：正文提及的 -2,147,483,648 与双精度约 ±10³⁰⁸ 的量级来自补码范围定义与 IEEE 754 规范；Ariane 5 损失“约 3.7 亿美元”为公开报道的估算值。</p>
+</section>
+
+<div class="footer-nav">
             <a href="02.html">← 上一章</a>
             <a href="index.html">📖 返回目录</a>
             <a href="04.html">下一章 →</a>
         </div>
-    </div>
+    </main>
 </div>
 </div>
 </body>
