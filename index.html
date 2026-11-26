@@ -278,19 +278,91 @@
             border-radius: 20px;
             margin: 1rem 0;
         }
+        .chapter-nav {
+            background: #ffffff; border: 1px solid #dbe7dc; border-radius: 24px;
+            padding: 1rem 1.5rem 1.2rem; margin: 1.4rem 0;
+        }
+        .chapter-nav h2, .hero h2, #grid-h { font-size: 1.15rem; color: #1f4d33; margin-bottom: 0.5rem; }
+        .chapter-nav ol {
+            list-style: none; padding: 0; margin: 0;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.1rem 1.2rem;
+        }
+        .chapter-nav a { color: #1e40af; text-decoration: none; font-size: 0.92rem; line-height: 2; }
+        .chapter-nav a:hover, .chapter-nav a:focus { text-decoration: underline; }
+        .hero { margin: 1.4rem 0; }
+        @media (max-width: 640px) { .chapter-nav ol { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
+<a class="skip-link" href="#content">跳转至正文</a>
 <div class="container">
-    <div class="header">
-        <h1><span class="emoji"></span><span class="title-text"></span></h1>
-        <div class="sub"></div>
-    </div>
+    <header class="header">
+        <h1><span class="emoji">🖥️</span><span class="title-text">计算机体系结构 · 从入门到精通</span></h1>
+        <div class="sub">📘 28章 实战体系</div>
+    </header>
 
-    <div id="cardContainer" class="course-grid"></div>
+    <main id="content">
+    <nav class="chapter-nav" aria-label="章节目录">
+        <h2>章节目录</h2>
+        <ol>
+            <li><a href="01.html">第1章 体系结构概述</a></li>
+            <li><a href="02.html">第2章 数字逻辑基础</a></li>
+            <li><a href="03.html">第3章 数据表示与运算</a></li>
+            <li><a href="04.html">第4章 指令集架构(ISA)</a></li>
+            <li><a href="05.html">第5章 RISC-V指令集精讲</a></li>
+            <li><a href="06.html">第6章 MIPS与x86指令集对比</a></li>
+            <li><a href="07.html">第7章 汇编与机器码实战</a></li>
+            <li><a href="08.html">第8章 单周期处理器设计</a></li>
+            <li><a href="09.html">第9章 流水线技术原理</a></li>
+            <li><a href="10.html">第10章 流水线冲突与解决</a></li>
+            <li><a href="11.html">第11章 分支预测技术</a></li>
+            <li><a href="12.html">第12章 异常与中断处理</a></li>
+            <li><a href="13.html">第13章 静态多发射与VLIW</a></li>
+            <li><a href="14.html">第14章 动态调度与乱序执行</a></li>
+            <li><a href="15.html">第15章 存储层次与局部性原理</a></li>
+            <li><a href="16.html">第16章 Cache设计与优化</a></li>
+            <li><a href="17.html">第17章 虚拟内存与TLB</a></li>
+            <li><a href="18.html">第18章 总线与I/O系统</a></li>
+            <li><a href="19.html">第19章 超标量与前瞻执行</a></li>
+            <li><a href="20.html">第20章 多核与多处理器架构</a></li>
+            <li><a href="21.html">第21章 SIMD与向量处理器</a></li>
+            <li><a href="22.html">第22章 GPU体系结构</a></li>
+            <li><a href="23.html">第23章 RISC-V开放生态与香山处理器</a></li>
+            <li><a href="24.html">第24章 Chiplet与先进封装</a></li>
+            <li><a href="25.html">第25章 AI加速器与领域专用架构</a></li>
+            <li><a href="26.html">第26章 从零构建计算机</a></li>
+            <li><a href="27.html">第27章 性能建模与仿真工具</a></li>
+            <li><a href="28.html">第28章 量子计算与体系结构的未来</a></li>
+        </ol>
+    </nav>
+
+    <section class="hero" aria-labelledby="map-h">
+        <h2 id="map-h">课程知识地图</h2>
+        <figure class="figure">
+            <svg viewBox="0 0 900 300" role="img" aria-labelledby="map-t map-d" style="width:100%;height:auto;display:block">
+                <title id="map-t">课程知识地图：从数字逻辑到体系结构前沿</title>
+                <desc id="map-d">五个由下至上的层级：数字逻辑与数据表示在第2至3章，指令集架构在第4至7章，处理器微架构在第8至14章，存储层次与互连在第15至18章，并行与加速器前沿在第19至28章。</desc>
+                <g font-family="system-ui, sans-serif" font-size="15">
+                    <rect x="40" y="230" width="820" height="42" rx="10" fill="#f7d44a"/><text x="60" y="257">L0 数字逻辑与数据表示（第 2–3 章）</text>
+                    <rect x="40" y="180" width="820" height="42" rx="10" fill="#a7d4a0"/><text x="60" y="207">L1 指令集架构 ISA（第 4–7 章）</text>
+                    <rect x="40" y="130" width="820" height="42" rx="10" fill="#b3d9e8"/><text x="60" y="157">L2 处理器微架构：单周期 / 流水线 / 乱序（第 8–14 章）</text>
+                    <rect x="40" y="80" width="820" height="42" rx="10" fill="#f7b07a"/><text x="60" y="107">L3 存储层次、虚拟内存与互连（第 15–18 章）</text>
+                    <rect x="40" y="30" width="820" height="42" rx="10" fill="#c4b3e0"/><text x="60" y="57">L4 并行、领域加速器与体系结构前沿（第 19–28 章）</text>
+                </g>
+            </svg>
+            <figcaption>图 0-1　本课程的知识地图：下层概念是上层的前提，28 章按此依赖顺序排列。从数字逻辑与数据表示（L0）出发，经指令集（L1）进入处理器微架构（L2），再由存储层次与互连（L3）支撑起并行与领域加速器（L4）。层次高度为教学示意，不代表课时分配。</figcaption>
+        </figure>
+    </section>
+
+    <section aria-labelledby="grid-h">
+        <h2 id="grid-h">按章节浏览</h2>
+        <div id="cardContainer" class="course-grid"></div>
+    </section>
+    </main>
 
     <div style="text-align:center;">
-        <div class="footer"></div>
+        <div class="footer">🖥️ <span>28章</span> 实战体系 · 从入门到精通</div>
     </div>
 </div>
 
@@ -303,7 +375,12 @@
         var footerEl = document.querySelector('.footer');
 
         function showError(msg) {
-            container.innerHTML = '<div class="state-msg error">' + msg + '</div>';
+            if (!container.querySelector('.state-msg')) {
+                var note = document.createElement('p');
+                note.className = 'state-msg error';
+                note.textContent = msg + ' 可改用上方“章节目录”直接打开各章。';
+                container.parentNode.insertBefore(note, container);
+            }
         }
 
         fetch('courses.json')
@@ -373,7 +450,7 @@
 
 <noscript>
     <div style="background:#fcf0d9; padding:1rem; border-radius:20px; text-align:center; color:#92400e;">
-        请启用 JavaScript 以浏览课程目录。
+        JavaScript 仅用于生成下方卡片视图；上方的章节目录无需 JavaScript 即可使用。
     </div>
 </noscript>
 </body>
