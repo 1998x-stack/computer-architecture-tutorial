@@ -149,9 +149,9 @@
         <div class="widget">
             <p>选择指令条数，观察理想加速比 <strong>nk / (n + k − 1)</strong>（此处固定 k = 5）：</p>
             <p class="widget-buttons">
-                <button type="button" data-n="5">n = 5</button>
-                <button type="button" data-n="100">n = 100</button>
-                <button type="button" data-n="1000">n = 1000</button>
+                <button type="button" data-n="5" aria-pressed="false">n = 5</button>
+                <button type="button" data-n="100" aria-pressed="true">n = 100</button>
+                <button type="button" data-n="1000" aria-pressed="false">n = 1000</button>
             </p>
             <p id="speedup-out" aria-live="polite">n = 100：理想加速比 ≈ 4.81×（理论上限 5×）</p>
         </div>
@@ -165,7 +165,12 @@
             }
             var buttons = document.querySelectorAll('.widget button');
             for (var i = 0; i < buttons.length; i++) {
-                buttons[i].addEventListener('click', function () { render(Number(this.dataset.n)); });
+                buttons[i].addEventListener('click', function () {
+                    render(Number(this.dataset.n));
+                    for (var j = 0; j < buttons.length; j++) {
+                        buttons[j].setAttribute('aria-pressed', buttons[j] === this ? 'true' : 'false');
+                    }
+                });
             }
         })();
         </script>
@@ -272,8 +277,9 @@
         （约370MHz）。同一工艺下单周期处理器的时钟周期 =
         (1.8+1.2+2.0+2.5+1.0) = 8.5ns（约118MHz）。
         单从时钟频率来看，流水线就带来了3倍以上的提升。
-        如果加上流水线带来的CPI改善（从单周期的有效CPI≈1到流水线的
-        有效CPI≈1——但时钟快了3倍），整体性能提升是显著的。</p>
+        注意这里单周期与理想流水线的有效 CPI 都≈1，
+        因此性能收益主要来自时钟频率提升约3倍（8.5ns ÷ 2.7ns ≈ 3.1），
+        整体性能提升是显著的。</p>
 
         <p class="note">说明：本节中的各阶段延迟（IF=1.8ns、ID=1.2ns、EX=2.0ns、
         MEM=2.5ns、WB=1.0ns）与流水线寄存器开销 0.2ns 均为教学示意，
