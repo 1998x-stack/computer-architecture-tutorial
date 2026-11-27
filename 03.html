@@ -188,21 +188,21 @@
 #include &lt;math.h&gt;
 
 int main() {
-    // 演示浮点结合律失效
-    float a = 1.0f;
-    float b = 1.0e-8f;
-    float c = -1.0e-8f;
+    // 演示浮点结合律失效：大数先“吃掉”小数，再反向相减就把它丢了
+    float a = 1.0e9f;
+    float b = -1.0e9f;
+    float c = 1.0f;
 
-    float result1 = (a + b) + c;  // 1.0 + 1e-8 ≈ 1.0（精度丢失）→ 再减去1e-8 = 1.0
-    float result2 = a + (b + c);  // 1e-8 + (-1e-8) = 0 → 1.0 + 0 = 1.0
+    float result1 = (a + b) + c;  // (1e9 - 1e9) + 1 = 1.0
+    float result2 = a + (b + c);  // 1e9 + (-1e9 + 1) ≈ 1e9 - 1e9 = 0.0
 
-    printf("(a + b) + c = %.15f\n", result1);
-    printf("a + (b + c) = %.15f\n", result2);
+    printf("(a + b) + c = %.1f\n", result1);
+    printf("a + (b + c) = %.1f\n", result2);  // 两值不同 → 结合律不成立
 
-    // 演示灾难性抵消
-    double x = 1.0000000000000001;
-    double y = 1.0000000000000000;
-    printf("x - y = %.16f\n", x - y);  // 期望1e-16，实际上消除掉了大部分有效位
+    // 演示灾难性抵消：x 很小时 1 - cos(x) 的有效位几乎被完全抵消
+    double x = 1.0e-8;
+    printf("1 - cos(x)   = %.20g\n", 1.0 - cos(x));             // 直接相减：结果为 0
+    printf("2*sin^2(x/2) = %.20g\n", 2.0 * sin(x/2) * sin(x/2)); // 等价稳定写法：≈ x²/2
 
     // Kahan求和算法
     double vals[4] = {1.0, 1e100, 1.0, -1e100};
