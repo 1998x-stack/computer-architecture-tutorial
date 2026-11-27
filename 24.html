@@ -210,7 +210,7 @@
 module ucie_stream_tx (
     input  logic        clk,
     input  logic        rst_n,
-    input  logic [63:0] tx_data,
+    input  logic [511:0] tx_data,
     input  logic        tx_valid,
     output logic        tx_ready,
     // Die-to-Die 物理接口
@@ -218,32 +218,32 @@ module ucie_stream_tx (
     output logic        tx_d2d_clk
 );
 
-    logic [63:0] data_reg;
-    logic [2:0]  beat_count;
+    logic [511:0] data_reg;
+    logic [4:0]  beat_count;
     logic        sending;
 
-    // UCIe 以64B flit为单位传输
-    // 物理层把64B分解为16个16-bit beatx
+    // UCIe 以 64B flit 为单位传输（64B = 512 bit）
+    // 物理层把 64B 分解为 32 个 16-bit beat
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             tx_ready   <= 1'b1;
-            beat_count <= 3'd0;
+            beat_count <= 5'd0;
             sending    <= 1'b0;
         end else begin
             if (tx_valid && tx_ready) begin
                 data_reg  <= tx_data;
                 sending   <= 1'b1;
-                beat_count <= 3'd0;
+                beat_count <= 5'd0;
                 tx_ready  <= 1'b0;  // 数据被接收，开始发送
             end
 
             if (sending) begin
                 tx_d2d_data <= data_reg[15:0];
-                data_reg    <= {16'b0, data_reg[63:16]};
-                if (beat_count == 3'd15) begin
+                data_reg    <= {16'b0, data_reg[511:16]};
+                if (beat_count == 5'd31) begin
                     sending   <= 1'b0;
-                    tx_ready  <= 1'b1;  // 16个beat发送完毕
+                    tx_ready  <= 1'b1;  // 32个beat发送完毕
                 end else begin
                     beat_count <= beat_count + 1;
                 end
