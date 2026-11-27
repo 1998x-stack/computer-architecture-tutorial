@@ -237,9 +237,9 @@ public:
         <div class="widget">
             <p>点击切换串行比例，观察 64 核下的 Amdahl 加速上限 <strong>1/(s + p/N)</strong>：</p>
             <p class="widget-buttons">
-                <button type="button" data-s="0.05">串行 5%</button>
-                <button type="button" data-s="0.10">串行 10%</button>
-                <button type="button" data-s="0.20">串行 20%</button>
+                <button type="button" data-s="0.05" aria-pressed="true">串行 5%</button>
+                <button type="button" data-s="0.10" aria-pressed="false">串行 10%</button>
+                <button type="button" data-s="0.20" aria-pressed="false">串行 20%</button>
             </p>
             <p id="amdahl-out" aria-live="polite">串行 5%（64 核）：加速上限 ≈ 15.4×</p>
         </div>
@@ -252,7 +252,12 @@ public:
             }
             var bs = document.querySelectorAll('.widget button');
             for (var i = 0; i < bs.length; i++) {
-                bs[i].addEventListener('click', function () { render(Number(this.dataset.s)); });
+                bs[i].addEventListener('click', function () {
+                    render(Number(this.dataset.s));
+                    for (var j = 0; j < bs.length; j++) {
+                        bs[j].setAttribute('aria-pressed', bs[j] === this ? 'true' : 'false');
+                    }
+                });
             }
         })();
         </script>
@@ -280,8 +285,9 @@ public:
                 <li><a href="https://en.wikipedia.org/wiki/MESI_protocol">Wikipedia: MESI protocol</a> — MESI 四状态与总线事务的通用说明。</li>
                 <li><a href="https://en.wikipedia.org/wiki/Non-uniform_memory_access">Wikipedia: Non-uniform memory access</a> — NUMA 拓扑与本地 / 远程内存延迟差异。</li>
                 <li>Hennessy, J. L., &amp; Patterson, D. A. <em>Computer Architecture: A Quantitative Approach</em> — 多核、缓存一致性与内存一致性模型。</li>
+                <li><a href="https://en.wikipedia.org/wiki/Pentium_4">Wikipedia: Pentium 4</a> — NetBurst 微架构、Tejas 项目取消与 10 GHz 频率目标的公开记述。</li>
             </ul>
-            <p class="note">本章的 Pentium 4 Tejas 取消与功耗数据引自公开资料；文中标注为教学示意的数字已在对应位置说明。</p>
+            <p class="note">本章的 Pentium 4 Tejas 取消与功耗/频率目标引自上列 Pentium 4 条目；文中标注为教学示意的数字已在对应位置说明。</p>
         </section>
 
         <div class="footer-nav">
