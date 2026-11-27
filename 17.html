@@ -44,6 +44,7 @@
         </ul>
     </nav>
     <main class="main-content" id="content" style="overflow-wrap:anywhere">
+        <article>
         <h1>第17章 虚拟内存与TLB</h1>
 
         <p>上一章我们看到了缓存如何通过局部性原理把慢速内存"伪装"成快速存储。现在我们要继续深入——不仅仅是性能问题，还有一个更根本的需求：如何让多个程序安全、高效地共享内存？答案就是<strong>虚拟内存</strong>（Virtual Memory）。如果说Cache是对程序员<strong>透明</strong>的硬件优化，那虚拟内存就是操作系统和硬件一起为我们构建的<strong>美丽幻觉</strong>——每个程序都觉得自己拥有整个地址空间。这一章，我们来揭开这个幻觉背后的硬件机制。</p>
@@ -258,6 +259,7 @@ void tlb_unfriendly_access(char *mem) {
             <a href="index.html">📖 返回目录</a>
             <a href="18.html">下一章 →</a>
         </div>
+        </article>
     </main>
 </div>
 </div>
