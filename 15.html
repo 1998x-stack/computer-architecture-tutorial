@@ -170,7 +170,7 @@
             </tr>
         </table>
 
-        <p>注意这里的魔法：如果L1 Cache的命中率达到95%（对于热点数据通常更高），那么平均访问时间就非常接近L1的延迟。我们来算一笔账：假设L1是1ns，命中率97%，L2是5ns，命中率90%，内存是50ns。那么平均访问时间就是：1ns + 3%×(5ns + 10%×50ns) ≈ 1.15ns。你看，通过层次化设计，我们得到了接近L1速度的访问体验，同时拥有接近内存的容量。这就是层次化设计的神奇之处。</p>
+        <p>注意这里的魔法：如果L1 Cache的命中率达到97%（对于热点数据通常更高），那么平均访问时间就非常接近L1的延迟。我们来算一笔账：假设L1是1ns，缺失率3%，L2是5ns，缺失率10%，内存是50ns。那么平均访问时间就是：1ns + 3%×(5ns + 10%×50ns) = 1ns + 3%×10ns ≈ 1.30ns。你看，通过层次化设计，我们得到了接近L1速度的访问体验，同时拥有接近内存的容量。这就是层次化设计的神奇之处。</p>
 
         <h2>AMAT：平均存储访问时间</h2>
 
@@ -202,9 +202,9 @@
         <div class="widget">
             <p>点击切换场景，体验 AMAT 对命中率 / 缺失率的敏感性：</p>
             <p class="widget-buttons">
-                <button type="button" data-sc="0">典型桌面</button>
-                <button type="button" data-sc="1">高命中率 L1</button>
-                <button type="button" data-sc="2">大 L3 / 低缺失</button>
+                <button type="button" data-sc="0" aria-pressed="true">典型桌面</button>
+                <button type="button" data-sc="1" aria-pressed="false">高命中率 L1</button>
+                <button type="button" data-sc="2" aria-pressed="false">大 L3 / 低缺失</button>
             </p>
             <p id="amat-out" aria-live="polite">典型桌面：AMAT = 1.64 ns（相对内存 ≈ 49×）</p>
         </div>
@@ -226,6 +226,9 @@
                 buttons[i].addEventListener('click', function () {
                     var s = scen[Number(this.dataset.sc)], a = amat(s);
                     out.textContent = s.name + '：AMAT = ' + a.toFixed(2) + ' ns（相对内存 ≈ ' + (s.mem / a).toFixed(0) + '×）';
+                    for (var j = 0; j < buttons.length; j++) {
+                        buttons[j].setAttribute('aria-pressed', buttons[j] === this ? 'true' : 'false');
+                    }
                 });
             }
         })();
