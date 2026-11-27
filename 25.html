@@ -44,6 +44,7 @@
         </ul>
     </nav>
     <main class="main-content" id="content" style="overflow-wrap:anywhere">
+        <article>
         <h1>第25章 AI加速器与领域专用架构</h1>
 
         <p>同学们好！上一章我们聊了Chiplet——芯片在物理形态上的变革。今天我们要聊的是体系结构层面最激动人心的话题：AI加速器与领域专用架构（Domain-Specific Architecture, DSA）。如果说过去50年计算机体系结构的故事是"通用处理器一统天下"，那么现在这个故事正在被重写——当AI工作负载成为计算需求的主要驱动力时，"专用的、为特定领域设计的"正在取代"通用的、什么都能跑的"。这不是渐进式的改进，而是范式级的颠覆。</p>
@@ -198,7 +199,7 @@
 
         <p>解决方案的两条路线：</p>
 
-        <p><strong>近存计算（Near-Memory Computing）：</strong>把计算单元放在靠近内存的地方。三星的HBM-PIM（Processing-in-Memory）就是典型代表——在HBM（高带宽内存）的每个Bank中直接嵌入一个FP16 MAC单元。数据不需要从HBM传输到处理器核心，直接在内存内部完成计算。结果：特定工作负载下性能提升2倍，能耗降低70%。</p>
+        <p><strong>近存计算（Near-Memory Computing）：</strong>把计算单元放在靠近内存的地方。三星的HBM-PIM（Processing-in-Memory）就是典型代表——在HBM（高带宽内存）的每个Bank中直接嵌入一个FP16 MAC单元。数据不需要从HBM传输到处理器核心，直接在内存内部完成计算。结果：三星公开数据显示，在特定工作负载下性能约提升2倍、能耗约降低70%（厂商公开数据，实际收益因负载而异）。</p>
 
         <p><strong>存内计算（Processing-in-Memory, PIM）：</strong>更激进的方案——直接在存储阵列内部进行计算。d-Matrix的Raptor平台采用3D In-Memory Compute（3DIMC）技术，将计算逻辑直接堆叠在DRAM上。据称可以减少10倍的数据搬运能耗。UPMEM则是另一种路线——在标准DRAM芯片中嵌入通用的DPU（Data Processing Unit），可以运行轻量级的计算任务。</p>
 
@@ -377,6 +378,7 @@ endmodule
     <li>Jouppi, N. et al. “In-Datacenter Performance Analysis of a Tensor Processing Unit,” <em>ISCA</em>, 2017 —— TPU v1 架构与脉动阵列的一手论文。</li>
     <li>Kung, H. T. “Why Systolic Architectures?,” <em>IEEE Computer</em>, 1982 —— 脉动阵列概念的原始来源。</li>
     <li>Hennessy, J. &amp; Patterson, D. <em>Computer Architecture: A Quantitative Approach</em> —— 领域专用架构（DSA）与数据流计算。</li>
+    <li><a href="https://en.wikipedia.org/wiki/Processing-in-memory">Wikipedia: Processing-in-memory</a> —— HBM-PIM / 近存计算方案的公开综述与厂商数据来源。</li>
   </ul>
   <p class="note">说明：正文中的 TPU 指标（如 92 TOPS/75W、v5p 的 459 TFLOPS BF16 等）来自 Google 官方论文与发布材料；图 25-1 为 4×4 教学示意，真实阵列规模更大。</p>
 </section>
@@ -386,6 +388,7 @@ endmodule
             <a href="index.html">📖 返回目录</a>
             <a href="26.html">下一章 →</a>
         </div>
+        </article>
     </main>
 </div>
 </div>
