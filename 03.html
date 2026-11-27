@@ -204,20 +204,21 @@ int main() {
     printf("1 - cos(x)   = %.20g\n", 1.0 - cos(x));             // 直接相减：结果为 0
     printf("2*sin^2(x/2) = %.20g\n", 2.0 * sin(x/2) * sin(x/2)); // 等价稳定写法：≈ x²/2
 
-    // Kahan求和算法
-    double vals[4] = {1.0, 1e100, 1.0, -1e100};
-    double naive_sum = vals[0] + vals[1] + vals[2] + vals[3];
-    printf("Naive sum = %f\n", naive_sum);  // 大数吃掉小数
+    // Kahan求和算法：把 1.0 反复累加到 1e16 上，演示大数“吃掉”小数
+    double big = 1.0e16;
+    double naive_sum = big;
+    for (int i = 0; i &lt; 10; i++) naive_sum += 1.0;
+    printf("Naive sum = %.1f\n", naive_sum);  // 1e16 —— 10 个 1.0 被全部吃掉
 
-    // Kahan求和
-    double sum = 0.0, err = 0.0;
-    for (int i = 0; i &lt; 4; i++) {
-        double y = vals[i] - err;
+    // Kahan求和：用补偿项 err 记住每次舍入丢弃的低位
+    double sum = big, err = 0.0;
+    for (int i = 0; i &lt; 10; i++) {
+        double y = 1.0 - err;
         double t = sum + y;
         err = (t - sum) - y;
         sum = t;
     }
-    printf("Kahan sum = %f\n", sum);  // 正确结果应该是2.0
+    printf("Kahan sum = %.1f\n", sum);  // 1e16 + 10 —— 10 个 1.0 都被累加
     return 0;
 }</code></pre>
 
